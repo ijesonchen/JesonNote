@@ -1,0 +1,24 @@
+WELCOME: Welcome to the Algorithms Specialization! Here's an overview of the first week of material.
+
+INTRODUCTION: The first set of lectures for this week is meant to give you the flavor of the course, and hopefully get you excited about it. We begin by discussing algorithms in general and why they're so important, and then use the problem of multiplying two integers to illustrate how algorithmic ingenuity can often improve over more straightforward or naive solutions. We discuss the Merge Sort algorithm in detail, for several reasons: it's a practical and famous algorithm that you should all know; it's a good warm-up to get you ready for more intricate algorithms; and it's the canonical introduction to the "divide and conquer" algorithm design paradigm. These lectures conclude by describing several guiding principles for how we'll analyze algorithms in this course.
+
+ASYMPTOTIC ANALYSIS: The second set of lectures for this week is an introduction to big-oh notation and its relatives, which belongs in the vocabulary of every serious programmer and computer scientist. The goal is to identify a "sweet spot" of granularity for reasoning about algorithms --- we want to suppress second-order details like constant factors and lower-order terms, and focus on how the running time of an algorithm scales as the input size grows large.
+
+PREREQUISITES: This course is not an introduction to programming, and it assumes that you have basic programming skills in a language such as Python, Java, or C. There are several outstanding free online courses that teach basic programming. We also use mathematical analysis as needed to understand how and why algorithms and data structures really work. If you need a refresher on the basics of proofs (induction, contradiction, etc.), I recommend the lecture notes "Mathematics for Computer Science" by Lehman and Leighton (see separate Resources pages).
+
+DISCUSSION FORUMS: The discussion forums play a crucial role in massive online courses like this one. If you have trouble understanding a lecture or completing an assignment, you should turn to the forums for help. After you've mastered the lectures and assignments for a given week, I hope you'll contribute to the forums and help out your fellow students. While I won't have time to carefully monitor the discussion forums, I'll check in and answer questions whenever I find the time.
+
+VIDEOS AND SLIDES: Videos can be streamed or downloaded and watched offline (recommended for commutes, etc.). We are also providing PDF lecture slides (typed versions of what's written in the lecture videos), as well as subtitle files (in English and in some cases other languages as well). And if you find yourself wishing that I spoke more quickly or more slowly, note that you can adjust the video speed to accommodate your preferred pace.
+
+HOMEWORK #1: The first problem set consists of 5 multiple choice problems, mostly about Merge Sort and asymptotic notation. The first programming assignment asks you to implement one or more of the integer multiplication algorithms covered in lecture.
+
+SUGGESTED READINGS FOR WEEK 1: Abbreviations in suggested readings refer to the following textbooks:
+
+CLRS - Cormen, Leiserson, Rivest, and Stein, Introduction to Algorithms (3rd edition)
+DPV - Dasgupta, Papadimitriou, and Vazirani, Algorithms
+KT - Kleinberg and Tardos, Algorithm Design
+SW - Sedgewick and Wayne, Algorithms (4th edition)
+CLRS: Chapters 2 and 3
+DPV: Sections 0.3, 2.1, 2.3
+KT: Sections 2.1, 2.2, 2.4, and 5.1
+SW: Sections 1.4 and 2.2
