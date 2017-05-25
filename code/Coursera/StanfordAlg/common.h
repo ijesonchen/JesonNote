@@ -1,0 +1,1 @@
+void CHECK(bool b);
