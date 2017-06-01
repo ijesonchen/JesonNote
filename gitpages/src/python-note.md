@@ -38,3 +38,12 @@ with ZipFile(zipname, 'w') as zipFile:
 		fullname = base + '\\' + x.name
 		zipFile.write(fullname, arcname = x.name, compress_type = zipfile.ZIP_DEFAULTED)
 
+# pymongo
+python setup.py build，生成编译后py文件，复制到脚本目录中即可直接import
+client = pymongo.MongoClient(ip, port)
+db = client.dbname
+table = db[tablename]
+for x in table.find().sort(fieldname, pymongo.ASCENDING)
+	id = x.['id']
+	...
+rec = table.find_one({field : value})
