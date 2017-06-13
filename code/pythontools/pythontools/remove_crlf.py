@@ -1,5 +1,7 @@
 import os
 
+PATH = r'''Z:\1'''
+
 def RemoveCRLF(dirname):
     os.chdir(dirname)
     files = os.listdir()
@@ -20,7 +22,7 @@ def RemoveCRLF(dirname):
     os.chdir('..')
 
 if __name__ == '__main__':
-    os.chdir(r'''D:\devdata\alg_coursera''')
+    os.chdir(PATH)
     files = os.listdir()
     for fn in files:
         if os.path.isdir(fn):

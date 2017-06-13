@@ -3,6 +3,7 @@ from docx.shared import Inches
 import os
 
 # combine text in subfolders in one doc
+PATH = r'''Z:\1'''
 
 def CombText2Doc(dirname):
     if dirname[0] == '.':
@@ -36,7 +37,7 @@ def CombText2Doc(dirname):
     os.chdir('..')
 
 if __name__ == '__main__':
-    os.chdir(r'''D:\devdata\alg_coursera''')
+    os.chdir(PATH)
     files = os.listdir()
     for fn in files:
         if os.path.isdir(fn):
