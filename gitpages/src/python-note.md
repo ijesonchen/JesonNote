@@ -10,6 +10,7 @@ python笔记
 
 [TOC]
 
+
 # 语法
 
 ## gobal关键词引用全局变量
@@ -35,6 +36,10 @@ def P():
 input('press any key to continue')
 ```
 
+# 库
+## math和cmath
+math包含取整、三角函数、幂、指数、对数、阶乘、伽马、最大公约数等，并包含一些常量定义（e,pi)
+cmath和math类似，但是支持复数，包括三角、幂指一级坐标变换等（极坐标）
 
 # 文件操作
 
