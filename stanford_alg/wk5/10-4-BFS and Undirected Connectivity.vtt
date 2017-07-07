@@ -1,0 +1,1191 @@
+WEBVTT
+
+1
+00:00:01.310 --> 00:00:02.300
+So what's the problem?
+
+2
+00:00:02.300 --> 00:00:06.086
+Well, I did say most of the stuff about
+graph search really doesn't matter,
+
+3
+00:00:06.086 --> 00:00:09.245
+undirected or directed,
+it's pretty much cosmetic changes.
+
+4
+00:00:09.245 --> 00:00:11.699
+But the big exception is when
+you're computing connectivity,
+
+5
+00:00:11.699 --> 00:00:14.020
+when you're computing
+the pieces of the graph.
+
+6
+00:00:14.020 --> 00:00:17.290
+So right now, I'm only going to
+talk about undirected graphs.
+
+7
+00:00:17.290 --> 00:00:21.600
+The directed case, we can get very
+efficient algorithms for, but it's quite
+
+8
+00:00:21.600 --> 00:00:24.339
+a bit harder work, so that's going to be
+covered in detail in a separate video.
+
+9
+00:00:25.600 --> 00:00:28.290
+So for now,
+focus just on an undirected graph, G.
+
+10
+00:00:28.290 --> 00:00:32.650
+And we're certainly not going to assume
+that G is connected, and the part of
+
+11
+00:00:32.650 --> 00:00:36.880
+the point here is to figure out whether or
+not it's connected, i.e., in one piece.
+
+12
+00:00:36.880 --> 00:00:39.580
+So maybe the graph looks like this.
+
+13
+00:00:39.580 --> 00:00:44.059
+So for example maybe the graph has ten
+vertices and looks like this on the right.
+
+14
+00:00:45.870 --> 00:00:49.720
+And intuitively, especially given that
+I've drawn it in such a clean way,
+
+15
+00:00:49.720 --> 00:00:52.060
+it's clear that this
+graph has three pieces.
+
+16
+00:00:52.060 --> 00:00:54.980
+And those are the things that we want
+to call the connected components.
+
+17
+00:00:56.210 --> 00:00:59.780
+But we do want to sum up more formal
+definitions, something which is actually
+
+18
+00:00:59.780 --> 00:01:03.040
+in math that we could say is true or
+false about a given graph.
+
+19
+00:01:03.040 --> 00:01:06.660
+And roughly, we define the connected
+components of an undirected graph
+
+20
+00:01:06.660 --> 00:01:10.300
+as the maximal regions that are connected.
+
+21
+00:01:10.300 --> 00:01:13.130
+In the sense you can get from
+any vertex in the region from
+
+22
+00:01:13.130 --> 00:01:15.610
+any other vertex in
+the region using a path.
+
+23
+00:01:15.610 --> 00:01:17.910
+So, maximal connected
+regions in that sense.
+
+24
+00:01:17.910 --> 00:01:20.838
+Now the slick way to do this is
+using an equivalence relation.
+
+25
+00:01:20.838 --> 00:01:24.214
+And I'm going to do this here in part
+because it's really the right way to think
+
+26
+00:01:24.214 --> 00:01:27.720
+about the directed graph case, which
+we'll talk about in some detail later.
+
+27
+00:01:28.720 --> 00:01:32.215
+So from your [INAUDIBLE] graphs,
+so this isn't super important, but
+
+28
+00:01:32.215 --> 00:01:34.987
+let me go ahead and
+state the formal definition just for
+
+29
+00:01:34.987 --> 00:01:37.716
+completeness about what is
+a connecting component.
+
+30
+00:01:37.716 --> 00:01:42.250
+What do I mean by a maximal
+region that's mutually connected.
+
+31
+00:01:43.770 --> 00:01:48.670
+So a good formal definition is as
+the equivalence classes of the relation on
+
+32
+00:01:48.670 --> 00:01:53.860
+vertices where we define by
+u being related to v if and
+
+33
+00:01:53.860 --> 00:01:56.300
+only if there's a path between u and
+v in the graph.
+
+34
+00:01:57.770 --> 00:02:01.030
+So I'll leave it for you to do the simple
+check that this squiggle is indeed
+
+35
+00:02:01.030 --> 00:02:02.140
+an equivalence relation.
+
+36
+00:02:02.140 --> 00:02:05.170
+I'm going to remind you what
+equivalence relations are.
+
+37
+00:02:05.170 --> 00:02:08.360
+This is something you generally learn
+in your first class on proofs or
+
+38
+00:02:08.360 --> 00:02:10.420
+your first class in discrete math.
+
+39
+00:02:10.420 --> 00:02:14.450
+So it's just something which may or
+may not be true about pairs of objects.
+
+40
+00:02:14.450 --> 00:02:17.490
+In an equivalence relation,
+you have to satisfy three properties.
+
+41
+00:02:17.490 --> 00:02:21.090
+So first you have to be reflexive, meaning
+everything has to be related to itself,
+
+42
+00:02:21.090 --> 00:02:26.430
+and indeed in a graph there is a path from
+any node to itself, namely the empty path.
+
+43
+00:02:26.430 --> 00:02:29.330
+Also a couple of these relations have
+to be symmetric, meaning that if u and
+
+44
+00:02:29.330 --> 00:02:30.800
+v are related then v and u are related.
+
+45
+00:02:30.800 --> 00:02:34.780
+Because this is an undirected graph
+it's clear that this is symmetric.
+
+46
+00:02:34.780 --> 00:02:38.130
+If there's a path from u to v in the graph
+there's also a path from v to u so
+
+47
+00:02:38.130 --> 00:02:39.390
+no problem there.
+
+48
+00:02:39.390 --> 00:02:41.310
+Finally equivalence classes
+have got to be transitive.
+
+49
+00:02:41.310 --> 00:02:45.700
+So that means if u and v are related and
+so are v and w and so are u and wo.
+
+50
+00:02:45.700 --> 00:02:48.980
+That is if u and v have a path,
+v and w have a path, then so
+
+51
+00:02:48.980 --> 00:02:53.710
+does u and w and you can prove transtivity
+just by pasting the two paths together.
+
+52
+00:02:53.710 --> 00:02:56.180
+And so the upshot is,
+when you want to say something like
+
+53
+00:02:56.180 --> 00:03:00.310
+the maximal subset of something
+where everything is the same.
+
+54
+00:03:00.310 --> 00:03:03.608
+The right way to make that mathematical
+is using equivalence relations.
+
+55
+00:03:03.608 --> 00:03:06.620
+So over in this blue graph we want
+to say one, three, five, seven, and
+
+56
+00:03:06.620 --> 00:03:10.230
+nine, which are all the same in the sense
+that they're mutually connected and so
+
+57
+00:03:10.230 --> 00:03:12.370
+that's exactly what this
+relation is making precise.
+
+58
+00:03:12.370 --> 00:03:14.598
+All five of those nodes
+are related to each other.
+
+59
+00:03:14.598 --> 00:03:15.994
+2 and 4 are related to each other.
+
+60
+00:03:15.994 --> 00:03:18.920
+6, 8, and 10,
+all pairs of them are related.
+
+61
+00:03:18.920 --> 00:03:22.174
+So equivalence relations always
+have equivalence classes,
+
+62
+00:03:22.174 --> 00:03:24.057
+the maximal mutual related stuff.
+
+63
+00:03:24.057 --> 00:03:27.963
+And in this graph context,
+it's exactly these connected components,
+
+64
+00:03:27.963 --> 00:03:29.250
+exactly what you want.
+
+65
+00:03:29.250 --> 00:03:33.624
+So what I want to show you is you
+can use wrapped in an outer of
+
+66
+00:03:33.624 --> 00:03:39.040
+the vertices to compute, to identify all
+of the connected components of a graph.
+
+67
+00:03:39.040 --> 00:03:42.580
+In time linear in
+the graph in n plus n time.
+
+68
+00:03:42.580 --> 00:03:44.770
+Now you might be wondering
+why do you want to do that.
+
+69
+00:03:46.850 --> 00:03:49.910
+Well there's a lot of reasons, so
+an obvious one which is relevant for
+
+70
+00:03:49.910 --> 00:03:54.940
+physical networks is to check if
+a network has broken into two pieces.
+
+71
+00:03:54.940 --> 00:03:58.320
+So certainly if you're an Internet service
+provider, you want to make sure that
+
+72
+00:03:58.320 --> 00:04:00.829
+from any point in your network, you can
+reach any other point in the network.
+
+73
+00:04:02.040 --> 00:04:05.010
+And that boils down to just understanding
+whether the graph that represents you
+
+74
+00:04:05.010 --> 00:04:09.140
+network, is a connected graph, that is if
+it's in one piece, or not in one piece.
+
+75
+00:04:09.140 --> 00:04:12.270
+So obviously, you can ask this same
+question about recreational examples.
+
+76
+00:04:12.270 --> 00:04:15.200
+So if you return to the movie graph,
+maybe you're wondering,
+
+77
+00:04:15.200 --> 00:04:20.800
+can you get from every single actor
+in the IMDB database to Kevin Bacon?
+
+78
+00:04:20.800 --> 00:04:24.000
+Or are there actors for
+which you cannot reach Kevin Bacon?
+
+79
+00:04:24.000 --> 00:04:25.450
+Via a sequence of edges,
+
+80
+00:04:25.450 --> 00:04:30.300
+a sequences of movies in which two
+actors have both played a role.
+
+81
+00:04:30.300 --> 00:04:33.030
+So that's something that boils down
+to a connectivity computation.
+
+82
+00:04:34.520 --> 00:04:37.810
+If you have networked data and you want to
+display it, you want to visualize it and
+
+83
+00:04:37.810 --> 00:04:40.440
+show it to a group of people so
+that they can interpret it.
+
+84
+00:04:40.440 --> 00:04:43.240
+Obviously one thing you want to do is you
+want to know if there's multiple pieces,
+
+85
+00:04:43.240 --> 00:04:45.420
+and then you want to display
+the different pieces separately.
+
+86
+00:04:47.130 --> 00:04:50.270
+So let me make sure that one probably
+a little less obvious application of
+
+87
+00:04:50.270 --> 00:04:54.790
+undirected connectivity is that it gives
+us a nice quick and dirty heuristic for
+
+88
+00:04:54.790 --> 00:04:58.690
+doing clustering if you have
+paralyzed information about objects.
+
+89
+00:04:58.690 --> 00:04:59.880
+Let me be a little more concrete.
+
+90
+00:04:59.880 --> 00:05:02.720
+Suppose you have a set of objects
+that you really care about.
+
+91
+00:05:02.720 --> 00:05:06.920
+This could be documents, maybe web pages
+that you crawl, something like that.
+
+92
+00:05:06.920 --> 00:05:10.756
+It could be a set of images, either
+your own or drawn from some data base.
+
+93
+00:05:10.756 --> 00:05:13.780
+Or it could be, for
+example, a set of genomes.
+
+94
+00:05:13.780 --> 00:05:18.710
+Suppose further, that you have a pairwise
+function, which for each pair of objects
+
+95
+00:05:18.710 --> 00:05:22.230
+tells you whether they are very much
+like each other or very much different.
+
+96
+00:05:22.230 --> 00:05:25.646
+So let's suppose that two objects
+are very similar to each other,
+
+97
+00:05:25.646 --> 00:05:28.087
+like the two web pages
+that are almost the same.
+
+98
+00:05:28.087 --> 00:05:31.614
+Or there are two genomes where you can get
+from one to the other with a small number
+
+99
+00:05:31.614 --> 00:05:32.450
+of mutations.
+
+100
+00:05:32.450 --> 00:05:34.580
+Then, they have a low score.
+
+101
+00:05:34.580 --> 00:05:35.490
+So low numbers,
+
+102
+00:05:35.490 --> 00:05:40.520
+close to zero, indicates that the objects
+are very similar to each other.
+
+103
+00:05:40.520 --> 00:05:43.200
+High numbers, let's say,
+they can go up to a thousand or
+
+104
+00:05:43.200 --> 00:05:46.060
+something, indicate that they
+are very different objects.
+
+105
+00:05:46.060 --> 00:05:49.470
+Two webpages that have nothing to
+do with each other, two genomes for
+
+106
+00:05:49.470 --> 00:05:53.910
+totally unrelated parts, or
+two images that seem to be of
+
+107
+00:05:53.910 --> 00:05:56.660
+completely different people or
+even completely different objects.
+
+108
+00:05:58.540 --> 00:06:02.920
+Now here's a graph you can
+construct using these objects and
+
+109
+00:06:02.920 --> 00:06:05.300
+the similarity data that
+you have about them.
+
+110
+00:06:05.300 --> 00:06:07.930
+So you can have a graph where
+the nodes are the objects.
+
+111
+00:06:07.930 --> 00:06:11.370
+Okay, so for each image, for
+each document, whatever,
+
+112
+00:06:11.370 --> 00:06:14.671
+you have a single node and
+then for a given pair of nodes,
+
+113
+00:06:14.671 --> 00:06:18.910
+you put in an edge if and
+only if the two objects are very similar.
+
+114
+00:06:18.910 --> 00:06:22.070
+So for example, you could put in
+an edge between two objects if and
+
+115
+00:06:22.070 --> 00:06:24.830
+only if the score is at most ten.
+
+116
+00:06:24.830 --> 00:06:28.490
+So remember, the more similar two objects
+are, the closer there score is to zero.
+
+117
+00:06:28.490 --> 00:06:31.070
+So you're going to get an edge
+between very similar documents,
+
+118
+00:06:31.070 --> 00:06:33.570
+very similar genomes, very similar images.
+
+119
+00:06:33.570 --> 00:06:37.690
+Now in this graph you've constructed,
+you can find the connected components.
+
+120
+00:06:37.690 --> 00:06:41.290
+So each of these connected components
+will be a group of objects, which more or
+
+121
+00:06:41.290 --> 00:06:43.110
+less are all very similar to each other.
+
+122
+00:06:43.110 --> 00:06:47.380
+So this would be a cluster of closely
+related objects in your database.
+
+123
+00:06:47.380 --> 00:06:51.420
+And you can imagine a lot of reasons why,
+given a large set of unstructured data,
+
+124
+00:06:51.420 --> 00:06:53.480
+just a bunch of pictures,
+a bunch of documents or
+
+125
+00:06:53.480 --> 00:06:57.209
+whatever, you might want to find
+clusters of highly related objects.
+
+126
+00:06:58.790 --> 00:07:01.104
+So we'll probably see more
+sophisticated heuristics for
+
+127
+00:07:01.104 --> 00:07:02.387
+clustering in some SQL course.
+
+128
+00:07:02.387 --> 00:07:06.332
+But already undirected connectivity gives
+you a super fast linear time quick and
+
+129
+00:07:06.332 --> 00:07:09.465
+dirty heuristic for
+identifying clusters of similar objects,
+
+130
+00:07:09.465 --> 00:07:11.450
+given pairwise data about similarity.
+
+131
+00:07:12.960 --> 00:07:14.870
+So that's some reasons
+you might want to do it.
+
+132
+00:07:14.870 --> 00:07:17.683
+Now let's actually talk
+about how to compute
+
+133
+00:07:17.683 --> 00:07:21.014
+the components in the near
+time using just a simple for
+
+134
+00:07:21.014 --> 00:07:24.730
+loop and breadth-first search
+as it's inner work horse.
+
+135
+00:07:24.730 --> 00:07:27.930
+So here's the code to compute
+all the connected components
+
+136
+00:07:27.930 --> 00:07:30.060
+of an undirected graph.
+
+137
+00:07:30.060 --> 00:07:32.810
+So first we initialize all
+nodes as being unexplored.
+
+138
+00:07:34.100 --> 00:07:36.110
+I'm also going to assume
+that the nodes have names.
+
+139
+00:07:36.110 --> 00:07:37.880
+Let's say that the names are from 1 to n.
+
+140
+00:07:37.880 --> 00:07:42.349
+So these names could just be the position
+in the node array that these nodes occupy.
+
+141
+00:07:42.349 --> 00:07:43.827
+So this is going to be an outer for loop,
+
+142
+00:07:43.827 --> 00:07:47.620
+which walks through the nodes in
+an arbitrary order, let's say from 1 to n.
+
+143
+00:07:47.620 --> 00:07:52.030
+This outer for loop is to ensure that
+every single node of the graph will be
+
+144
+00:07:52.030 --> 00:07:55.520
+inspected for
+sure at some point in the algorithm.
+
+145
+00:07:55.520 --> 00:07:58.550
+Now, again, one of maxims is that we
+should never do redundant work, so
+
+146
+00:07:58.550 --> 00:08:01.620
+before we start exploring from some node,
+we check if they've already been there.
+
+147
+00:08:03.190 --> 00:08:08.620
+And if we haven't seen i before,
+then we invoke the breath-first search,
+
+148
+00:08:08.620 --> 00:08:13.206
+a term we were talking about previously
+in the lecture, in the graph G,
+
+149
+00:08:13.206 --> 00:08:14.904
+starting from the node I.
+
+150
+00:08:14.904 --> 00:08:16.405
+So to make sure this is clear,
+
+151
+00:08:16.405 --> 00:08:20.320
+let's just run this algorithm
+on this blue graph to the right.
+
+152
+00:08:20.320 --> 00:08:24.100
+So we start in the outer for
+loop and we said i equal to 1.
+
+153
+00:08:24.100 --> 00:08:25.960
+And we say have we explored
+node number 1 yet.
+
+154
+00:08:25.960 --> 00:08:28.440
+And of course not,
+we haven't explored anything yet.
+
+155
+00:08:28.440 --> 00:08:31.280
+So the first thing we're going to
+do is we're going to invoke
+
+156
+00:08:31.280 --> 00:08:33.870
+BFS on node number 1 here.
+
+157
+00:08:33.870 --> 00:08:37.620
+So now we start running the usual
+breadth for search subroutine starting
+
+158
+00:08:37.620 --> 00:08:42.600
+from this node one and so we explore layer
+one here is going to be nodes 3 and 5.
+
+159
+00:08:42.600 --> 00:08:44.200
+So we explore them in some order for
+
+160
+00:08:44.200 --> 00:08:47.770
+example maybe node number 3
+is what we explore second.
+
+161
+00:08:47.770 --> 00:08:50.260
+Then node number five is
+what we explore third and
+
+162
+00:08:51.430 --> 00:08:55.290
+then the second layer in this component
+is going to be the nodes 7 and 9.
+
+163
+00:08:55.290 --> 00:09:00.580
+So we'll explore them in some order as
+well and say 7 first followed by 9.
+
+164
+00:09:00.580 --> 00:09:03.580
+So after this BFS initiated
+from node number one completes,
+
+165
+00:09:03.580 --> 00:09:06.550
+of course it will have found
+everything it could possibly find,
+
+166
+00:09:06.550 --> 00:09:09.820
+namely the five nodes in the same
+connected component as node number 1.
+
+167
+00:09:09.820 --> 00:09:13.030
+And of course, all of the five of these
+nodes will be marked as explored.
+
+168
+00:09:13.030 --> 00:09:17.440
+So now we return once that exits we return
+to the outer for loop we increment I we go
+
+169
+00:09:17.440 --> 00:09:22.410
+to I equal 2, and we say we already
+explored node number 2 no we have not.
+
+170
+00:09:22.410 --> 00:09:25.640
+And so now we invoke BFS
+again from node number 2.
+
+171
+00:09:25.640 --> 00:09:27.390
+So that will be the sixth node we explore.
+
+172
+00:09:27.390 --> 00:09:28.590
+There's not much to do from two,
+
+173
+00:09:28.590 --> 00:09:32.940
+all we can do is go to 4, so
+that's the seventh node we explore.
+
+174
+00:09:32.940 --> 00:09:36.410
+That BFS terminates at finding
+the nodes in this connected component,
+
+175
+00:09:36.410 --> 00:09:37.935
+then we go back to the outer for loop.
+
+176
+00:09:37.935 --> 00:09:41.360
+We increment i to 3, we say we've
+already seen node number three.
+
+177
+00:09:41.360 --> 00:09:43.690
+Yes we have, we saw that in
+the first breadth first search.
+
+178
+00:09:43.690 --> 00:09:48.520
+So we certainly don't bother to BFS from
+node 3, then we increment item four.
+
+179
+00:09:48.520 --> 00:09:49.410
+Have we seen 4?
+
+180
+00:09:49.410 --> 00:09:51.380
+Yes we have, in the second called to BFS.
+
+181
+00:09:51.380 --> 00:09:52.650
+Have we seen node 5?
+
+182
+00:09:52.650 --> 00:09:54.955
+Yes we have, in the first call to BFS.
+
+183
+00:09:54.955 --> 00:09:56.377
+Have we seen node 6?
+
+184
+00:09:56.377 --> 00:09:57.590
+No, we have not.
+
+185
+00:09:57.590 --> 00:10:01.920
+So the final indication of breadth-first
+search begins from node number 6.
+
+186
+00:10:01.920 --> 00:10:04.640
+That's going to be the eighth
+node overall that we see.
+
+187
+00:10:04.640 --> 00:10:07.850
+And then we're going to see the notes
+8 and 10 in some order, so for
+
+188
+00:10:07.850 --> 00:10:10.530
+example maybe we first
+explore note number 8.
+
+189
+00:10:10.530 --> 00:10:13.140
+That's one of the first
+layer in this component,
+
+190
+00:10:13.140 --> 00:10:18.650
+and then note number 10 is the other note
+of the first layer in this component.
+
+191
+00:10:18.650 --> 00:10:21.640
+So in general, what's going on,
+well what we know
+
+192
+00:10:21.640 --> 00:10:24.770
+will happen when we invoked that
+first search from a given node i.
+
+193
+00:10:24.770 --> 00:10:27.860
+We're going to discover exactly
+the nodes in i's connected component.
+
+194
+00:10:27.860 --> 00:10:31.410
+Right, anything where there's a path
+from i to that node, we'll find it.
+
+195
+00:10:31.410 --> 00:10:34.750
+That's the BFS guarantee, that's also
+the definition of a connected component.
+
+196
+00:10:34.750 --> 00:10:38.040
+All the other nodes
+which have a path to i.
+
+197
+00:10:39.720 --> 00:10:42.160
+Another thing that I hope was
+clear from the example, but
+
+198
+00:10:42.160 --> 00:10:46.920
+just to reiterate it,
+is every search call,
+
+199
+00:10:46.920 --> 00:10:50.260
+when you explore a node, you remember
+that through the entire for loop.
+
+200
+00:10:50.260 --> 00:10:54.610
+So when we invoke breadth-first search
+from node number 1, we explore nodes 1, 3,
+
+201
+00:10:54.610 --> 00:10:59.790
+5, 7 and 9, and we keep those marked as
+explored for the rest of this algorithm.
+
+202
+00:10:59.790 --> 00:11:00.680
+And that's so
+
+203
+00:11:00.680 --> 00:11:03.867
+we don't do redundant work when we
+get to later stages of the for loop.
+
+204
+00:11:04.950 --> 00:11:07.400
+So as far as what does this
+algorithm accomplish, well,
+
+205
+00:11:07.400 --> 00:11:10.400
+it certainly finds every
+connected component.
+
+206
+00:11:10.400 --> 00:11:13.573
+There is absolutely no way it
+can miss a node because this for
+
+207
+00:11:13.573 --> 00:11:17.266
+loop literally walks through the nodes,
+all of them, one at a time.
+
+208
+00:11:17.266 --> 00:11:18.340
+So you're not going to miss a node.
+
+209
+00:11:18.340 --> 00:11:21.420
+Moreover, we know that as soon as
+you hit a connected component for
+
+210
+00:11:21.420 --> 00:11:24.470
+the first time, and you do
+breadth-first search from that node,
+
+211
+00:11:24.470 --> 00:11:25.600
+you're going to find the whole thing.
+
+212
+00:11:25.600 --> 00:11:28.390
+That the breadth-first a search guarantee.
+
+213
+00:11:28.390 --> 00:11:32.740
+As far as what's the running time, well
+it's going to be exactly what we want.
+
+214
+00:11:32.740 --> 00:11:37.860
+It's going to be linear time, which again
+means proportional to the number of edges
+
+215
+00:11:37.860 --> 00:11:39.260
+plus the number of vertices.
+
+216
+00:11:39.260 --> 00:11:42.318
+And again depending on the graph, one of
+these might be bigger that the other.
+
+217
+00:11:42.318 --> 00:11:44.940
+So why is it O of m plus n?
+
+218
+00:11:44.940 --> 00:11:48.800
+Well as far as the nodes, we have to do
+this initialization there where we mark
+
+219
+00:11:48.800 --> 00:11:52.650
+them all as unexplored, so
+that takes constant time per node.
+
+220
+00:11:52.650 --> 00:11:57.552
+We have just the basic overhead of a for
+loop, so that's constant time per node.
+
+221
+00:11:57.552 --> 00:12:01.897
+And then we have this check,
+constant time per node, so that's O of n.
+
+222
+00:12:01.897 --> 00:12:05.035
+And then recall we proved that
+within breath for research,
+
+223
+00:12:05.035 --> 00:12:07.050
+you do a amount of work proportional.
+
+224
+00:12:07.050 --> 00:12:10.070
+You do constant time for
+each node in that connected component.
+
+225
+00:12:10.070 --> 00:12:13.078
+Now, each of the nodes of the graph is in
+exactly one of the connected components.
+
+226
+00:12:13.078 --> 00:12:14.970
+So you'll do constant time for
+
+227
+00:12:14.970 --> 00:12:18.220
+each node in the BFS in which
+you discover that node.
+
+228
+00:12:18.220 --> 00:12:21.150
+So that's again, o of n over all
+of the connected components.
+
+229
+00:12:21.150 --> 00:12:24.420
+And as far as the edges, note we don't
+even bother to look at edges until
+
+230
+00:12:24.420 --> 00:12:26.950
+we're inside one of these
+breadth first search calls.
+
+231
+00:12:26.950 --> 00:12:30.250
+They played no role in the outer for
+loop or in the pre-processing.
+
+232
+00:12:30.250 --> 00:12:33.240
+And remember what we proved about
+an indication of breadth first search.
+
+233
+00:12:33.240 --> 00:12:35.690
+The running time,
+you only do constant amount of work
+
+234
+00:12:35.690 --> 00:12:38.710
+per edge in the connected
+component that you're exploring.
+
+235
+00:12:38.710 --> 00:12:41.530
+In the worst case, you look at
+an edge once from either endpoint and
+
+236
+00:12:41.530 --> 00:12:43.602
+each of that triggers
+a constant amount of work.
+
+237
+00:12:43.602 --> 00:12:46.060
+So when you discover a given
+connected component,
+
+238
+00:12:46.060 --> 00:12:50.190
+the edge work is proportional to the
+number of edges in that kind of component.
+
+239
+00:12:50.190 --> 00:12:54.230
+Each edge of the graph is only in exactly
+one of the connect components, so
+
+240
+00:12:54.230 --> 00:12:57.270
+over this entire for loop,
+over all of these BFS calls.
+
+241
+00:12:57.270 --> 00:13:00.270
+For each edge of the graph,
+you'll only be responsible for
+
+242
+00:13:00.270 --> 00:13:01.505
+a constant amount of
+work of the algorithm.
+
+243
+00:13:01.505 --> 00:13:06.159
+So summarizing because breadth-first
+search from a given starting node.
+
+244
+00:13:06.159 --> 00:13:09.864
+That is, works in time proportional to the
+size of that component, piggybacking on
+
+245
+00:13:09.864 --> 00:13:12.639
+that sub routine and looping over
+all of the nodes of the graph.
+
+246
+00:13:12.639 --> 00:13:16.166
+We find all of the connecting components
+in time proportional to the amount of
+
+247
+00:13:16.166 --> 00:13:17.860
+edges and nodes in the entire graph.

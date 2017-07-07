@@ -1,0 +1,640 @@
+WEBVTT
+
+1
+00:00:02.660 --> 00:00:05.429
+Alright. 
+So now that we've completed our warm up 
+
+2
+00:00:05.429 --> 00:00:10.102
+by showing that at the very least, Prim's 
+algorithm outputs a spanning tree. Let's 
+
+3
+00:00:10.102 --> 00:00:13.910
+move on and actually show it outputs a 
+minimum cost spanning tree. 
+
+4
+00:00:13.910 --> 00:00:18.502
+And to prove this theorem, we're going to 
+have to tackle head-on the kind of crisis 
+
+5
+00:00:18.502 --> 00:00:21.601
+which you always face when designing a 
+greedy algorithm. 
+
+6
+00:00:21.601 --> 00:00:25.088
+So in a greedy algorithm, you're making 
+an irrevocable decision, 
+
+7
+00:00:25.088 --> 00:00:29.625
+like in Prim's algorithm, we're including 
+an edge in our tree and never revisiting 
+
+8
+00:00:29.625 --> 00:00:32.337
+it later. 
+And, how can you be sure that you're not 
+
+9
+00:00:32.337 --> 00:00:35.380
+making a mistake? 
+How can you have a guarantee that the 
+
+10
+00:00:35.380 --> 00:00:39.420
+decision you're making seemingly 
+myopically right now is actually a good 
+
+11
+00:00:39.420 --> 00:00:42.060
+decision won't come back to bite you 
+later? 
+
+12
+00:00:42.060 --> 00:00:46.336
+So it turns out for minimum spanning 
+trees, there is a beautiful condition 
+
+13
+00:00:46.336 --> 00:00:50.851
+which tells you when you're guaranteed to 
+not regret including an edge into a 
+
+14
+00:00:50.851 --> 00:00:54.118
+spanning tree, 
+but guarantees when an edge has to belong 
+
+15
+00:00:54.118 --> 00:00:57.860
+to the minimum spanning tree. 
+So that's called the cut property, 
+
+16
+00:00:57.860 --> 00:01:04.911
+it's the subject of the next slide. 
+So this is a cool enough property that 
+
+17
+00:01:04.911 --> 00:01:09.500
+we're going to bestow it not just with 
+all caps but even with a box. 
+
+18
+00:01:09.500 --> 00:01:13.800
+Now, that's a pretty good property. 
+So what does it states? 
+
+19
+00:01:13.800 --> 00:01:19.160
+Well, consider an edge of a graph, an 
+edge that we are wondering if it's safe 
+
+20
+00:01:19.160 --> 00:01:24.238
+to include it in the tree so far. 
+So here is this sufficient condition 
+
+21
+00:01:24.238 --> 00:01:29.458
+guaranteeing that you won't regret 
+including this edge in the tree so far. 
+
+22
+00:01:29.458 --> 00:01:32.561
+The condition is stated in terms of the 
+cut. 
+
+23
+00:01:32.561 --> 00:01:38.792
+So suppose you can find a cut, A, B with 
+the property that amongst all edges in 
+
+24
+00:01:38.792 --> 00:01:43.924
+the graph G, that happened across this 
+cut, the edge E is the cheapest edge 
+
+25
+00:01:43.924 --> 00:01:47.878
+crossing this cut. 
+Okay? So not only should edge E cross 
+
+26
+00:01:47.878 --> 00:01:51.840
+this cut, A, B, but it should cheapest 
+such edge. 
+
+27
+00:01:51.840 --> 00:01:57.166
+If this condition is met, then we 
+definitely want them include the edge E 
+
+28
+00:01:57.166 --> 00:02:01.489
+in our solution. 
+Indeed, the edge E has to be a member of 
+
+29
+00:02:01.489 --> 00:02:07.355
+any minimum spanning tree of the graph. 
+So in this video, we're going to assume 
+
+30
+00:02:07.355 --> 00:02:10.190
+that the cut property is true. 
+It is by no means obvious. 
+
+31
+00:02:10.190 --> 00:02:13.685
+It definitely requires a proof. 
+I'll give you the proof in a separate 
+
+32
+00:02:13.685 --> 00:02:14.444
+video. 
+It's not, 
+
+33
+00:02:14.444 --> 00:02:17.888
+it's a little bit tricky. 
+It's based on a subtle exchange argument. 
+
+34
+00:02:17.888 --> 00:02:21.636
+For this video, we're going to assume 
+that it's true, however, and we just want 
+
+35
+00:02:21.636 --> 00:02:24.623
+to be quiet, so that we want to figure 
+out what it's good for. 
+
+36
+00:02:24.623 --> 00:02:28.270
+Now, I will soon show you that it 
+actually implies correctness of Prim's 
+
+37
+00:02:28.270 --> 00:02:30.852
+algorithm. 
+But just to get a feel for it, let's look 
+
+38
+00:02:30.852 --> 00:02:33.992
+at a much simpler graph. 
+Let's just look at a four cycle. 
+
+39
+00:02:33.992 --> 00:02:37.081
+Four nodes, four edges with edge costs 1, 
+2, 3, and 4. 
+
+40
+00:02:37.081 --> 00:02:39.310
+So let's look at, let's look at a few 
+cuts. 
+
+41
+00:02:39.310 --> 00:02:43.070
+So, let's look at the cut. 
+We're on one side of the cut, 
+
+42
+00:02:43.070 --> 00:02:47.324
+I put the upper right vertex, 
+and on the other side of the cut, I put 
+
+43
+00:02:47.324 --> 00:02:51.106
+the other three vertices. 
+So there are two edges crossing this cut, 
+
+44
+00:02:51.106 --> 00:02:54.200
+the edge that has cost 1, the edge that 
+has cost 2. 
+
+45
+00:02:54.200 --> 00:02:58.727
+So the edge with cost 1 is the cheapest 
+edge crossing this cut, so by the cut 
+
+46
+00:02:58.727 --> 00:03:01.650
+property, the edge of cost 1 has to be in 
+the MST. 
+
+47
+00:03:01.650 --> 00:03:14.200
+Okay. 
+So we looked at one cut and both the cut 
+
+48
+00:03:14.200 --> 00:03:14.200
+property [INAUDIBLE} to stick in the MST. 
+That was pretty cool. 
+
+49
+00:03:14.200 --> 00:03:15.516
+let's look another cut. 
+Let's look at a cut where on one side, we 
+
+50
+00:03:15.516 --> 00:03:17.730
+just put the bottom right vertex, 
+and on the other side, we put all Now 
+
+51
+00:03:17.730 --> 00:03:22.636
+this cut has two edges crossing it the 
+edges that have cost 2 and cost 3. 
+
+52
+00:03:22.636 --> 00:03:26.226
+The edge of cost 2 is the cheapest edge 
+crossing this cut. 
+
+53
+00:03:26.226 --> 00:03:29.038
+So by the cut property, it has to be in 
+the MST. 
+
+54
+00:03:29.038 --> 00:03:32.209
+So that's cool. 
+So we know the two has got to be there. 
+
+55
+00:03:32.209 --> 00:03:35.740
+Now let me point out something 
+interesting that's happened, 
+
+56
+00:03:35.740 --> 00:03:39.846
+which is that, it is not the case that 
+this edge of cost 2 is the cheapest 
+
+57
+00:03:39.846 --> 00:03:43.790
+crossing, every single cut that it 
+crosses. Remember when we looked at cut 
+
+58
+00:03:43.790 --> 00:03:48.058
+number 1, this edge of cost 2 was 
+actually the most expensive edge crossing 
+
+59
+00:03:48.058 --> 00:03:52.326
+that cut. But, we found a different cut 
+that is the cheapest crossing and that's 
+
+60
+00:03:52.326 --> 00:03:55.190
+enough to justify the cut property. 
+So in other words, 
+
+61
+00:03:55.190 --> 00:03:57.675
+all that's important for the cut 
+property, 
+
+62
+00:03:57.675 --> 00:04:02.527
+I just got to find you one cut for which 
+an edge is the cheapest, that's enough to 
+
+63
+00:04:02.527 --> 00:04:06.905
+conclude its presence in the MST. 
+So similarly, we can look at a third cut 
+
+64
+00:04:06.905 --> 00:04:12.140
+just consisting of the bottom left 
+vertext and the other three vertices. 
+
+65
+00:04:12.140 --> 00:04:15.908
+And it's the same story, there are two 
+edges crossing this cut, the edge of cost 
+
+66
+00:04:15.908 --> 00:04:19.343
+3, the edge of cost 4. 
+The edge of cost 3 is the cheapest edge 
+
+67
+00:04:19.343 --> 00:04:21.967
+crossing this cut, so we know it's got to 
+be in the MST. 
+
+68
+00:04:21.967 --> 00:04:25.832
+And again, when we look at cut number 2, 
+it didn't tell us whether or not the edge 
+
+69
+00:04:25.832 --> 00:04:29.791
+of cost 3 is in the MST, but when we 
+looked at cut number 3, that was enough 
+
+70
+00:04:29.791 --> 00:04:33.417
+to conclude that the edge of cost 3 has 
+to be in the MST. So there we go. 
+
+71
+00:04:33.417 --> 00:04:36.280
+So we could use the cut property that 
+construct an entire MST. 
+
+72
+00:04:36.280 --> 00:04:40.121
+On the other hand, there's no way to use 
+the cut property to try to justify the 
+
+73
+00:04:40.121 --> 00:04:42.990
+edge of cost 4. 
+Any cut that you pick for which the edge 
+
+74
+00:04:42.990 --> 00:04:46.442
+of cost 4 crosses, there will be some 
+other cheaper edge crossing it. 
+
+75
+00:04:46.442 --> 00:04:50.381
+So you can never use the cut property as 
+one would hope to justify the inclusion 
+
+76
+00:04:50.381 --> 00:04:54.465
+of the edge of cost 4 and you'd better 
+not be able to, because 4 is not in the 
+
+77
+00:04:54.465 --> 00:04:56.608
+MST. 
+Now a quick side note, some of you might 
+
+78
+00:04:56.608 --> 00:04:59.871
+be wondering when I wrote in the 
+conclusion of the cut property, 
+
+79
+00:04:59.871 --> 00:05:03.621
+I said the MST of G, so that would seem 
+to indicate that the minimum spanning 
+
+80
+00:05:03.621 --> 00:05:05.959
+tree is unique. 
+So that deserves a quick comment. 
+
+81
+00:05:05.959 --> 00:05:09.806
+so first of all, if the edge costs are 
+not distinct, if you have ties between 
+
+82
+00:05:09.806 --> 00:05:13.508
+edges, then you can certainly have 
+multiple different minimum spanning trees 
+
+83
+00:05:13.508 --> 00:05:16.624
+and you have to state the cut property a 
+little bit differently. 
+
+84
+00:05:16.624 --> 00:05:20.375
+But again, in the lectures we are just 
+going to assume distinct edge costs, so 
+
+85
+00:05:20.375 --> 00:05:23.199
+that's not a problem. 
+And in fact, something that will be a 
+
+86
+00:05:23.199 --> 00:05:27.121
+consequence of the next slide, we'll 
+notice that the minimum spanning tree is 
+
+87
+00:05:27.121 --> 00:05:31.301
+unique with distinct edge cost. 
+It's not obvious, but we'll prove it 
+
+88
+00:05:31.301 --> 00:05:34.140
+shortly. 
+All right. 
+
+89
+00:05:34.140 --> 00:05:39.043
+So what I want to do to finish up this 
+video is I want to assume that the cut 
+
+90
+00:05:39.043 --> 00:05:42.333
+property is true. 
+And then, from that, I want to derive, I 
+
+91
+00:05:42.333 --> 00:05:45.126
+want to argue that Prim's algorithm is 
+correct, 
+
+92
+00:05:45.126 --> 00:05:48.539
+always outputs an MST. 
+The proof of the cut property is 
+
+93
+00:05:48.539 --> 00:05:53.500
+non-trivial and deserves its own video, 
+which you can see separately. 
+
+94
+00:05:53.500 --> 00:05:56.987
+All right. So given the tools that we've 
+developed, this argument is actually 
+
+95
+00:05:56.987 --> 00:06:01.072
+going to be quite short. So let's assume 
+that the cut property is a true statement 
+
+96
+00:06:01.072 --> 00:06:03.563
+and let's begin by building on the 
+previous video. 
+
+97
+00:06:03.563 --> 00:06:07.499
+The previous video argued that Prim's 
+algorithm outputs a spanning tree, didn't 
+
+98
+00:06:07.499 --> 00:06:11.385
+argue it was a minimum one, but it argued 
+it's a spanning tree, it spans all the 
+
+99
+00:06:11.385 --> 00:06:17.797
+vertices and has no cycles. 
+Let's call the output of Prim's algorithm 
+
+100
+00:06:17.797 --> 00:06:20.780
+at the end of algorithm T star. 
+Now, 
+
+101
+00:06:20.780 --> 00:06:24.791
+stare at the cut property, 
+stare at the pseudocode of Prim's 
+
+102
+00:06:24.791 --> 00:06:28.145
+algorithm. 
+What happens in each iteration of Prim's 
+
+103
+00:06:28.145 --> 00:06:30.776
+algorithm? 
+Well, we have our set capital X, that's 
+
+104
+00:06:30.776 --> 00:06:34.327
+what we spanned so far. 
+There's the rest of this stuff, V - X, so 
+
+105
+00:06:34.327 --> 00:06:39.260
+that's a cut X, V - X. 
+What does Prim choose to include next? 
+
+106
+00:06:39.260 --> 00:06:44.718
+Well, in brute-force searches through the 
+edges, the cross is cut and it adds the 
+
+107
+00:06:44.718 --> 00:06:48.540
+cheapest one of them. 
+Well, that is right in the wheelhouse of 
+
+108
+00:06:48.540 --> 00:06:51.813
+the cut property. 
+What does the cut property says? It says 
+
+109
+00:06:51.813 --> 00:06:54.848
+cheapest edges crossing cuts have to be 
+in the MST. 
+
+110
+00:06:54.848 --> 00:06:59.550
+So they just fit together beautifully. 
+Prim's algorithm explicitly picks an edge 
+
+111
+00:06:59.550 --> 00:07:03.895
+at each iteration which satisfies the 
+hypothesis of the cut property and 
+
+112
+00:07:03.895 --> 00:07:09.255
+therefore has to be in the MST. 
+So remember, the conclusion of the cut 
+
+113
+00:07:09.255 --> 00:07:14.048
+property says edges so justified must 
+belong to the MST. So if everything in T 
+
+114
+00:07:14.048 --> 00:07:18.842
+star is justified by the cut property, 
+then everything in T star is in the MST 
+
+115
+00:07:18.842 --> 00:07:22.935
+so T star is a subset of the MST. 
+But T star, of course, as we have argued, 
+
+116
+00:07:22.935 --> 00:07:24.694
+is already a spanning tree in it of 
+itself. 
+
+117
+00:07:24.694 --> 00:07:27.946
+And, if you add more edges to T star, 
+it's no longer going to be a spanning 
+
+118
+00:07:27.946 --> 00:07:31.375
+tree, because you are going to pick up 
+cycles, right? If you ever have something 
+
+119
+00:07:31.375 --> 00:07:34.847
+that is connected, there is a path from 
+each pair of vertices, and you add a new 
+
+120
+00:07:34.847 --> 00:07:37.440
+edge, you are going to close a path, 
+you're going to get a loop. 
+
+121
+00:07:37.440 --> 00:07:39.462
+Okay? 
+So T star is already a spanning tree, and 
+
+122
+00:07:39.462 --> 00:07:42.560
+you can't have anything bigger and still 
+be a spanning tree. 
+
+123
+00:07:42.560 --> 00:07:46.181
+So therefore, this has to be the minimum 
+spanning tree, 
+
+124
+00:07:46.181 --> 00:07:50.809
+there cannot be anything else. 
+So for this reason, T star must in fact 
+
+125
+00:07:50.809 --> 00:07:53.962
+be the minimum cost spanning tree of the 
+graph. 
+
+126
+00:07:53.962 --> 00:07:58.791
+Since the input graph was arbitrary, 
+assuming only it was connected, this 
+
+127
+00:07:58.791 --> 00:08:04.090
+completes, assuming the cut property, the 
+proof of correctness of Prim's minimum 
+
+128
+00:08:04.090 --> 00:08:05.700
+spanning tree algortihm. 

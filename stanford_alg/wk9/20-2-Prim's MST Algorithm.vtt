@@ -1,0 +1,631 @@
+WEBVTT
+
+1
+00:00:01.720 --> 00:00:05.875
+Okay, so it's time to discuss our first 
+minimum spanning tree algorithm namely 
+
+2
+00:00:05.875 --> 00:00:08.912
+Prim's algorithm. 
+Definitely a candidate for the greatest 
+
+3
+00:00:08.912 --> 00:00:11.736
+hits compilation. 
+And again remember even though it's 
+
+4
+00:00:11.736 --> 00:00:15.573
+called Prim's algorithm, it was actually 
+discovered earlier by Jarnik. 
+
+5
+00:00:15.573 --> 00:00:18.610
+So how's it work? 
+Well before showing you any pseudo code, 
+
+6
+00:00:18.610 --> 00:00:22.925
+let's first illustrate it on an example. 
+As we go through the example, I hope that 
+
+7
+00:00:22.925 --> 00:00:26.868
+the similarities to Dijkstra's shortest 
+path algorithm will be evident. 
+
+8
+00:00:26.868 --> 00:00:31.131
+I'm going to work with the same example 
+graph from the previous video with four 
+
+9
+00:00:31.131 --> 00:00:34.621
+vertices and five edges. 
+The plan is to grow a tree one edge at a 
+
+10
+00:00:34.621 --> 00:00:37.155
+time. 
+And we're going to keep growing this tree 
+
+11
+00:00:37.155 --> 00:00:39.690
+like a mold. 
+We're going to start from just a seed 
+
+12
+00:00:39.690 --> 00:00:42.225
+vertex. 
+And then we're going to suck up one new 
+
+13
+00:00:42.225 --> 00:00:44.760
+vertex with each iteration of the 
+algorithm. 
+
+14
+00:00:44.760 --> 00:00:46.971
+So, this is similar to Dijkstra's 
+Algorithm. 
+
+15
+00:00:46.971 --> 00:00:50.908
+In Dijkstra's Algorithm, it was clear 
+where we should grow the initial mold 
+
+16
+00:00:50.908 --> 00:00:54.683
+from, because we were given a source 
+vertex, that they're trying to compute 
+
+17
+00:00:54.683 --> 00:00:58.242
+the shortest paths out of. 
+We have no source vertex in the minimum 
+
+18
+00:00:58.242 --> 00:01:02.611
+spanning tree problem, but it turns out 
+that we can just pick an arbitrary vertex 
+
+19
+00:01:02.611 --> 00:01:05.520
+to start. 
+Doesn't matter which one, which is cool. 
+
+20
+00:01:05.520 --> 00:01:09.836
+So the plan is in E generation we're 
+going to add one edge and span one new 
+
+21
+00:01:09.836 --> 00:01:12.732
+vertex adjacent to the ones we're already 
+spanning. 
+
+22
+00:01:12.732 --> 00:01:17.275
+Now as a greedy algorithm Prim is simply 
+going to select the cheapest edge that 
+
+23
+00:01:17.275 --> 00:01:19.857
+allows it to span one additional new 
+vertex. 
+
+24
+00:01:19.857 --> 00:01:23.444
+Now the start of the algorithm here we're 
+not really spamming anything. 
+
+25
+00:01:23.444 --> 00:01:27.487
+We are sort of thinking of ourselves as 
+growing from and currently spanning the 
+
+26
+00:01:27.487 --> 00:01:30.720
+vertex in the upper right. 
+So what are the edges in which we can 
+
+27
+00:01:30.720 --> 00:01:33.196
+span an adjacent vertex? 
+Well, there is two inches. 
+
+28
+00:01:33.196 --> 00:01:37.542
+There is the top inch that costs one then 
+we'll span an addition in the upper left 
+
+29
+00:01:37.542 --> 00:01:40.220
+vertex or the is the edge with cost two 
+on the right. 
+
+30
+00:01:40.220 --> 00:01:43.891
+If we include that, we'll be able to span 
+the vertex in the bottom right. 
+
+31
+00:01:43.891 --> 00:01:47.611
+So we're not going to be greedy, we're 
+just going to choose the cheaper edge, 
+
+32
+00:01:47.611 --> 00:01:54.285
+the edge of cost one. 
+Now, the vertices that our tree thus far 
+
+33
+00:01:54.285 --> 00:01:57.709
+spans are the top two vertices. 
+So, in the next iteration, we want to add 
+
+34
+00:01:57.709 --> 00:02:00.488
+one more edge [COUGH] to span one 
+additional new vertex. 
+
+35
+00:02:00.488 --> 00:02:04.608
+And now we see that there are three edges 
+sticking out of what we're spanning thus 
+
+36
+00:02:04.608 --> 00:02:06.692
+far that will allow us to span a new 
+edge. 
+
+37
+00:02:06.692 --> 00:02:09.273
+There's the edges that have cost two, 
+three, and four. 
+
+38
+00:02:09.273 --> 00:02:12.995
+The two and the three will allow us to 
+span the vertex in the bottom right. 
+
+39
+00:02:12.995 --> 00:02:16.717
+If we pick the four, that will allow us 
+to span the vertex in the bottom left. 
+
+40
+00:02:16.717 --> 00:02:20.539
+Yeah, and we're going to be greedy, so of 
+these three candid edges, we're going to 
+
+41
+00:02:20.539 --> 00:02:23.120
+pick the cheapest one which is the edge 
+of cost two. 
+
+42
+00:02:24.240 --> 00:02:28.935
+So now the mold that we've been growing 
+is in effect, covers all of the verticies 
+
+43
+00:02:28.935 --> 00:02:33.981
+except for the one in the bottom left. 
+So now in the final iteration we want to 
+
+44
+00:02:33.981 --> 00:02:37.028
+include one more edge so that we span 
+that final remaining vertex. 
+
+45
+00:02:37.028 --> 00:02:40.162
+The one in the bottom left. 
+Note that there's there was this edge of 
+
+46
+00:02:40.162 --> 00:02:43.474
+cause three that we never added. 
+But it got sucked up into the tree that 
+
+47
+00:02:43.474 --> 00:02:45.725
+we grew anyways. 
+So we're going to go ahead and ignore 
+
+48
+00:02:45.725 --> 00:02:47.624
+that. 
+Adding the three wouldn't allow us to 
+
+49
+00:02:47.624 --> 00:02:50.405
+span any more vertices. 
+In fact, it would create a loop which we 
+
+50
+00:02:50.405 --> 00:02:51.950
+don't want. 
+So we're going to say, okay. 
+
+51
+00:02:51.950 --> 00:02:54.997
+We'll have the two edges that would allow 
+us to span an extra vertex. 
+
+52
+00:02:54.997 --> 00:02:57.602
+There's the four and there's the five. 
+We're going to be greedy, 
+
+53
+00:02:57.602 --> 00:03:00.671
+we're going to pick the four. 
+And once we have the edges of the cost 
+
+54
+00:03:00.671 --> 00:03:04.711
+one and two and three and four we have a 
+spanning tree there's no loops there's a 
+
+55
+00:03:04.711 --> 00:03:08.653
+path from any vertex to any other vertex 
+along the pink edges, the cost is seven 
+
+56
+00:03:08.653 --> 00:03:12.693
+you might recall from the previous video 
+this is indeed the minimum cost spanning 
+
+57
+00:03:12.693 --> 00:03:15.499
+tree of this graph. 
+Of course, the fact that we have this 
+
+58
+00:03:15.499 --> 00:03:19.591
+simple procedure that works correctly in 
+this toy example, which is four vertices 
+
+59
+00:03:19.591 --> 00:03:23.128
+and five edges, really means nothing. 
+I mean you shouldn't draw any immediate 
+
+60
+00:03:23.128 --> 00:03:27.270
+conclusions that this is a good algorithm 
+in general even though that is going to 
+
+61
+00:03:27.270 --> 00:03:29.796
+be the case. 
+So let's next go and actually define the 
+
+62
+00:03:29.796 --> 00:03:32.878
+algorithm generally. 
+So if you have a general graph, what does 
+
+63
+00:03:32.878 --> 00:03:36.364
+it mean to start somewhere and grow a 
+mold, span one more vertex each 
+
+64
+00:03:36.364 --> 00:03:39.193
+iteration, always proceeding greedily 
+until you are done. 
+
+65
+00:03:39.193 --> 00:03:42.280
+So lets spell out the pseudo code on the 
+next slide. 
+
+66
+00:03:42.280 --> 00:03:44.942
+So here is Prim's minimum spanning tree 
+algorithm. 
+
+67
+00:03:44.942 --> 00:03:48.084
+We're going to start with just two lines 
+of initialization. 
+
+68
+00:03:48.084 --> 00:03:50.694
+We're going to maintain a set of 
+vertices, capital X. 
+
+69
+00:03:50.694 --> 00:03:53.729
+This is meant to the be the vertices that 
+we span so far. 
+
+70
+00:03:53.729 --> 00:03:57.084
+Again, we need some seed vertex from 
+which to start the process. 
+
+71
+00:03:57.084 --> 00:03:59.321
+It doesn't matter where, which one we 
+pick. 
+
+72
+00:03:59.321 --> 00:04:03.048
+We're going to get the same tree no 
+matter what, so just call it little s. 
+
+73
+00:04:03.048 --> 00:04:05.924
+That's an arbitrary vertex from which we 
+start growth. 
+
+74
+00:04:05.924 --> 00:04:08.906
+The other thing we're maintaining is, of 
+course, the tree. 
+
+75
+00:04:08.906 --> 00:04:12.847
+So that's initially going to be empty. 
+We're going to add one edge to it in each 
+
+76
+00:04:12.847 --> 00:04:15.259
+iteration. 
+An invarient that we are going to 
+
+77
+00:04:15.259 --> 00:04:19.738
+maintain throughout the algorithm is that 
+the edges that currently reside in the 
+
+78
+00:04:19.738 --> 00:04:24.400
+set capital T span the verticies that 
+currently reside in the set capital X. 
+
+79
+00:04:24.400 --> 00:04:26.674
+Then we're going to have our main while 
+loop. 
+
+80
+00:04:26.674 --> 00:04:30.899
+this is the workhorse of the algorithm. 
+And it's very similar to the one in 
+
+81
+00:04:30.899 --> 00:04:34.203
+Dijkstra's algorithm. 
+Namely, each iteration is responsible for 
+
+82
+00:04:34.203 --> 00:04:36.748
+picking one edge crossing the current 
+frontier. 
+
+83
+00:04:36.748 --> 00:04:40.485
+advancing to include one new vertex. 
+And again, it's going to be greed. 
+
+84
+00:04:40.485 --> 00:04:44.331
+The criterion's going to be different, in 
+fact, simpler, than with Dijkstra's 
+
+85
+00:04:44.331 --> 00:04:48.122
+Algorithm instead of looking at links. 
+We're just going to say, what's the 
+
+86
+00:04:48.122 --> 00:04:50.830
+cheapest edge that allows us to span a 
+new vertex? 
+
+87
+00:04:50.830 --> 00:04:54.892
+So the loop's going to keep going, as 
+long as there are vertices that we don't 
+
+88
+00:04:54.892 --> 00:04:59.640
+yet span. 
+And then what we do is we search to the 
+
+89
+00:04:59.640 --> 00:05:03.634
+edges that allow us to span a new vertex. 
+So which edges are those? 
+
+90
+00:05:03.634 --> 00:05:08.657
+Well we want there to be one endpoint in 
+the set X of vertices we already have our 
+
+91
+00:05:08.657 --> 00:05:13.498
+tree spanning and we want the other end 
+point to be non-redundant, so we want it 
+
+92
+00:05:13.498 --> 00:05:17.008
+to be outside of X. 
+So if we have an edge that crosses the 
+
+93
+00:05:17.008 --> 00:05:21.547
+frontier in this sense, one endpoint in 
+X, in endpoint outside that's how we 
+
+94
+00:05:21.547 --> 00:05:25.720
+increase the number of spanned vertices 
+by one in an iteration. 
+
+95
+00:05:25.720 --> 00:05:30.114
+So if E is the cheapest edge amongst all 
+of those that cross the front here with 
+
+96
+00:05:30.114 --> 00:05:34.726
+one end point on either side, that's the 
+one we're going to add to our tree so far 
+
+97
+00:05:34.726 --> 00:05:38.796
+capital T in this iteration, it's end 
+point that's not already in capital X, 
+
+98
+00:05:38.796 --> 00:05:42.322
+that's going to be the very text that we 
+add to X in this iteration. 
+
+99
+00:05:42.322 --> 00:05:46.500
+And again the semantics of an iteration 
+is that we're trying to increase the 
+
+100
+00:05:46.500 --> 00:05:50.787
+number of spanned vertices while paying 
+as little as possible, that's the sense 
+
+101
+00:05:50.787 --> 00:05:53.500
+in which a prim's algorithm is a greedy 
+algorithm. 
+
+102
+00:05:54.580 --> 00:05:58.701
+So as usual with a greedy algorithm, this 
+seems natural enough, but it's not at all 
+
+103
+00:05:58.701 --> 00:06:02.321
+clear that it's correct, that it always 
+computes in minimum spanning tree. 
+
+104
+00:06:02.321 --> 00:06:06.342
+In fact, if you think about it's not even 
+obvious, it actually computes a spannin 
+
+105
+00:06:06.342 --> 00:06:08.906
+tree at all, minimum or otherwise, but it 
+is correct. 
+
+106
+00:06:08.906 --> 00:06:11.520
+Let's make that statement precise on the 
+next slide. 
+
+107
+00:06:14.860 --> 00:06:17.788
+So the key claim is that Prim's Algorithm 
+is correct. 
+
+108
+00:06:17.788 --> 00:06:22.207
+Given any connected input graph, it is 
+guaranteed to output a spanning tree with 
+
+109
+00:06:22.207 --> 00:06:25.633
+minimum possible cost. 
+So before we delve into any details, let 
+
+110
+00:06:25.633 --> 00:06:29.058
+me just finish this video by telling you 
+about the proof plan. 
+
+111
+00:06:29.058 --> 00:06:31.489
+We're going to prove this theorem in two 
+parts. 
+
+112
+00:06:31.489 --> 00:06:34.970
+First, we're going to establish that it 
+outputs some spanning tree. 
+
+113
+00:06:34.970 --> 00:06:37.621
+Maybe, maybe not minimum. 
+Even that's non trivial. 
+
+114
+00:06:37.621 --> 00:06:42.041
+Then we'll worry about arguing that the 
+spanning tree output actually is one of 
+
+115
+00:06:42.041 --> 00:06:45.010
+minimum cost. 
+Both parts of the proof are interesting. 
+
+116
+00:06:45.010 --> 00:06:49.680
+For part one to argue that we output some 
+spanning tree, we're going to review some 
+
+117
+00:06:49.680 --> 00:06:54.069
+preliminaries about graphs and about cuts 
+and about spanning trees and graphs. 
+
+118
+00:06:54.069 --> 00:06:58.571
+For part two to argue optimality, we're 
+going to rely on a very neat property of 
+
+119
+00:06:58.571 --> 00:07:02.060
+spanning trees, minimum spanning trees 
+called the cut property. 
+
+120
+00:07:02.060 --> 00:07:06.399
+I'm happy to report so that the work that 
+we do here and in both parts will bear 
+
+121
+00:07:06.399 --> 00:07:10.376
+further fruit later we're going to reuse 
+these ingredients when we prove the 
+
+122
+00:07:10.376 --> 00:07:13.786
+correctness of another MST algorithm 
+named McCrustgrals algorithm. 
+
+123
+00:07:13.786 --> 00:07:17.918
+For those of you who would much rather 
+talk about running time than correctness 
+
+124
+00:07:17.918 --> 00:07:21.896
+don't worry your time will come after we 
+wrap up this correctness proof I'll 
+
+125
+00:07:21.896 --> 00:07:25.719
+address how do you implement prim's 
+algorithm quickly in particular using 
+
+126
+00:07:25.719 --> 00:07:29.490
+heaps we'll get the running time down to 
+the near linear bound of O of M log n. 

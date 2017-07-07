@@ -1,0 +1,346 @@
+WEBVTT
+
+1
+00:00:02.560 --> 00:00:06.266
+Okay let's continue the perfect 
+correctness of our greedy algorithm for 
+
+2
+00:00:06.266 --> 00:00:10.023
+minimizing the sum of the weight of 
+completion times and let's move onto 
+
+3
+00:00:10.023 --> 00:00:13.781
+understanding the ramifications of the 
+exchange of jobs suggested at the 
+
+4
+00:00:13.781 --> 00:00:19.286
+conclusion of the previous video. 
+So recall the basic ideas to use this 
+
+5
+00:00:19.286 --> 00:00:24.225
+observation that the optimal schedule 
+sigma star by virtue of our assumption of 
+
+6
+00:00:24.225 --> 00:00:29.041
+being different from the greedy one has 
+to have this pair of consecutive jobs 
+
+7
+00:00:29.041 --> 00:00:31.696
+where the earlier one has the higher 
+index. 
+
+8
+00:00:31.696 --> 00:00:36.758
+So my question for you involves thinking 
+about how the completion times of all of 
+
+9
+00:00:36.758 --> 00:00:40.957
+the jobs change after we make this 
+exchange of the two jobs i and j. 
+
+10
+00:00:40.957 --> 00:00:43.179
+Which ones go up? 
+Which ones go down? 
+
+11
+00:00:43.179 --> 00:00:47.192
+Which ones are unaffected? 
+Which ones can we not actually predict 
+
+12
+00:00:47.192 --> 00:00:52.312
+whether they go up or down? 
+All right, so the answer to this, quite 
+
+13
+00:00:52.312 --> 00:00:56.414
+key question is the third answer. Jobs 
+other than I and J are unaffected, the 
+
+14
+00:00:56.414 --> 00:01:00.515
+completion time of job I goes up, and the 
+completion time of job J goes down. 
+
+15
+00:01:00.515 --> 00:01:04.671
+So let's review why. Consider a job K, 
+other than I or J, it's probably easiest 
+
+16
+00:01:04.671 --> 00:01:08.934
+to see if in sigma-star, K completes 
+before I and J, scheduled earlier than I 
+
+17
+00:01:08.934 --> 00:01:11.417
+and J. 
+Don't, remember what the completion time 
+
+18
+00:01:11.417 --> 00:01:15.465
+of a job is, it's just the time that 
+needs to elapse before it gets done, so 
+
+19
+00:01:15.465 --> 00:01:19.134
+it's the sum of the job lengths up to, 
+and including that job itself. 
+
+20
+00:01:19.134 --> 00:01:23.344
+So if K was scheduled before I and J 
+before, it's exactly the same after I and 
+
+21
+00:01:23.344 --> 00:01:25.797
+J are swapped. 
+You don't know the difference. 
+
+22
+00:01:25.797 --> 00:01:30.436
+Exactly the same set of jobs precedes Job 
+K is the force whose completion time is 
+
+23
+00:01:30.436 --> 00:01:33.038
+the same. 
+But if you think about it, this exact 
+
+24
+00:01:33.038 --> 00:01:35.867
+same argument is true for jobs K that 
+succeed INJ. 
+
+25
+00:01:35.867 --> 00:01:40.392
+So before we do the swap, it has to wait 
+for a bunches ops to complete, including 
+
+26
+00:01:40.392 --> 00:01:44.183
+INJ and after we swap INJ, it still has 
+to wait for INJ to complete. 
+
+27
+00:01:44.183 --> 00:01:47.068
+Yeah, they complete in opposite order but 
+who cares? 
+
+28
+00:01:47.068 --> 00:01:50.010
+The amount of time of the lapse is 
+exactly the same. 
+
+29
+00:01:50.010 --> 00:01:54.026
+So importantly, jobs other than INJ are 
+completely agnostic to the swap. 
+
+30
+00:01:54.026 --> 00:01:56.968
+Their completion time is exactly the same 
+as before. 
+
+31
+00:01:56.968 --> 00:01:58.536
+So that's the first. 
+Part. 
+
+32
+00:01:58.536 --> 00:02:04.274
+so job I, it's completion time goes up. 
+It's easier to see why it used to be 
+
+33
+00:02:04.274 --> 00:02:08.351
+before J, now it has to wait for J. 
+In fact we can say exactly how much 
+
+34
+00:02:08.351 --> 00:02:12.136
+completion time goes up by. 
+It goes up by exactly the length of J. 
+
+35
+00:02:12.136 --> 00:02:16.330
+That is the extra time that now needs to 
+elapse before I gets completed. 
+
+36
+00:02:16.330 --> 00:02:20.546
+By exactly the same reasoning the 
+completion time of job j actually drops 
+
+37
+00:02:20.546 --> 00:02:24.543
+it has to wait for the same jobs to 
+complete before it being accepted no 
+
+38
+00:02:24.543 --> 00:02:28.212
+longer has to wait for job I. 
+So, not only can we say its completion 
+
+39
+00:02:28.212 --> 00:02:32.592
+time goes down we can say that it goes 
+down so by precisely the length of job I. 
+
+40
+00:02:32.592 --> 00:02:35.823
+So now we are in a great position to 
+finish off this proof. 
+
+41
+00:02:35.823 --> 00:02:40.013
+Let's summarize what we got so far. 
+So, for a cost benefit analysis of 
+
+42
+00:02:40.013 --> 00:02:45.229
+exchanging I and J, we discovered the 
+cost is limited to an increase in the 
+
+43
+00:02:45.229 --> 00:02:50.244
+completion time of job I and the benefit 
+is limited to the decrease in the 
+
+44
+00:02:50.244 --> 00:02:54.257
+completion time of job J. 
+Specifically the cost, the new cost 
+
+45
+00:02:54.257 --> 00:02:59.540
+incurred by the exchange is the weight of 
+job I times the amount by which it's 
+
+46
+00:02:59.540 --> 00:03:02.950
+completion time went up, namely the 
+length of job J. 
+
+47
+00:03:02.950 --> 00:03:08.300
+Similarly, the benefit of the exchange is 
+the drop of LI and J's completion time 
+
+48
+00:03:08.300 --> 00:03:11.510
+and that gets multiplied by it's weight's 
+of WJ. 
+
+49
+00:03:11.510 --> 00:03:16.468
+So now finally we are at the point where 
+we can use the fact that this purportedly 
+
+50
+00:03:16.468 --> 00:03:20.769
+optimal schedule sigma star schedules I 
+and J in some sense incorrectly, 
+
+51
+00:03:20.769 --> 00:03:25.608
+with a higher index job first despite it 
+having a lower ratio in contrast to the 
+
+52
+00:03:25.608 --> 00:03:28.236
+principles followed by our greedy 
+algorithm. 
+
+53
+00:03:28.236 --> 00:03:32.060
+So why is it relevant that the earlier 
+job I has a higher index? 
+
+54
+00:03:32.060 --> 00:03:35.066
+Well, a higher index corresponds to a 
+lower ratio. 
+
+55
+00:03:35.066 --> 00:03:40.035
+Remember we did this notation switch so 
+that the first job has the highest ratio, 
+
+56
+00:03:40.035 --> 00:03:43.348
+the second job has the second highest 
+ratio and so on. 
+
+57
+00:03:43.348 --> 00:03:48.317
+So the bigger your index, the further you 
+are down in the ordering, the lower your 
+
+58
+00:03:48.317 --> 00:03:51.200
+ratio. 
+So because I is bugger than J, that means 
+
+59
+00:03:51.200 --> 00:03:55.310
+I's ratio is worse than J. 
+The usefulness of this becomes even more 
+
+60
+00:03:55.310 --> 00:03:59.727
+apparent when we clear denominators. 
+We multiply both sides by the, by LI 
+
+61
+00:03:59.727 --> 00:04:04.589
+times LJ. 
+And then we find that WI times LJ is 
+
+62
+00:04:04.589 --> 00:04:10.497
+strictly less than WJ times LI. 
+But what are these, these are just the 
+
+63
+00:04:10.497 --> 00:04:14.789
+cost and benefit terms respectively of 
+our thought experiment exchange, 
+
+64
+00:04:14.789 --> 00:04:18.416
+exchanging I and j. 
+So what does it mean that the benefit of 
+
+65
+00:04:18.416 --> 00:04:22.285
+the swap outweighs the cost? 
+It mean if we take sigma star, this 
+
+66
+00:04:22.285 --> 00:04:26.396
+reportedly optimal solution, and we 
+invert the jobs I and j, we get a 
+
+67
+00:04:26.396 --> 00:04:31.172
+schedule with an even better weighted sum 
+of completion times, but that is nuts. 
+
+68
+00:04:31.172 --> 00:04:34.315
+That's absurd, sigma star was supposed to 
+be optimal. 
+
+69
+00:04:34.315 --> 00:04:37.520
+So here's our contradiction. 
+That completes the proof. 

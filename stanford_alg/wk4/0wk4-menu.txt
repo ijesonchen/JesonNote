@@ -1,0 +1,34 @@
+VIII. LINEAR-TIME SELECTION
+
+Week 4 Overview10 分
+Randomized Selection - Algorithm21 分
+继续
+Randomized Selection - Analysis20 分
+Deterministic Selection - Algorithm [Advanced - Optional]16 分
+Deterministic Selection - Analysis I [Advanced - Optional]22 分
+Deterministic Selection - Analysis II [Advanced - Optional]12 分
+Omega(n log n) Lower Bound for Comparison-Based Sorting [Advanced - Optional]13 分
+IX. GRAPHS AND THE CONTRACTION ALGORITHM
+
+Graphs and Minimum Cuts15 分
+Graph Representations14 分
+Random Contraction Algorithm8 分
+Analysis of Contraction Algorithm30 分
+Counting Minimum Cuts7 分
+Problem Set #4
+
+购买课程以解锁此项目。
+测验: Problem Set #45 个试题
+截止时间 六月 18, 11:59 晚上 PDT
+Optional Theory Problems (Batch #2)10 分
+Programming Assignment #4
+
+购买课程以解锁此项目。
+测验: Programming Assignment #41 个试题
+截止时间 六月 18, 11:59 晚上 PDT
+Final Exam (1 attempt per 24 hours)
+
+Info and FAQ for final exam10 分
+购买课程以解锁此项目。
+测验: Final Exam10 个试题
+截止时间 六月 18, 11:59 晚上 PDT

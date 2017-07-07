@@ -1,0 +1,1156 @@
+WEBVTT
+
+1
+00:00:02.820 --> 00:00:06.541
+So at this point we understand, Prim's 
+algorithm and we also know why it's 
+
+2
+00:00:06.541 --> 00:00:08.704
+correct. 
+That is why it always computes the 
+
+3
+00:00:08.704 --> 00:00:12.627
+minimum cost spanning tree of a graph. 
+So in this video, we're going to turn to 
+
+4
+00:00:12.627 --> 00:00:15.041
+implementation issues and running time 
+analysis. 
+
+5
+00:00:15.041 --> 00:00:18.813
+We'll begin by just analyzing the 
+straightforward implementation of Prim's 
+
+6
+00:00:18.813 --> 00:00:20.624
+algorithm. 
+That's already reasonable. 
+
+7
+00:00:20.624 --> 00:00:23.843
+It's polynomial running time, but not 
+especially close to linear. 
+
+8
+00:00:23.843 --> 00:00:28.017
+Then we'll see how a suitable deployment 
+of heaps very much in the way that we did 
+
+9
+00:00:28.017 --> 00:00:32.740
+for Dijkstra's algorithm leads to a 
+blazingly fast, near linear running time. 
+
+10
+00:00:32.740 --> 00:00:36.250
+So let's briefly review the pseudocode 
+for Prim's algorithm. 
+
+11
+00:00:36.250 --> 00:00:40.614
+Recall that Prim grows a tree one edge at 
+a time spanning one new vertex at each 
+
+12
+00:00:40.614 --> 00:00:42.500
+iteration. 
+So it maintains two sets, 
+
+13
+00:00:42.500 --> 00:00:45.356
+capital X, a set of vertices that have 
+spanned so far, 
+
+14
+00:00:45.356 --> 00:00:48.858
+and capital T, these are the edges we've 
+committed to thus far. 
+
+15
+00:00:48.858 --> 00:00:53.276
+They start out by just being some 
+arbitrary vertex, little s, and the empty 
+
+16
+00:00:53.276 --> 00:00:57.425
+set, and in each iteration of this main 
+while-loop, we add one new edge to the 
+
+17
+00:00:57.425 --> 00:00:59.850
+tree. 
+And whatever new vertex that edge spans, 
+
+18
+00:00:59.850 --> 00:01:03.137
+we add that to capital X. 
+The algorithm terminates when we're 
+
+19
+00:01:03.137 --> 00:01:07.501
+spanning all of the vertices and as we've 
+seen, it halts not just with a spanning 
+
+20
+00:01:07.501 --> 00:01:09.818
+tree but with a minimum cost spanning 
+tree. 
+
+21
+00:01:09.818 --> 00:01:15.419
+So suppose we just literally implemented 
+this algorithm as is, what would be the 
+
+22
+00:01:15.419 --> 00:01:18.796
+running time? 
+Well, the initialization stick, step 
+
+23
+00:01:18.796 --> 00:01:21.355
+takes only constant time, so let's ignore 
+that. 
+
+24
+00:01:21.355 --> 00:01:25.417
+So let me just have this one loop. 
+So let's just ask how many iterations 
+
+25
+00:01:25.417 --> 00:01:29.920
+does the loop take and how much time is 
+needed to execute each iteration? 
+
+26
+00:01:29.920 --> 00:01:33.981
+Well, the number of loop iterations is 
+going to be exactly n - 1, so, where n is 
+
+27
+00:01:33.981 --> 00:01:37.097
+the number of vertices. 
+X starts out with one vertex and 
+
+28
+00:01:37.097 --> 00:01:41.325
+terminates when it has all n vertices. 
+How much work do we need to implement 
+
+29
+00:01:41.325 --> 00:01:44.386
+each iteration? 
+Well, essentially, what each iteration is 
+
+30
+00:01:44.386 --> 00:01:47.056
+doing is a brute-force search through the 
+edges. 
+
+31
+00:01:47.056 --> 00:01:51.285
+It's looking for the edges that have one 
+endpoint inside X and one endpoint 
+
+32
+00:01:51.285 --> 00:01:53.955
+outside, 
+and amongst those, it just remembers the 
+
+33
+00:01:53.955 --> 00:01:56.459
+cheapest. 
+And it's easy to see that you could 
+
+34
+00:01:56.459 --> 00:02:00.410
+implement each iteration in O of m time, 
+where M is the number of edges. 
+
+35
+00:02:00.410 --> 00:02:04.442
+For example, you can just, with each 
+vertex associate a Boolean variable that 
+
+36
+00:02:04.442 --> 00:02:08.852
+keeps track of whether or not it's in 
+this capital X, that way when you see an 
+
+37
+00:02:08.852 --> 00:02:12.777
+edge, you know whether it's crossing the 
+frontier or not in constant time. 
+
+38
+00:02:12.777 --> 00:02:17.133
+So putting it together, O of m iterations 
+with O of m works for each gives us a 
+
+39
+00:02:17.133 --> 00:02:21.261
+running time of O of m times n. 
+So this running time is already nothing 
+
+40
+00:02:21.261 --> 00:02:23.806
+to sneeze at. 
+As we discussed, graphs can have an 
+
+41
+00:02:23.806 --> 00:02:27.942
+exponential number of spanning trees. 
+So, this algorithm is doing far less work 
+
+42
+00:02:27.942 --> 00:02:30.276
+than examining each of these spanning 
+trees. 
+
+43
+00:02:30.276 --> 00:02:33.457
+It's homing in in polynomial time, to the 
+minimum cost point. 
+
+44
+00:02:33.457 --> 00:02:36.798
+So that's pretty cool. 
+But remember the mantra of any algorithm 
+
+45
+00:02:36.798 --> 00:02:40.245
+designer worth their salts, 
+confronted with a solution, you should 
+
+46
+00:02:40.245 --> 00:02:43.745
+always ask but can we do better? 
+And can we do better than running time O 
+
+47
+00:02:43.745 --> 00:02:46.661
+of m times n? 
+We can as we'll see in the rest of this 
+
+48
+00:02:46.661 --> 00:02:53.075
+video. 
+The big idea for speeding up Prim's 
+
+49
+00:02:53.075 --> 00:02:57.289
+Algorithm is exactly the big idea we used 
+in part 1 to speed up Dijkstra's 
+
+50
+00:02:57.289 --> 00:03:00.061
+algorithm, 
+namely we're going to deploy a suitable 
+
+51
+00:03:00.061 --> 00:03:02.944
+data structure. 
+So, what data structure seems like it 
+
+52
+00:03:02.944 --> 00:03:05.605
+might be a good idea for making Prim run 
+faster? 
+
+53
+00:03:05.605 --> 00:03:09.763
+Well, what's happening in the main 
+workhorse while-loop of Prim's algorithm? 
+
+54
+00:03:09.763 --> 00:03:13.977
+Over and over again, we keep meaning to 
+do a minimum computation amongst all 
+
+55
+00:03:13.977 --> 00:03:17.359
+edges crossing the frontier, we need to 
+find the cheapest one. 
+
+56
+00:03:17.359 --> 00:03:21.628
+So, the question we should ask ourselves 
+is what kind of data structure would 
+
+57
+00:03:21.628 --> 00:03:24.948
+facilitate, would speed-up repeated 
+minimum computations. 
+
+58
+00:03:24.948 --> 00:03:29.831
+And if you recall from part 1, we have a 
+data structure where that's exactly what 
+
+59
+00:03:29.831 --> 00:03:34.638
+it's raison d'etre is, the heap, 
+the meaning of life for a heap is to 
+
+60
+00:03:34.638 --> 00:03:38.930
+speed-up repeated minimum computations, 
+just like in Prim's algorithm. 
+
+61
+00:03:38.930 --> 00:03:44.701
+So let me just remind you briefly, what 
+are the operations exported by heap data 
+
+62
+00:03:44.701 --> 00:03:50.475
+structure and what is the running time? 
+So first recall that a heap contains a 
+
+63
+00:03:50.475 --> 00:03:54.544
+bunch of objects, and each of those 
+objects should have some key value from 
+
+64
+00:03:54.544 --> 00:03:58.287
+some totally ordered set, like a number, 
+like for example, an edge cost. 
+
+65
+00:03:58.287 --> 00:04:01.922
+So what can you do with a heap? 
+Well, the salient operations for our 
+
+66
+00:04:01.922 --> 00:04:06.208
+purposes today are, first of all, you can 
+insert new stuff into the heap with 
+
+67
+00:04:06.208 --> 00:04:10.169
+their, whatever their key value is. 
+You can extract the object with the 
+
+68
+00:04:10.169 --> 00:04:13.261
+minimum key value. 
+And you can also delete stuff from the 
+
+69
+00:04:13.261 --> 00:04:16.028
+middle of the heap. 
+And all of these can be done in 
+
+70
+00:04:16.028 --> 00:04:20.160
+logarithmic time, logarithmic in a number 
+of objects stored by the heap. 
+
+71
+00:04:20.160 --> 00:04:23.648
+So it's not going to be important for us 
+today to know how heaps are implemented 
+
+72
+00:04:23.648 --> 00:04:27.003
+and what they look like under the hood. 
+We're just going to be clients of them. 
+
+73
+00:04:27.003 --> 00:04:30.402
+We're just going to make use of these 
+operations and the fact that they run in 
+
+74
+00:04:30.402 --> 00:04:32.907
+logarithmic time. 
+But you know, just for those of you who 
+
+75
+00:04:32.907 --> 00:04:36.216
+are curious, and/or want to have your 
+memory jogged. Under the hood, heaps are 
+
+76
+00:04:36.216 --> 00:04:38.274
+implemented logically as complete binary 
+tree. 
+
+77
+00:04:38.274 --> 00:04:41.450
+They're actually laid out in an array, 
+but you sort of think of them 
+
+78
+00:04:41.450 --> 00:04:45.658
+conceptually as being in a complete 
+binary tree. And they, they, they satisfy 
+
+79
+00:04:45.658 --> 00:04:50.032
+what's called the heap property. And the 
+heap property is to make sure that you 
+
+80
+00:04:50.032 --> 00:04:52.911
+know where the object with the minimum 
+key value is. 
+
+81
+00:04:52.911 --> 00:04:57.285
+So the actual definition is, every parent 
+should have a key value which is less 
+
+82
+00:04:57.285 --> 00:05:00.884
+than that of its children. 
+So as you go up the tree, the key value 
+
+83
+00:05:00.884 --> 00:05:04.668
+can only drop and that means you know 
+where the minimum is got to be. 
+
+84
+00:05:04.668 --> 00:05:08.160
+It's got to be at the root of this tree 
+orr the front of the array. 
+
+85
+00:05:08.160 --> 00:05:11.007
+So that's great. 
+That's how you locate the minimum so 
+
+86
+00:05:11.007 --> 00:05:13.800
+quickly in a heap. 
+Now, what do you do when you want to 
+
+87
+00:05:13.800 --> 00:05:16.862
+extract the minimum? 
+So you rip off the root of this tree, 
+
+88
+00:05:16.862 --> 00:05:20.515
+and now, you have to rearrange the tree 
+to restore the heap property. 
+
+89
+00:05:20.515 --> 00:05:24.612
+So you swap the last leaf up to where the 
+root was, you bubble-down as needed to 
+
+90
+00:05:24.612 --> 00:05:26.898
+restore the heap property. 
+how do you insert? 
+
+91
+00:05:26.898 --> 00:05:30.302
+You put the new object as the new last 
+leaf and you bubble it up as needed to 
+
+92
+00:05:30.302 --> 00:05:33.512
+restore the heap property. 
+To delete from the middle of a heap, you 
+
+93
+00:05:33.512 --> 00:05:37.257
+just sort of rip it out and then bubble 
+things up or down as necessary to restore 
+
+94
+00:05:37.257 --> 00:05:40.029
+the heap property. 
+Again, that's not supposed to, if you're 
+
+95
+00:05:40.029 --> 00:05:42.752
+hearing this for the first time, I know 
+this is too fast, 
+
+96
+00:05:42.752 --> 00:05:47.080
+this is just to jog your memory for those 
+of you who already learned this in part 1 
+
+97
+00:05:47.080 --> 00:05:49.804
+of the course. 
+For more details, you can go review the 
+
+98
+00:05:49.804 --> 00:05:53.655
+appropriate videos there. 
+So now that I've reminded you about the 
+
+99
+00:05:53.655 --> 00:05:59.056
+salient properties of heaps. Let's return 
+to the question of how do we deploy them 
+
+100
+00:05:59.056 --> 00:06:03.518
+cleverly to speed-up Prim's algorithm. 
+So our intuition is that because we're 
+
+101
+00:06:03.518 --> 00:06:07.536
+doing repeated minimum computations in 
+Prim's algorithm, each time that it's 
+
+102
+00:06:07.536 --> 00:06:11.252
+while-looped, compute the cheapest edge 
+cross in your frontier, that's sort of in 
+
+103
+00:06:11.252 --> 00:06:14.316
+the wheelhouse of heaps. 
+So how should we use heaps? Well, the 
+
+104
+00:06:14.316 --> 00:06:18.384
+first idea, which is a pretty good idea, 
+is to use the heap to store edges, right? 
+
+105
+00:06:18.384 --> 00:06:22.402
+Because our minimum computation should 
+result in us choosing an edge, so when we 
+
+106
+00:06:22.402 --> 00:06:26.269
+EXTRACT-MIN from a heap, we want it to 
+hand us an edge on a silver platter. So 
+
+107
+00:06:26.269 --> 00:06:28.630
+it would seem this would be your first 
+thought, 
+
+108
+00:06:28.630 --> 00:06:33.354
+that the heap should store edges and that 
+the key value that you use should just be 
+
+109
+00:06:33.354 --> 00:06:36.560
+the edge cost, because you want to find 
+the cheapest edge. 
+
+110
+00:06:36.560 --> 00:06:39.808
+So this already a quite good idea using 
+heaps in this manner. 
+
+111
+00:06:39.808 --> 00:06:43.802
+We'll already definitely speed-up Prim's 
+algorithm relative to the naive 
+
+112
+00:06:43.802 --> 00:06:45.240
+implementation. 
+And in fact. 
+
+113
+00:06:45.240 --> 00:06:48.170
+and I'll leave this as an exercise for 
+you to work out. 
+
+114
+00:06:48.170 --> 00:06:52.360
+using heaps in this way results in an 
+implementation that has, that runs in 
+
+115
+00:06:52.360 --> 00:06:55.910
+time big O of m log n. 
+What I'm going to show you instead is not 
+
+116
+00:06:55.910 --> 00:07:00.740
+that implementation, but an even cleverer 
+implementation of Prim using heaps. 
+
+117
+00:07:00.740 --> 00:07:04.290
+We're not going to see a benefit in the 
+asymptotic running time. 
+
+118
+00:07:04.290 --> 00:07:08.829
+This more sophisticated version will also 
+give us m log n running time, but it 
+
+119
+00:07:08.829 --> 00:07:13.776
+would give you better constants and it is 
+the version you would want to implement 
+
+120
+00:07:13.776 --> 00:07:18.026
+in practice. 
+[SOUND] So, the one slightly tricky point 
+
+121
+00:07:18.026 --> 00:07:22.112
+in this exercise is remembering Prim's 
+algorithm, you don't just want the 
+
+122
+00:07:22.112 --> 00:07:27.667
+cheapest edge overall [INAUDIBLE] You 
+want the cheapest edge which crosses the 
+
+123
+00:07:27.667 --> 00:07:31.242
+current cut that has one endpoint in each 
+of x and v - x. 
+
+124
+00:07:31.242 --> 00:07:35.903
+And, when you use heaps in this way, it 
+might hand you in a silver platter and 
+
+125
+00:07:35.903 --> 00:07:39.861
+edge which is cheap, but isn't 
+necessarily crossing the frontier. 
+
+126
+00:07:39.861 --> 00:07:44.777
+So, you need some extra checks to ensure 
+that you're always finding the minimum 
+
+127
+00:07:44.777 --> 00:07:48.800
+edge and that that edge crosses the 
+frontier between x and v - x. 
+
+128
+00:07:48.800 --> 00:07:52.895
+So I'll leave it to you to work out the 
+details of this implementation in the 
+
+129
+00:07:52.895 --> 00:07:56.308
+privacy of your own home. 
+What I want to spend our time together on 
+
+130
+00:07:56.308 --> 00:07:59.984
+instead is this somewhat more 
+sophisticated, more practical way to use 
+
+131
+00:07:59.984 --> 00:08:02.295
+heaps. 
+And for those of you who remember our 
+
+132
+00:08:02.295 --> 00:08:05.708
+fast implementation of Dijkstra, this 
+will be very familiar to you. 
+
+133
+00:08:05.708 --> 00:08:08.753
+It will be the same kinds of ideas that 
+we used for Dijkstra, 
+
+134
+00:08:08.753 --> 00:08:12.954
+and the keypoint is, instead of using the 
+heap to store edges, were going to use it 
+
+135
+00:08:12.954 --> 00:08:16.889
+to store vertices. 
+So, in a bit more detail, our plan is 
+
+136
+00:08:16.889 --> 00:08:22.199
+going to be to maintain two invariants. 
+The first invariant is going to describe 
+
+137
+00:08:22.199 --> 00:08:26.446
+what the heap contains. 
+The second invariant is going to be what 
+
+138
+00:08:26.446 --> 00:08:31.424
+the key values of those heap object are. 
+So as I said, we're now going to be 
+
+139
+00:08:31.424 --> 00:08:34.278
+starting at vertices in the heap, not 
+edges. 
+
+140
+00:08:34.278 --> 00:08:37.862
+Which vertices? 
+Exactly the vertices that we don't yet 
+
+141
+00:08:37.862 --> 00:08:39.920
+span. 
+The vertices of v - x. 
+
+142
+00:08:41.220 --> 00:08:46.696
+The motivation here is that rather than 
+getting on a silver platter, the edge in 
+
+143
+00:08:46.696 --> 00:08:51.364
+which to add next to the tree, we're 
+going to get from a heap on a silver 
+
+144
+00:08:51.364 --> 00:08:55.161
+platter, the vertex, that we're next 
+going to add to capital X. 
+
+145
+00:08:55.161 --> 00:09:00.637
+So the second invariant tells us what the 
+key values of these vertices in v - x are 
+
+146
+00:09:00.637 --> 00:09:03.936
+supposed to be. 
+And we're going to define them to be the 
+
+147
+00:09:03.936 --> 00:09:09.102
+cheapest cost of an edge incident of this 
+vertex that crosses the current frontier. 
+
+148
+00:09:09.102 --> 00:09:13.771
+So, I think a picture will make this 
+definition clear. 
+
+149
+00:09:13.771 --> 00:09:18.060
+So, consider some snapshot of Prim's 
+algorithm at some iteration. 
+
+150
+00:09:18.060 --> 00:09:21.411
+We have our vertices X that were already 
+spanning. 
+
+151
+00:09:21.411 --> 00:09:25.029
+We have our vertices v - x that were not 
+spanning. 
+
+152
+00:09:25.029 --> 00:09:30.256
+And remember, the elements of the heap by 
+invariant 1 are exactly the vertices on 
+
+153
+00:09:30.256 --> 00:09:33.339
+the right-hand side, 
+the vertices of v - x. 
+
+154
+00:09:33.339 --> 00:09:37.695
+So were trying to find the key value for 
+some vertex in the heap. 
+
+155
+00:09:37.695 --> 00:09:41.850
+So some vertex v, which is on the right 
+side, which is not in x. 
+
+156
+00:09:41.850 --> 00:09:46.486
+And so, what we do is we look at the 
+edges incident on this vertex v that go 
+
+157
+00:09:46.486 --> 00:09:50.634
+back to the left-hand side, 
+so, edges incident to v that are crossing 
+
+158
+00:09:50.634 --> 00:09:54.050
+the frontier and there may be of course 
+be many such edges. 
+
+159
+00:09:54.050 --> 00:09:58.676
+And the invariant we want to maintain is 
+that the key value for this vertex V is 
+
+160
+00:09:58.676 --> 00:10:03.479
+the cheapest of all the incident edges 
+crossing their frontier or in this 
+
+161
+00:10:03.479 --> 00:10:08.223
+picture the key should be equal to two. 
+There is the niggling issue of how do you 
+
+162
+00:10:08.223 --> 00:10:12.557
+define the key if there are no incident 
+edges at all that are crossing the 
+
+163
+00:10:12.557 --> 00:10:15.310
+frontier. 
+So maybe you have a vertex w, which is 
+
+164
+00:10:15.310 --> 00:10:19.703
+buried deep inside of v - x, and 
+actually, none of the incident edges go 
+
+165
+00:10:19.703 --> 00:10:24.564
+back to the left blob at all. So in that 
+case we just define the key to be plus 
+
+166
+00:10:24.564 --> 00:10:27.328
+infinity. 
+So given this high level approach to 
+
+167
+00:10:27.328 --> 00:10:30.960
+implementing Prim's algorithm using 
+heaps, we now have a few things to think 
+
+168
+00:10:30.960 --> 00:10:33.206
+through. 
+So first of all we have to think about 
+
+169
+00:10:33.206 --> 00:10:37.172
+how to initialize the heap so that these 
+invariants are satisfied at the beginning 
+
+170
+00:10:37.172 --> 00:10:39.992
+of Prim's algorithm. 
+Second of all, we have to check that if 
+
+171
+00:10:39.992 --> 00:10:43.863
+these invariants are satisfied, then we 
+can faithfully simulate each iteration of 
+
+172
+00:10:43.863 --> 00:10:46.682
+the while-loop in Prim's algorithm, 
+hopefully very quickly. 
+
+173
+00:10:46.682 --> 00:10:50.458
+And then third, we have to think about 
+how do we make sure these invariants are 
+
+174
+00:10:50.458 --> 00:10:52.990
+maintained throughout the course of 
+Prim's algorithm, 
+
+175
+00:10:52.990 --> 00:10:56.861
+so let's do those in turn. So the first 
+thing is how do we set up the heap at the 
+
+176
+00:10:56.861 --> 00:11:00.618
+beginning of Prim's algorithm and a 
+preprocessing step, so that both of these 
+
+177
+00:11:00.618 --> 00:11:03.060
+invariants are satisfied. 
+Well, at the beginning, 
+
+178
+00:11:03.060 --> 00:11:06.472
+X consists just of this single arbitrary 
+star vertex S. 
+
+179
+00:11:06.472 --> 00:11:09.574
+V minus X contains the other n - 1 
+vertices. 
+
+180
+00:11:09.574 --> 00:11:14.414
+The key value of a vertex other than S at 
+the beginning of Prim's algorithm, is 
+
+181
+00:11:14.414 --> 00:11:19.129
+just the cheapest edge between that 
+vertex and S if there is one, or plus 
+
+182
+00:11:19.129 --> 00:11:22.727
+infinity otherwise. 
+So, the thing to think through and make 
+
+183
+00:11:22.727 --> 00:11:27.319
+sure you believe this, is that first of 
+all, with a single scan through the 
+
+184
+00:11:27.319 --> 00:11:32.282
+edges, so an O of m time, we can compute 
+the key value for each vertex that needs 
+
+185
+00:11:32.282 --> 00:11:35.881
+to go in the heap. 
+And then, we just have to insert those n 
+
+186
+00:11:35.881 --> 00:11:41.712
+- 1 vertices into the heap. So that's 
+going to cost us O of m time for an edge 
+
+187
+00:11:41.712 --> 00:11:50.460
+scan, 
+and then, m log n for the inserts. 
+
+188
+00:11:54.800 --> 00:11:58.356
+In fact, for those of you that really 
+know heaps very well, you might know 
+
+189
+00:11:58.356 --> 00:12:02.253
+about a heapify operation which allows 
+you to do a batch of n inserts in O of n 
+
+190
+00:12:02.253 --> 00:12:06.004
+time because we can do this even faster 
+in linear time but we're not going to 
+
+191
+00:12:06.004 --> 00:12:09.717
+need that in this lectures. 
+And also, I claim that this expression m 
+
+192
+00:12:09.717 --> 00:12:13.792
++ n log n is bounded above by the 
+expression m log n, at least an 
+
+193
+00:12:13.792 --> 00:12:17.148
+asymptotic notation. 
+To see that, remember two things. First 
+
+194
+00:12:17.148 --> 00:12:21.762
+of all we're assuming that the input 
+graph is connected, otherwise there's no 
+
+195
+00:12:21.762 --> 00:12:26.137
+spanning trees and it's not interesting 
+to talk about minimum spanning trees. 
+
+196
+00:12:26.137 --> 00:12:30.392
+Second of all, in any connected graph, 
+the number of edges m is at least n - 1. 
+
+197
+00:12:30.392 --> 00:12:35.246
+So asymptotically, m is always at least 
+as big as n and it can be bigger. So you 
+
+198
+00:12:35.246 --> 00:12:40.100
+can always replace an n by an m and get a 
+valid upper bound, so that's what we're 
+
+199
+00:12:40.100 --> 00:12:43.417
+doing here. 
+The second issue we need to think through 
+
+200
+00:12:43.417 --> 00:12:48.225
+is how do we faithfully simulates each 
+iteration of the while loop in Prim's 
+
+201
+00:12:48.225 --> 00:12:51.198
+Algorithm, given that these two 
+invariants halt. 
+
+202
+00:12:51.198 --> 00:12:55.627
+So this issue is going to work out 
+beautifully really, by construction. 
+
+203
+00:12:55.627 --> 00:12:59.170
+We set up our heap and we set up our 
+definition of keys, 
+
+204
+00:12:59.170 --> 00:13:04.800
+so that extracting min from the heap and 
+iteration is a faithful simulation of the 
+
+205
+00:13:04.800 --> 00:13:08.920
+brute-force search in the naive 
+implementation of Prim's alogrithm. 
+
+206
+00:13:08.920 --> 00:13:14.245
+So specifically, assuming that these two 
+invariants hold when we invoke 
+
+207
+00:13:14.245 --> 00:13:18.790
+EXTRACT-MIN from this heap, what it 
+provides to us on a silver platter is the 
+
+208
+00:13:18.790 --> 00:13:20.297
+next vertex, 
+not yet in X. 
+
+209
+00:13:20.297 --> 00:13:23.541
+The next vertex that we should add to X 
+in this iteration. 
+
+210
+00:13:23.541 --> 00:13:28.015
+And moreover, the cheapest edge incident 
+to that vertex crossing the frontier is 
+
+211
+00:13:28.015 --> 00:13:31.595
+the one that we should be adding to the 
+set T in this iteration. 
+
+212
+00:13:31.595 --> 00:13:36.125
+And the way to think about this fact is 
+to think of us as essentially simulating 
+
+213
+00:13:36.125 --> 00:13:40.544
+the brute-force search and the naive 
+implementation using a 2-round knockout 
+
+214
+00:13:40.544 --> 00:13:43.452
+tournament. 
+So, in the straightforward implementation 
+
+215
+00:13:43.452 --> 00:13:45.918
+of Prim, 
+the way we think of it is we just do a 
+
+216
+00:13:45.918 --> 00:13:50.161
+scan through all the edges crossing the 
+frontier and we remember the winner, we 
+
+217
+00:13:50.161 --> 00:13:52.438
+remember the smallest cost of them all. 
+Here, 
+
+218
+00:13:52.438 --> 00:13:56.837
+with a heap, we're doing it in two steps. 
+So first of all, for each vertex on the 
+
+219
+00:13:56.837 --> 00:14:00.511
+right-hand side of the cut, for each 
+vertex in v - x, it locally remembers 
+
+220
+00:14:00.511 --> 00:14:04.651
+what is its best candidate so what is the 
+cheapest edge incident on that vertex 
+
+221
+00:14:04.651 --> 00:14:07.756
+crossing the frontier. 
+So that's kind of round one, so for an 
+
+222
+00:14:07.756 --> 00:14:11.431
+edge to be chosen as the winner, at the 
+very least, it'd better be a local 
+
+223
+00:14:11.431 --> 00:14:13.863
+winner. 
+It'd better be the cheapest edge crossing 
+
+224
+00:14:13.863 --> 00:14:17.900
+the cut that ends at this particular 
+vertex on the right-hand side of the cut. 
+
+225
+00:14:17.900 --> 00:14:22.507
+So that's just in a definition of the key 
+of each vertex and encodes the value of 
+
+226
+00:14:22.507 --> 00:14:26.830
+the winner localed in that vertex. 
+And then this EXTRACT-MIN is envoking the 
+
+227
+00:14:26.830 --> 00:14:30.300
+second round of this 2, 2-round 
+elimination tournament. 
+
+228
+00:14:30.300 --> 00:14:34.452
+It's saying, well, amongst all the 
+proposals from the 1st round, amongst all 
+
+229
+00:14:34.452 --> 00:14:38.662
+the crossing edges that are locally 
+minimum given it's endpoint, which of 
+
+230
+00:14:38.662 --> 00:14:42.643
+them is the cheapest overall? 
+And that's going to be the cheapest edge 
+
+231
+00:14:42.643 --> 00:14:46.000
+crossing this cut, the result of this 
+exact min computation. 

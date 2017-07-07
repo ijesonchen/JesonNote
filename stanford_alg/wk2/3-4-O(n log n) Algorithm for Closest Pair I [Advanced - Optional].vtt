@@ -892,7 +892,7 @@ recursive call, that is, P2 and Q2 are
 
 179
 00:11:20.751 --> 00:11:25.628
-amongst all pairs of points that both lie
+amongst all pairs of points that both lie 
 in R, the pair that has the minimum
 
 180
@@ -1137,7 +1137,7 @@ gives us an overall running time bound of
 
 228
 00:14:48.979 --> 00:14:52.731
-n log n. Remem ber, that's what we were
+n log n. Remember, that's what we were
 shooting for. We were working n log n
 
 229
@@ -1162,7 +1162,7 @@ pair subroutine. If we can do that, we're
 
 233
 00:15:09.160 --> 00:15:12.989
-home-free, we get the desired n log
+home-free, we get the desired n log n
 algorithm. Now, I'm going to proceed in a
 
 234

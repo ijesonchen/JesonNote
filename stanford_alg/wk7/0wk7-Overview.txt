@@ -1,0 +1,11 @@
+SUMMARY: This week we start our discussion of data structures, a huge (and hugely useful) topic. This week covers heaps and balanced binary search trees. My primary goals here are to teach you the operations that these data structures support (along with their running times), and to develop your intuition about which data structures are useful for which sorts of problems.
+
+THE VIDEOS: Part XII begins with a short overview video in which I explain my approach to teaching data structures in this course. The next two videos discuss heaps and some of their applications (required), and some details about how they are typically implemented (optional, recommended for hardcore programmer/computer science types). Part XIII discusses balanced binary search trees --- the supported operations and canonical uses (required) and a glimpse at what's "under the hood" (optional).
+
+THE HOMEWORK: Problem Set #3 should solidify your understanding of heaps and search trees. In the programming assignment you'll implement a slick data structure application covered in the lectures (median maintenance).
+
+SUGGESTED READINGS FOR WEEK 3:
+
+CLRS Chapter 6,11,12,13
+DPV Section 4.5
+SW Section 3.3, 3.4

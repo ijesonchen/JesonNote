@@ -1,0 +1,2033 @@
+WEBVTT
+
+1
+00:00:00.500 --> 00:00:03.010
+I've said pretty much everything I want
+to say about sorting at this point but
+
+2
+00:00:03.010 --> 00:00:05.110
+I do want to cover one more related topic.
+
+3
+00:00:05.110 --> 00:00:07.190
+Namely the selection problem.
+
+4
+00:00:07.190 --> 00:00:09.900
+This is a problem of computing
+ordered statistics of an array
+
+5
+00:00:09.900 --> 00:00:12.710
+with computing the median of
+an array being a special case.
+
+6
+00:00:12.710 --> 00:00:16.240
+Analogous to our coverage of quick sort
+the goal is going to be the design and
+
+7
+00:00:16.240 --> 00:00:20.590
+analysis of a super practical randomized
+algorithm that solves the problem.
+
+8
+00:00:20.590 --> 00:00:24.290
+And this time, we'll even achieve
+an expected running time that is linear
+
+9
+00:00:24.290 --> 00:00:25.890
+in the length of the input array.
+
+10
+00:00:25.890 --> 00:00:29.210
+That is big O of n for
+input arrays of length n, as opposed
+
+11
+00:00:29.210 --> 00:00:32.970
+to the o of n log in time that we had for
+the expected running time of quick sort.
+
+12
+00:00:32.970 --> 00:00:36.850
+Like quick sort, the mathematical analysis
+is also going to be quite elegant.
+
+13
+00:00:36.850 --> 00:00:40.777
+So in addition these two required videos
+on this very practical algorithm will
+
+14
+00:00:40.777 --> 00:00:43.810
+motivate two optional videos
+that are on very cool topics but
+
+15
+00:00:43.810 --> 00:00:45.785
+of a similar more theoretical nature.
+
+16
+00:00:45.785 --> 00:00:49.622
+The first optional video is going to be
+on how you solve the selection problem in
+
+17
+00:00:49.622 --> 00:00:51.087
+deterministic linear time.
+
+18
+00:00:51.087 --> 00:00:53.124
+That is without using randomization.
+
+19
+00:00:53.124 --> 00:00:57.115
+And the second optional video will be
+a sorting lower bound that is why no
+
+20
+00:00:57.115 --> 00:01:00.280
+comparison based sort can
+be better than mergeshort.
+
+21
+00:01:00.280 --> 00:01:02.450
+Can have better running
+time than big O of n login.
+
+22
+00:01:04.090 --> 00:01:07.242
+So a few words about what you should
+have fresh in your mind before you
+
+23
+00:01:07.242 --> 00:01:08.136
+watch this video.
+
+24
+00:01:08.136 --> 00:01:10.760
+I have definitely assuming that
+you watched quicksort videos.
+
+25
+00:01:10.760 --> 00:01:11.851
+And not just watched them but
+
+26
+00:01:11.851 --> 00:01:14.440
+that you have that material
+pretty fresh in your mind.
+
+27
+00:01:14.440 --> 00:01:18.360
+So in particular the video of quicksort
+about the partition subroutine, so
+
+28
+00:01:18.360 --> 00:01:22.790
+this is where you take a input ray and you
+choose a pivot and you do repeated swaps.
+
+29
+00:01:22.790 --> 00:01:25.950
+You rearrange the array so that everything
+less then the pivot is to the left of it.
+
+30
+00:01:25.950 --> 00:01:27.840
+Everything bigger then the pivot
+is to the right of it.
+
+31
+00:01:27.840 --> 00:01:29.030
+You should remember that sub routine,
+
+32
+00:01:29.030 --> 00:01:32.920
+you should also remember the previous
+discussion about pivot choices.
+
+33
+00:01:32.920 --> 00:01:36.581
+The idea that the quality of a pivot
+depends on how balanced a split into two
+
+34
+00:01:36.581 --> 00:01:38.482
+different sub problems it gives you.
+
+35
+00:01:38.482 --> 00:01:39.880
+Those are both going to be important.
+
+36
+00:01:39.880 --> 00:01:44.014
+For the analysis of this randomized linear
+time selection algorithm I need you to
+
+37
+00:01:44.014 --> 00:01:47.014
+remember the concepts from
+probability review part one.
+
+38
+00:01:47.014 --> 00:01:52.390
+And particular random variables, their
+expectation, and linearity of expectation.
+
+39
+00:01:52.390 --> 00:01:56.670
+That said, let's move on and formally
+define what the selection problem is.
+
+40
+00:01:56.670 --> 00:01:57.770
+The input is the same as for
+
+41
+00:01:57.770 --> 00:02:02.750
+the sorting problem, just you're
+giving it array of indistinct entries.
+
+42
+00:02:02.750 --> 00:02:05.790
+But in addition, you're told what
+order statistic you're looking for.
+
+43
+00:02:05.790 --> 00:02:11.421
+So that's going to be a number I,
+which an integer between 1 and N.
+
+44
+00:02:11.421 --> 00:02:13.889
+And the goal is to output
+just a single number.
+
+45
+00:02:13.889 --> 00:02:15.890
+Namely the ith order statistic,
+
+46
+00:02:15.890 --> 00:02:18.970
+that is the ith smallest
+entry in this input array.
+
+47
+00:02:20.800 --> 00:02:25.928
+So just to be clear, if you had
+an array entry of let's just say
+
+48
+00:02:25.928 --> 00:02:30.974
+4 elements, containing the numbers 10,
+8, 2 and 4.
+
+49
+00:02:30.974 --> 00:02:35.215
+And you were looking for, let's say, the
+3rd or a statistic that would be this 8.
+
+50
+00:02:36.250 --> 00:02:39.840
+The first order statistic is just
+the minimum element of the array.
+
+51
+00:02:39.840 --> 00:02:41.930
+That's easier to find with a linear scan.
+
+52
+00:02:41.930 --> 00:02:45.883
+The nth order statistic is just
+the maximum, again easier,
+
+53
+00:02:45.883 --> 00:02:47.983
+easy to find with a linear scan.
+
+54
+00:02:47.983 --> 00:02:50.182
+The middle element is the median.
+
+55
+00:02:50.182 --> 00:02:53.219
+You should think of that as the canonical
+version of the selection problem.
+
+56
+00:02:54.870 --> 00:02:58.580
+Now when n is odd, it's obvious what the
+median is, that's just the middle element,
+
+57
+00:02:58.580 --> 00:03:01.601
+so the n plus one over
+2th order statistic.
+
+58
+00:03:03.010 --> 00:03:05.900
+If the array has even length,
+there's two possible medians, so
+
+59
+00:03:05.900 --> 00:03:09.745
+let's just take the smaller of them,
+that's the n over 2th order statistic.
+
+60
+00:03:09.745 --> 00:03:13.145
+You might wonder why you'd ever want to
+compute the median of an array rather than
+
+61
+00:03:13.145 --> 00:03:14.503
+the mean, that is the average.
+
+62
+00:03:14.503 --> 00:03:17.127
+It's easy to see you that you can
+compute the average just with a simple
+
+63
+00:03:17.127 --> 00:03:18.110
+linear scan.
+
+64
+00:03:18.110 --> 00:03:22.620
+And the median you can, one motivation is
+it's a more robust version of the mean.
+
+65
+00:03:22.620 --> 00:03:26.470
+So if you just have a data entry problem
+and it corrupts one element of an input
+
+66
+00:03:26.470 --> 00:03:29.740
+array it can totally screw up
+the average value of the array, but
+
+67
+00:03:29.740 --> 00:03:33.190
+it has generally very little
+impact on the median.
+
+68
+00:03:33.190 --> 00:03:36.729
+Final comment about the problem is that I
+am going to assume that the array entries
+
+69
+00:03:36.729 --> 00:03:39.189
+are distinct,
+that is there's no repeated elements.
+
+70
+00:03:39.189 --> 00:03:42.817
+But just like in our discussions of
+sorting, this is not a big assumption.
+
+71
+00:03:42.817 --> 00:03:46.051
+I can encourage you to think about how to
+adapt these algorithms to work even if
+
+72
+00:03:46.051 --> 00:03:47.770
+the arrays do have duplicate.
+
+73
+00:03:47.770 --> 00:03:51.048
+You can, indeed,
+still get the same very practical,
+
+74
+00:03:51.048 --> 00:03:53.977
+very fast algorithms
+with duplicate elements.
+
+75
+00:03:53.977 --> 00:03:58.414
+Now if you think about it, we already have
+a pretty darn good algorithm that solves
+
+76
+00:03:58.414 --> 00:04:00.620
+the selection problem.
+
+77
+00:04:00.620 --> 00:04:01.320
+Here's the algorithm.
+
+78
+00:04:01.320 --> 00:04:04.100
+It's two simple steps and
+it runs in o of n log n time.
+
+79
+00:04:06.490 --> 00:04:08.500
+Step one, sort the input array.
+
+80
+00:04:08.500 --> 00:04:10.310
+We have various subroutines to do that.
+
+81
+00:04:10.310 --> 00:04:11.550
+Let's say we pick MergeSort.
+
+82
+00:04:12.610 --> 00:04:13.510
+Now, what is it we're trying to do?
+
+83
+00:04:13.510 --> 00:04:16.758
+We're trying to the ith smallest
+element of the input array.
+
+84
+00:04:16.758 --> 00:04:20.208
+Well, once we've sorted it we certainly
+know where the ith smallest element is,
+
+85
+00:04:20.208 --> 00:04:22.160
+it's in the ith position
+of the sorted array.
+
+86
+00:04:23.340 --> 00:04:26.581
+So that's pretty cool, we've just
+done what a computer scientist would
+
+87
+00:04:26.581 --> 00:04:29.940
+call a reduction and that's a super
+useful and super fundamental concept.
+
+88
+00:04:29.940 --> 00:04:34.051
+It's when you realize that you can solve
+one problem by reducing it to another
+
+89
+00:04:34.051 --> 00:04:36.860
+problem that you already
+know how to solve.
+
+90
+00:04:36.860 --> 00:04:40.490
+So what we just showed is that
+the selection problem reduces easily
+
+91
+00:04:40.490 --> 00:04:41.610
+to the sorting problem.
+
+92
+00:04:41.610 --> 00:04:44.470
+We already know how to solve
+the sorting problem n log n time so
+
+93
+00:04:44.470 --> 00:04:48.340
+that gives an n log n time solution
+to this selection problem.
+
+94
+00:04:48.340 --> 00:04:52.410
+But again remember the mantra of any
+algorithm designer worth their salt,
+
+95
+00:04:52.410 --> 00:04:53.950
+is can we do better.
+
+96
+00:04:53.950 --> 00:04:55.900
+We should avoid contentedness.
+
+97
+00:04:55.900 --> 00:04:58.370
+Just because we got nlogn
+we should stop there.
+
+98
+00:04:58.370 --> 00:05:01.080
+Maybe can be even faster.
+
+99
+00:05:01.080 --> 00:05:04.797
+Now certainly we're going to have to look
+at all the elements in the input array,
+
+100
+00:05:04.797 --> 00:05:05.682
+in the worst case.
+
+101
+00:05:05.682 --> 00:05:09.730
+You shouldn't expect to do better than
+linear, but hey, why not linear time?
+
+102
+00:05:11.050 --> 00:05:13.810
+Actually if you think about it, we
+probably should have asked that question
+
+103
+00:05:13.810 --> 00:05:15.800
+back when we were studying
+the sorting problem.
+
+104
+00:05:15.800 --> 00:05:19.220
+Why were we so content with the end
+login time bound for merch sort.
+
+105
+00:05:19.220 --> 00:05:22.840
+And the O of N login time on
+average bound, for quick sort.
+
+106
+00:05:22.840 --> 00:05:26.150
+Well it turns out, we have a really
+good reason to be happy with our N login
+
+107
+00:05:26.150 --> 00:05:27.599
+upper bounds for the sorting problem.
+
+108
+00:05:28.600 --> 00:05:32.760
+It turns out and this is not obvious, and
+will be the subject of the optional video.
+
+109
+00:05:32.760 --> 00:05:38.760
+You actually can't sort an input array
+of length N better than N log n time.
+
+110
+00:05:38.760 --> 00:05:40.530
+Either in the worst case or an average.
+
+111
+00:05:41.660 --> 00:05:45.720
+So another words, if we insist on
+solving the selection problem via
+
+112
+00:05:45.720 --> 00:05:50.370
+a reduction to the sorting problem then
+we're stuck with this N log N time bound.
+
+113
+00:05:50.370 --> 00:05:51.580
+Okay, strictly speaking that's for
+
+114
+00:05:51.580 --> 00:05:55.160
+something called comparison sorts,
+see the video for more details but
+
+115
+00:05:55.160 --> 00:05:58.000
+the upshot is if you want
+a general purpose algorithm.
+
+116
+00:05:58.000 --> 00:05:59.430
+And we want to do better than N log N for
+
+117
+00:05:59.430 --> 00:06:04.760
+selection we have to do it using
+ingenuity beyond this reduction,
+
+118
+00:06:04.760 --> 00:06:10.030
+we have to prove that selection is
+a strictly easier problem then sort it.
+
+119
+00:06:10.030 --> 00:06:12.930
+That's the only way we're going to
+have an algorithm that beats n log n.
+
+120
+00:06:12.930 --> 00:06:16.410
+That's the only way we can conceivably
+get a linear time algorithm.
+
+121
+00:06:16.410 --> 00:06:19.090
+And that is exactly what
+is up next on our plates.
+
+122
+00:06:19.090 --> 00:06:23.150
+We're going to show selection is indeed
+fundamentally easier than sorting.
+
+123
+00:06:23.150 --> 00:06:24.940
+We can have a linear time algorithm for
+it,
+
+124
+00:06:24.940 --> 00:06:27.990
+even though we can't get a linear
+time algorithm for sorting.
+
+125
+00:06:27.990 --> 00:06:31.071
+You can think of the algorithm we're
+going to discuss as a modification of
+
+126
+00:06:31.071 --> 00:06:34.465
+quick sort and in the same spirit of quick
+sort it will be a randomized algorithm.
+
+127
+00:06:34.465 --> 00:06:38.091
+And the running time will be an expected
+running time that will hold for
+
+128
+00:06:38.091 --> 00:06:39.020
+any input array.
+
+129
+00:06:40.060 --> 00:06:43.170
+Now, for the sorting problem we
+know that quick sort that's n
+
+130
+00:06:43.170 --> 00:06:47.420
+log in time on average, where the average
+is over the coin flips done by the code.
+
+131
+00:06:47.420 --> 00:06:49.050
+But we also know that if we wanted to,
+
+132
+00:06:49.050 --> 00:06:52.880
+we could get a sorting algorithm in n log
+n time that doesn't use randomization.
+
+133
+00:06:52.880 --> 00:06:55.670
+The merge sort algorithm
+is one such solution.
+
+134
+00:06:55.670 --> 00:06:58.202
+So here,
+we're giving a linear time solution for
+
+135
+00:06:58.202 --> 00:07:02.300
+selection, for finding order
+statistics that uses randomization.
+
+136
+00:07:02.300 --> 00:07:05.670
+And it would be natural to wonder,
+is there an analog to merge sort?
+
+137
+00:07:05.670 --> 00:07:08.514
+Is there an algorithm which
+does not use randomization, and
+
+138
+00:07:08.514 --> 00:07:10.365
+gets this exact same linear time down.
+
+139
+00:07:10.365 --> 00:07:11.400
+In fact there is.
+
+140
+00:07:11.400 --> 00:07:13.470
+The algorithm's a little more complicated,
+and
+
+141
+00:07:13.470 --> 00:07:16.450
+therefore not quite as practical
+as this randomized algorithm.
+
+142
+00:07:16.450 --> 00:07:17.925
+But it's still very cool.
+
+143
+00:07:17.925 --> 00:07:20.790
+It's a really fun algorithm to learn and
+to teach.
+
+144
+00:07:20.790 --> 00:07:23.690
+So I will have an optional video
+about linear time selection
+
+145
+00:07:23.690 --> 00:07:25.330
+without randomization.
+
+146
+00:07:25.330 --> 00:07:28.003
+So for those of you who aren't
+going to watch that video or
+
+147
+00:07:28.003 --> 00:07:29.639
+want to know what's the key idea.
+
+148
+00:07:29.639 --> 00:07:34.201
+The idea is to choose the pivot
+deterministically in a very careful way
+
+149
+00:07:34.201 --> 00:07:37.073
+using a trick called
+the median of medians.
+
+150
+00:07:37.073 --> 00:07:40.044
+That's all I'm going to say about it now
+you should watch the optional video if you
+
+151
+00:07:40.044 --> 00:07:40.809
+want more details.
+
+152
+00:07:41.830 --> 00:07:44.652
+I do feel compelled to warn you that
+if you're going to actually implemented
+
+153
+00:07:44.652 --> 00:07:45.587
+a selection algorithm.
+
+154
+00:07:45.587 --> 00:07:49.100
+You should do the one that we discuss
+in this video, not the linear time one.
+
+155
+00:07:49.100 --> 00:07:52.310
+because the one we'll discuss in this
+video has both smaller constants and
+
+156
+00:07:52.310 --> 00:07:53.030
+works in place.
+
+157
+00:07:54.050 --> 00:07:58.400
+So what I want to do next is develop
+the idea that can modify the QuickSort
+
+158
+00:07:58.400 --> 00:08:02.420
+paradigm in order to directly
+solve The selection problem.
+
+159
+00:08:02.420 --> 00:08:06.460
+So to get an idea of how that works,
+let me review the Partition subroutine.
+
+160
+00:08:06.460 --> 00:08:11.870
+Like in Quicksort this subroutine will be
+our workhorse for the selection algorithm.
+
+161
+00:08:11.870 --> 00:08:15.810
+So, what the Partition subroutine does, it
+takes as inputs, some jumbled up array and
+
+162
+00:08:15.810 --> 00:08:19.640
+it's going to solve a problem which
+is much more modest than sorting.
+
+163
+00:08:19.640 --> 00:08:23.274
+So in partitioning, it's going to
+first choose a pivot element somehow.
+
+164
+00:08:23.274 --> 00:08:26.850
+We'll have to discuss what's a good
+strategy for choosing a pivot element.
+
+165
+00:08:26.850 --> 00:08:30.020
+But suppose in this particular input
+array it chooses the first element,
+
+166
+00:08:30.020 --> 00:08:33.765
+this three, as the pivot element,
+the responsibility of the partition
+
+167
+00:08:33.765 --> 00:08:37.370
+sub-routine then is to rearrange
+the elements in this array so
+
+168
+00:08:37.370 --> 00:08:39.910
+that the following
+properties are satisfied.
+
+169
+00:08:39.910 --> 00:08:43.740
+Anything less than the pivot is to the
+left of it and it can be in jumbled order.
+
+170
+00:08:43.740 --> 00:08:47.000
+But if you're less than pivot you
+better be to the left like this two and
+
+171
+00:08:47.000 --> 00:08:48.890
+one is less than three.
+
+172
+00:08:48.890 --> 00:08:52.170
+If you're bigger than the pivot than again
+you can be in jumbled order amongst those
+
+173
+00:08:52.170 --> 00:08:54.670
+elements but all of them have to
+be to the right of the pivot and
+
+174
+00:08:54.670 --> 00:08:57.220
+that's true for
+the numbers four through eight.
+
+175
+00:08:57.220 --> 00:09:00.880
+They all are to the right of
+the pivot three in a jumbled order.
+
+176
+00:09:00.880 --> 00:09:03.778
+So this in particular puts
+the pivot in its rightful position,
+
+177
+00:09:03.778 --> 00:09:05.974
+where it will belong in
+the final sorted array.
+
+178
+00:09:05.974 --> 00:09:06.884
+And at least for
+
+179
+00:09:06.884 --> 00:09:11.870
+Quicksort, it enabled us to recursively
+sort to smaller subproblems.
+
+180
+00:09:11.870 --> 00:09:14.830
+So this is where I want you to think
+a little bit about how we should adapt
+
+181
+00:09:14.830 --> 00:09:16.080
+this paradigm.
+
+182
+00:09:16.080 --> 00:09:19.610
+So, suppose I told you the first step of
+our selection algorithm is going to be
+
+183
+00:09:19.610 --> 00:09:22.010
+choose a pivot and partition the array.
+
+184
+00:09:22.010 --> 00:09:25.240
+Now the question is,
+how are we going to recurse?
+
+185
+00:09:25.240 --> 00:09:28.860
+We need to understand how to find
+the ith order statistic of the original
+
+186
+00:09:28.860 --> 00:09:29.970
+input array.
+
+187
+00:09:29.970 --> 00:09:35.082
+It suffices to recurse on just
+one sub problem of smaller size,
+
+188
+00:09:35.082 --> 00:09:38.367
+and find a suitable or a statistic in it.
+
+189
+00:09:38.367 --> 00:09:39.930
+So how should we do that?
+
+190
+00:09:39.930 --> 00:09:43.040
+Let me ask you that with
+some very concrete examples.
+
+191
+00:09:43.040 --> 00:09:46.780
+About what pivot we choose and
+what order statistic we're looking for and
+
+192
+00:09:46.780 --> 00:09:47.460
+see what you think.
+
+193
+00:09:47.460 --> 00:09:52.070
+So the correct action to this
+quiz is the second answer.
+
+194
+00:09:53.320 --> 00:09:57.080
+So we can get away with recursing just
+once, and then this particular example,
+
+195
+00:09:57.080 --> 00:09:59.580
+we're going to recurse on
+the right side of the array.
+
+196
+00:09:59.580 --> 00:10:03.820
+And instead of looking for the fifth
+order statistic like we would originally,
+
+197
+00:10:03.820 --> 00:10:06.680
+we're going to recursively search for
+the second order statistic.
+
+198
+00:10:06.680 --> 00:10:07.270
+So why is that?
+
+199
+00:10:07.270 --> 00:10:09.900
+Well first why do we recurse on
+the right side of the array?
+
+200
+00:10:09.900 --> 00:10:13.630
+So by assumption we have this array
+of ten elements, we choose the pivot,
+
+201
+00:10:13.630 --> 00:10:17.280
+we do partitioning, remember the pivot
+winds up in its rightful position.
+
+202
+00:10:17.280 --> 00:10:18.940
+That's what partitioning does.
+
+203
+00:10:18.940 --> 00:10:21.750
+So in the bid it winds up
+in the third position,
+
+204
+00:10:21.750 --> 00:10:24.770
+we know it's the third
+smallest element in the array.
+
+205
+00:10:24.770 --> 00:10:26.631
+Now that's not what we were looking for.
+
+206
+00:10:26.631 --> 00:10:30.310
+We were looking for
+the fifth smallest element in the array.
+
+207
+00:10:30.310 --> 00:10:34.630
+That, of course, is bigger than
+the third smallest element of the array.
+
+208
+00:10:34.630 --> 00:10:37.440
+So by partitioning,
+where is the fifth element going to be?
+
+209
+00:10:37.440 --> 00:10:40.270
+It's gotta be to the right of
+this third smallest element,
+
+210
+00:10:40.270 --> 00:10:41.830
+to the right of the pivot.
+
+211
+00:10:41.830 --> 00:10:46.050
+So we know for sure that the fifth
+order statistic of the original array
+
+212
+00:10:46.050 --> 00:10:47.540
+lies to the right of the pivot.
+
+213
+00:10:47.540 --> 00:10:48.880
+That is guaranteed.
+
+214
+00:10:48.880 --> 00:10:51.188
+So we know where to recurse
+on the right hand side.
+
+215
+00:10:51.188 --> 00:10:53.560
+Now, what are we looking for?
+
+216
+00:10:53.560 --> 00:10:57.260
+We are no longer looking for
+the fifth order statistic,
+
+217
+00:10:57.260 --> 00:10:58.900
+the fifth smallest element.
+
+218
+00:10:58.900 --> 00:10:59.600
+Why?
+
+219
+00:10:59.600 --> 00:11:03.650
+Well we've thrown out both the pivot and
+everything smaller than it.
+
+220
+00:11:03.650 --> 00:11:06.110
+Remember we're only recursing
+on the right hand side.
+
+221
+00:11:06.110 --> 00:11:08.820
+So we've thrown out the pivot, the hird
+element, and everything less than it,
+
+222
+00:11:08.820 --> 00:11:10.850
+the minimum and the second minimum.
+
+223
+00:11:10.850 --> 00:11:14.800
+Having deleted the three smallest
+elements and originally looking for
+
+224
+00:11:14.800 --> 00:11:18.910
+the fifth smallest of what remains,
+of what we're recursing on.
+
+225
+00:11:18.910 --> 00:11:21.960
+We're looking for
+the second smallest element.
+
+226
+00:11:21.960 --> 00:11:27.380
+So the selection algorithm in general,
+is just the generalization of this idea.
+
+227
+00:11:27.380 --> 00:11:31.880
+So arbitrary arrays and arbitrary
+situations of whether the pivot comes back
+
+228
+00:11:31.880 --> 00:11:35.530
+equal to less or bigger than
+the element you are looking for.
+
+229
+00:11:35.530 --> 00:11:40.710
+So let me be more precise, I am going
+to call this algorithm R select for
+
+230
+00:11:40.710 --> 00:11:46.320
+randomized selection, and according to
+the problem definition it takes as input,
+
+231
+00:11:46.320 --> 00:11:49.140
+as usual an array A of some length n.
+
+232
+00:11:49.140 --> 00:11:53.210
+Then also the order statistic that we
+are looking for, so we are going to call
+
+233
+00:11:53.210 --> 00:11:58.370
+that i, and of course we assume that i is
+some integer between one and inclusive.
+
+234
+00:11:58.370 --> 00:12:02.610
+So for the base case, that is going
+to be if the array has size one,
+
+235
+00:12:02.610 --> 00:12:06.690
+then the only element we could be looking
+for is the oneth order statistic and
+
+236
+00:12:06.690 --> 00:12:08.680
+we just return the sole
+element of the array.
+
+237
+00:12:10.010 --> 00:12:12.760
+Now we have to partition the array
+around the pivot element.
+
+238
+00:12:12.760 --> 00:12:16.710
+And just like in quick sort, we're going
+to very lazy about choosing the pivot.
+
+239
+00:12:16.710 --> 00:12:19.930
+We're going to choose it uniformly at
+random from the n possibilities, and
+
+240
+00:12:19.930 --> 00:12:20.840
+hope things work out.
+
+241
+00:12:20.840 --> 00:12:22.440
+And that will be the crux of the analysis,
+
+242
+00:12:22.440 --> 00:12:25.920
+proving that random pivots are good
+enough sufficiently often.
+
+243
+00:12:25.920 --> 00:12:28.990
+Having chosen the pivot, we now just
+invoke the standard partitioning and
+
+244
+00:12:28.990 --> 00:12:30.020
+subroutine.
+
+245
+00:12:30.020 --> 00:12:32.720
+As usual, that's going to give
+us the partitioned array.
+
+246
+00:12:32.720 --> 00:12:35.460
+You'll have the pivot element, you'll have
+everything less in the pivot to the left,
+
+247
+00:12:35.460 --> 00:12:36.770
+everything bigger, to the right.
+
+248
+00:12:36.770 --> 00:12:39.879
+As usual,
+I'll call everything to the left,
+
+249
+00:12:39.879 --> 00:12:42.762
+the first parts of the partitioned array.
+
+250
+00:12:42.762 --> 00:12:44.310
+And everything bigger, the second part.
+
+251
+00:12:45.550 --> 00:12:48.970
+Now we have a couple of cases, depending
+on whether the pivot is bigger or
+
+252
+00:12:48.970 --> 00:12:51.030
+less then the element we are looking for.
+
+253
+00:12:51.030 --> 00:12:53.450
+So I need a little notation
+to talk about that.
+
+254
+00:12:53.450 --> 00:12:58.832
+So let's let j be the order
+statistic that p is.
+
+255
+00:12:58.832 --> 00:13:02.720
+So if p winds up being the third
+smallest element like in the quiz,
+
+256
+00:13:02.720 --> 00:13:05.030
+then j's going to be equal to three.
+
+257
+00:13:05.030 --> 00:13:08.270
+Equivalently we can think of j
+as defined as the physician of
+
+258
+00:13:08.270 --> 00:13:11.080
+the pivot in the partition
+version of the array.
+
+259
+00:13:11.080 --> 00:13:13.580
+Now there's one case,
+which is very unlikely to occur, but
+
+260
+00:13:13.580 --> 00:13:15.560
+we should include it just for
+completeness.
+
+261
+00:13:15.560 --> 00:13:18.400
+If we're really lucky, then, in fact,
+
+262
+00:13:18.400 --> 00:13:22.730
+a random pivot just happens to be
+the order statistic we were looking for.
+
+263
+00:13:22.730 --> 00:13:24.090
+That's when i equals j.
+
+264
+00:13:24.090 --> 00:13:26.037
+We're looking for
+the ith smallest element.
+
+265
+00:13:26.037 --> 00:13:29.475
+If by dumb luck the pivot winds up being
+the ith smallest element, we're done.
+
+266
+00:13:29.475 --> 00:13:30.275
+We can just return it.
+
+267
+00:13:30.275 --> 00:13:31.209
+We don't have to recurse.
+
+268
+00:13:32.300 --> 00:13:33.850
+Now in general of course,
+
+269
+00:13:33.850 --> 00:13:35.880
+we don't randomly choose
+the element we are looking for.
+
+270
+00:13:35.880 --> 00:13:39.330
+We choose something that, that could
+be bigger or could be smaller then it.
+
+271
+00:13:39.330 --> 00:13:42.380
+In the quiz we chose a pivot that was
+smaller then what we were looking for.
+
+272
+00:13:42.380 --> 00:13:43.490
+Actually, that's the harder case.
+
+273
+00:13:43.490 --> 00:13:44.963
+So, let's first start with a case,
+
+274
+00:13:44.963 --> 00:13:48.540
+where the pivot winds up being bigger
+then the element we were looking for.
+
+275
+00:13:48.540 --> 00:13:51.020
+So that means that j is bigger than i.
+
+276
+00:13:51.020 --> 00:13:52.400
+We're looking for the i smallest.
+
+277
+00:13:52.400 --> 00:13:55.325
+We randomly chose the j smallest for
+j bigger than i.
+
+278
+00:13:55.325 --> 00:13:57.310
+So this is the opposite case of the quiz.
+
+279
+00:13:57.310 --> 00:14:01.460
+This is where we know what we're looking
+for has to be to the left of the pivot.
+
+280
+00:14:01.460 --> 00:14:04.110
+The pivot's the j smallest
+everything less than is to the left.
+
+281
+00:14:04.110 --> 00:14:06.395
+We're looking for the i smallest,
+i is less than j, so
+
+282
+00:14:06.395 --> 00:14:07.650
+that's got to be on the left.
+
+283
+00:14:07.650 --> 00:14:09.090
+That's where it recurs.
+
+284
+00:14:09.090 --> 00:14:11.810
+Moreover it clear we're looking for
+exactly the same order statistic.
+
+285
+00:14:11.810 --> 00:14:15.410
+If we're looking for the third smallest
+element, we're only throwing out stuff
+
+286
+00:14:15.410 --> 00:14:18.260
+which is bigger than something even bigger
+hthan the third smallest element so
+
+287
+00:14:18.260 --> 00:14:21.700
+we're still looking for
+the third smallest of what remains.
+
+288
+00:14:21.700 --> 00:14:25.550
+And naturally the new array size is
+j minus 1 because that's what's to
+
+289
+00:14:25.550 --> 00:14:26.882
+the left of the pivot.
+
+290
+00:14:26.882 --> 00:14:31.490
+And then finally, the final case is when
+the random element that we choose is less
+
+291
+00:14:31.490 --> 00:14:34.430
+than what we're looking for and
+then we're just like the quiz.
+
+292
+00:14:34.430 --> 00:14:37.040
+Namely what we're looking for
+is bigger than the pivot.
+
+293
+00:14:37.040 --> 00:14:38.390
+It's got to be in the right-hand side.
+
+294
+00:14:38.390 --> 00:14:40.598
+We know we've got a recurse
+in the right-hand side.
+
+295
+00:14:40.598 --> 00:14:42.970
+Whenever the right-hand side
+has n minus j elements,
+
+296
+00:14:42.970 --> 00:14:44.270
+we throw out everything up to the pivot.
+
+297
+00:14:44.270 --> 00:14:45.367
+So we throw out j things.
+
+298
+00:14:45.367 --> 00:14:47.380
+There's n minus j left.
+
+299
+00:14:47.380 --> 00:14:50.820
+All of those j things we threw out
+are less than what we're looking for.
+
+300
+00:14:50.820 --> 00:14:53.240
+So if we used to be looking for the i
+smallest element now we're looking for
+
+301
+00:14:53.240 --> 00:14:55.031
+the i minus j smallest element.
+
+302
+00:14:56.140 --> 00:14:57.220
+So that is the whole algorithm.
+
+303
+00:14:57.220 --> 00:15:01.020
+That is how we adopt the approach we took
+to the sorting problem in quick sort and
+
+304
+00:15:01.020 --> 00:15:04.000
+adapt it to the problem of selection.
+
+305
+00:15:04.000 --> 00:15:06.440
+So, is this algorithm any good?
+
+306
+00:15:06.440 --> 00:15:09.510
+Let's start studying its properties and
+understand how well it works.
+
+307
+00:15:09.510 --> 00:15:11.590
+So let's begin with correctness.
+
+308
+00:15:11.590 --> 00:15:14.580
+So the claim is that, no matter how
+the algorithm's coin flips come up,
+
+309
+00:15:14.580 --> 00:15:17.380
+no matter what random pivots we choose,
+the algorithm is correct.
+
+310
+00:15:17.380 --> 00:15:21.830
+In the sense that it's guaranteed
+to output the ith order statistic.
+
+311
+00:15:21.830 --> 00:15:23.130
+The proof is by induction.
+
+312
+00:15:23.130 --> 00:15:25.860
+It proceeds very similarly to quick sort.
+
+313
+00:15:25.860 --> 00:15:27.130
+So I'm not going to give it here.
+
+314
+00:15:27.130 --> 00:15:28.650
+If you're curious about
+how these proofs go,
+
+315
+00:15:28.650 --> 00:15:31.640
+there's an optional video about
+the correctness of quick sort.
+
+316
+00:15:31.640 --> 00:15:34.780
+If you watch that and understand it,
+it should be clear how to adapt
+
+317
+00:15:34.780 --> 00:15:38.160
+that inductive argument to apply
+to this select algorithm as well.
+
+318
+00:15:39.620 --> 00:15:43.110
+So as usual for divide and conquer
+algorithms, the interesting part is not so
+
+319
+00:15:43.110 --> 00:15:46.030
+much knowing,
+understanding why the algorithm works, but
+
+320
+00:15:46.030 --> 00:15:48.890
+rather understanding how fast it runs.
+
+321
+00:15:48.890 --> 00:15:54.030
+So the big question is, what is the
+running time of this selection algorithm?
+
+322
+00:15:54.030 --> 00:15:57.550
+Now, to understand this we have to
+understand the ramifications of
+
+323
+00:15:57.550 --> 00:16:00.220
+pivot choices on the running time.
+
+324
+00:16:00.220 --> 00:16:03.860
+So you've seen the QuickSort videos
+they're fresh in your mind so
+
+325
+00:16:03.860 --> 00:16:06.970
+what should be clear is that
+just like in QuickSort how
+
+326
+00:16:06.970 --> 00:16:11.690
+fast this algorithm runs is going to
+depend on how good the pivots are and
+
+327
+00:16:11.690 --> 00:16:15.680
+what good pivots means is pivots
+that guarantee a balanced split.
+
+328
+00:16:16.720 --> 00:16:19.190
+So, the next quiz, we'll make sure
+that you understand this point and
+
+329
+00:16:19.190 --> 00:16:23.280
+ask you to think about just how bad the
+running time of the selection algorithm
+
+330
+00:16:23.280 --> 00:16:27.470
+could be if you get extremely
+unlucky in your pivot choices.
+
+331
+00:16:29.660 --> 00:16:32.760
+So the correct answer to this question
+is exactly the same as the answer for
+
+332
+00:16:32.760 --> 00:16:33.990
+QuickSort.
+
+333
+00:16:33.990 --> 00:16:38.430
+The worst case running time, if the pivots
+are chosen just in a really unlucky way.
+
+334
+00:16:38.430 --> 00:16:40.630
+Is actually quadratic in the array length.
+
+335
+00:16:40.630 --> 00:16:42.290
+Remember, we're shooting for linear time.
+
+336
+00:16:42.290 --> 00:16:44.990
+So this quadratic is a total disaster.
+
+337
+00:16:44.990 --> 00:16:46.030
+So how could this happen?
+
+338
+00:16:46.030 --> 00:16:49.070
+Well suppose you're looking for
+the median, and
+
+339
+00:16:49.070 --> 00:16:53.780
+suppose you choose the minimum element
+as the pivot every single time.
+
+340
+00:16:53.780 --> 00:16:56.710
+So if this is what happens, if every time
+you choose a pivot to be the minimum,
+
+341
+00:16:56.710 --> 00:16:59.180
+just like in QuickSort,
+this means every time you recurse,
+
+342
+00:16:59.180 --> 00:17:03.670
+all you succeed in doing is peeling off
+a single element from the input array.
+
+343
+00:17:03.670 --> 00:17:06.850
+Now, you're not going to find
+the median element until you've roughly
+
+344
+00:17:06.850 --> 00:17:08.590
+n over 2 recursive cause,
+
+345
+00:17:08.590 --> 00:17:12.550
+each on an array that has size at least
+a constant fraction of the original one.
+
+346
+00:17:12.550 --> 00:17:14.840
+So it's a linear number
+of recursive calls,
+
+347
+00:17:14.840 --> 00:17:17.930
+each on an array of size at
+least some constant times n.
+
+348
+00:17:17.930 --> 00:17:21.410
+So that gives you a total running
+time of quadratic overall.
+
+349
+00:17:21.410 --> 00:17:23.780
+Of course,
+this is an absurdly unlikely event.
+
+350
+00:17:23.780 --> 00:17:27.250
+Frankly, your computer is more likely
+to be struck by a meteor than it is for
+
+351
+00:17:27.250 --> 00:17:30.530
+the pivot to be chosen as the minimum
+element in every recursive call.
+
+352
+00:17:30.530 --> 00:17:34.260
+But if you really have an absolutely
+worst case choice of pivots,
+
+353
+00:17:34.260 --> 00:17:35.910
+it would give this
+quadratic run time down.
+
+354
+00:17:37.740 --> 00:17:40.780
+So the upshot then is that the running
+time of this randomized selection
+
+355
+00:17:40.780 --> 00:17:43.280
+algorithm depends on how
+good our pivots are.
+
+356
+00:17:43.280 --> 00:17:47.460
+And for a worse case chose of pivots the
+running time can be as large as m squared.
+
+357
+00:17:47.460 --> 00:17:49.970
+Now hopefully most of the time we're
+going to have much better pivots.
+
+358
+00:17:49.970 --> 00:17:52.770
+So the analysis receives by
+making that idea precise.
+
+359
+00:17:54.190 --> 00:17:58.130
+So the key to a fast running time is going
+to be the usual property that we want to
+
+360
+00:17:58.130 --> 00:18:02.768
+see in the divide and conquer algorithms,
+namely every time that recurse the problem
+
+361
+00:18:02.768 --> 00:18:07.140
+size better not just be smaller but it
+better be smaller by a significant factor.
+
+362
+00:18:07.140 --> 00:18:09.960
+How would that happen in the selection
+approach based on the partition
+
+363
+00:18:09.960 --> 00:18:10.612
+subroutine?
+
+364
+00:18:10.612 --> 00:18:13.780
+Well if both of the sub-problems
+are not too big,
+
+365
+00:18:13.780 --> 00:18:17.660
+then we're guaranteed that when we
+recurse we make a lot of progress.
+
+366
+00:18:17.660 --> 00:18:20.890
+So let's think about what
+the best possible pivot would be
+
+367
+00:18:20.890 --> 00:18:24.440
+in the sense of giving a "balanced" split,
+right, so of course in some sense the best
+
+368
+00:18:24.440 --> 00:18:27.745
+pivot is you just choose your
+statistic group you're looking for.
+
+369
+00:18:27.745 --> 00:18:29.525
+Then you're done in constant time.
+
+370
+00:18:29.525 --> 00:18:32.005
+But that's extremely unlikely, and
+it's not worth worrying about.
+
+371
+00:18:32.005 --> 00:18:33.965
+So ignore the fact that
+we might guess the pivot.
+
+372
+00:18:33.965 --> 00:18:36.645
+What's the best pivot if we
+want to guarantee an aggressive
+
+373
+00:18:36.645 --> 00:18:39.815
+decrease in the input side for
+the next iteration.
+
+374
+00:18:39.815 --> 00:18:44.550
+Well, the best pivot is the one that
+gives as most balanced split as possible.
+
+375
+00:18:44.550 --> 00:18:47.440
+So what's the pivot that gives
+us the most balanced split?
+
+376
+00:18:47.440 --> 00:18:49.060
+A 50/50 split.
+If you think
+
+377
+00:18:49.060 --> 00:18:50.920
+about it it's exactly the median.
+
+378
+00:18:50.920 --> 00:18:53.980
+Of course, this is not super-helpful,
+
+379
+00:18:53.980 --> 00:18:56.760
+because the median might well be what
+we're looking for in the first place.
+
+380
+00:18:56.760 --> 00:18:59.690
+So this is sort of a circular idea.
+
+381
+00:18:59.690 --> 00:19:02.530
+But for intuition, it's still worth
+exploring what kind of running time we
+
+382
+00:19:02.530 --> 00:19:04.040
+would get in the best case, right?
+
+383
+00:19:04.040 --> 00:19:06.840
+If we're not going to get linear
+time even in this magical best case,
+
+384
+00:19:06.840 --> 00:19:11.160
+we certainly wouldn't expect to get it on
+average over random choices of the pivots.
+
+385
+00:19:11.160 --> 00:19:14.830
+So what would happen if we actually did
+luckily choose the median as the pivot
+
+386
+00:19:14.830 --> 00:19:16.390
+every single time?
+
+387
+00:19:16.390 --> 00:19:19.390
+Well we get the recurrence
+that the running time that
+
+388
+00:19:19.390 --> 00:19:22.640
+the algorithm requires
+at a rate of length n.
+
+389
+00:19:22.640 --> 00:19:25.030
+Well, there's only going
+to be one recursive call.
+
+390
+00:19:25.030 --> 00:19:26.340
+So this is the big
+difference from QuickSort
+
+391
+00:19:26.340 --> 00:19:29.890
+where we had to recurse on both sides and
+we had two recursive calls.
+
+392
+00:19:29.890 --> 00:19:32.520
+So here, we're only going
+to have one recursive call.
+
+393
+00:19:32.520 --> 00:19:35.450
+In the magical case where our pivots
+are always equal to the median,
+
+394
+00:19:35.450 --> 00:19:40.550
+both sub-problem sizes are only
+half as large as the original one.
+
+395
+00:19:40.550 --> 00:19:43.550
+So when we recurse,
+it's on a problem size guaranteed.
+
+396
+00:19:43.550 --> 00:19:47.650
+Could be at most n over two and then
+outside the recursive call pretty much
+
+397
+00:19:47.650 --> 00:19:51.880
+all we do is a partitioning invocation,
+and we know that that is linear time.
+
+398
+00:19:51.880 --> 00:19:56.860
+So the recurrence we get is T of N is
+the most T of N over two plus big O of N.
+
+399
+00:19:56.860 --> 00:20:00.350
+This is totally ready to get
+plugged into the master method.
+
+400
+00:20:00.350 --> 00:20:03.630
+It winds up being two of
+the master method and
+
+401
+00:20:03.630 --> 00:20:06.230
+indeed we get exactly what we wanted,
+linear time.
+
+402
+00:20:07.470 --> 00:20:09.960
+To reiterate this is not
+interesting in its own right.
+
+403
+00:20:09.960 --> 00:20:11.580
+This is just for intuition.
+
+404
+00:20:11.580 --> 00:20:14.975
+This was a sanity check that at least for
+a best case choice of pivots
+
+405
+00:20:14.975 --> 00:20:18.590
+we'd get what we want,
+the linear time algorithm and we do.
+
+406
+00:20:18.590 --> 00:20:22.210
+Now, the question is how well
+do we do with random pivots?
+
+407
+00:20:22.210 --> 00:20:26.510
+Now the intuition, the hope is exactly as
+it was for QuickSort which is the random
+
+408
+00:20:26.510 --> 00:20:30.400
+pivots are perfectly good surrogate for
+the median, for the perfect pivot.
+
+409
+00:20:31.820 --> 00:20:35.560
+So having the analysis of Quicksort under
+our belt where indeed random pivots
+
+410
+00:20:35.560 --> 00:20:39.490
+do approximate very closely to the
+performance you get with best case pivots
+
+411
+00:20:39.490 --> 00:20:42.008
+maybe now we have reason to believe
+that this is hopefully true.
+
+412
+00:20:42.008 --> 00:20:45.630
+That said, as a mathematical statement
+this is totally not obvious and
+
+413
+00:20:45.630 --> 00:20:46.820
+it's going to take a proof.
+
+414
+00:20:46.820 --> 00:20:48.430
+That's the subject for the next video.
+
+415
+00:20:48.430 --> 00:20:51.280
+Let me just be clear exactly
+what we're claiming.
+
+416
+00:20:51.280 --> 00:20:55.610
+Here is the running time guarantee
+the random Rselection provide.
+
+417
+00:20:57.510 --> 00:21:00.780
+For an arbitrary input
+array of input length n,
+
+418
+00:21:00.780 --> 00:21:04.040
+the average running time of this
+randomized selection is linear.
+
+419
+00:21:04.040 --> 00:21:06.894
+Big O of n.
+Let me reiterate a couple of points I made
+
+420
+00:21:06.894 --> 00:21:10.593
+for the analogous guarantee for
+the QuickSort algorithm.
+
+421
+00:21:10.593 --> 00:21:14.130
+The first is that we're making no
+assumptions for data whatsoever.
+
+422
+00:21:14.130 --> 00:21:16.920
+In particular we're not assuming
+that the data is random.
+
+423
+00:21:16.920 --> 00:21:17.870
+This guarantee holds,
+
+424
+00:21:17.870 --> 00:21:21.030
+no matter what input array you feed
+into this randomized algorithm.
+
+425
+00:21:21.030 --> 00:21:23.830
+In that sense, this is a totally
+general purpose subroutine.
+
+426
+00:21:25.070 --> 00:21:26.920
+So where then does this
+averaging come from?
+
+427
+00:21:26.920 --> 00:21:28.620
+Where does the expectation come from?
+
+428
+00:21:28.620 --> 00:21:34.180
+The randomness is not in the data,
+rather, the randomness is in the code.
+
+429
+00:21:34.180 --> 00:21:36.360
+And we put it there ourselves.
+
+430
+00:21:37.760 --> 00:21:39.380
+Now let's proceed to the analysis.

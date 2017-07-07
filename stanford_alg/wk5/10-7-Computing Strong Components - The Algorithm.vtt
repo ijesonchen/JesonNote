@@ -1,0 +1,2617 @@
+WEBVTT
+
+1
+00:00:00.012 --> 00:00:03.620
+Having mastered computing the connecting
+components of an undirected graph in
+
+2
+00:00:03.620 --> 00:00:06.740
+linear time, let's now turn our
+attention to directed graphs,
+
+3
+00:00:06.740 --> 00:00:09.780
+which also arise in all kinds
+of different applications.
+
+4
+00:00:09.780 --> 00:00:13.340
+Now the good news is, is we'll be able to
+get just a blazingly fast primitive for
+
+5
+00:00:13.340 --> 00:00:15.940
+computing connectivity information for
+directed graphs.
+
+6
+00:00:15.940 --> 00:00:17.600
+The bad news, if you want to call it hat,
+
+7
+00:00:17.600 --> 00:00:19.300
+is we'll have to think
+a little bit harder.
+
+8
+00:00:19.300 --> 00:00:21.150
+So it won't be as obvious how to do it.
+
+9
+00:00:21.150 --> 00:00:24.499
+But by the end of this lecture will
+you know linear time algorithms,
+
+10
+00:00:24.499 --> 00:00:25.572
+a very good concept.
+
+11
+00:00:25.572 --> 00:00:28.050
+It's really just based on
+depth first search for
+
+12
+00:00:28.050 --> 00:00:30.930
+computing all of the pieces
+of a directed graph.
+
+13
+00:00:30.930 --> 00:00:33.480
+In fact, it's not even so
+obvious how to define pieces,
+
+14
+00:00:33.480 --> 00:00:35.790
+how to define connected
+components in a directed graph.
+
+15
+00:00:35.790 --> 00:00:39.004
+Certainly not as obvious as it
+was with undirected graphs.
+
+16
+00:00:39.004 --> 00:00:42.940
+So, see what I mean, let's consider
+the following four node directed graph.
+
+17
+00:00:45.070 --> 00:00:48.805
+So on the one hand,
+this graph in some sense in one piece.
+
+18
+00:00:48.805 --> 00:00:52.333
+If this was an actual physical object,
+made say of a bunch of strings connected
+
+19
+00:00:52.333 --> 00:00:54.471
+to each other and
+we picked it up with our hands,
+
+20
+00:00:54.471 --> 00:00:58.007
+it wouldn't fall apart into two pieces,
+it would hang together in one piece.
+
+21
+00:00:58.007 --> 00:01:00.995
+On the other hand, when you think
+about moving around this network,
+
+22
+00:01:00.995 --> 00:01:03.880
+it's not connected in the sense
+that we might think about.
+
+23
+00:01:03.880 --> 00:01:07.280
+You cannot get from any one point a,
+to any other point b.
+
+24
+00:01:07.280 --> 00:01:09.990
+For example, if you started
+the right-most node in this graph,
+
+25
+00:01:09.990 --> 00:01:13.540
+certainly there's no directed path that
+will get you to the left-most node.
+
+26
+00:01:13.540 --> 00:01:14.980
+So what's typically studied and
+
+27
+00:01:14.980 --> 00:01:18.660
+most useful for directed graphs is
+what you call strong connectivity.
+
+28
+00:01:18.660 --> 00:01:22.687
+And a graph is strongly connected if
+you can get from any one point to any
+
+29
+00:01:22.687 --> 00:01:24.334
+other point and vice versa.
+
+30
+00:01:24.334 --> 00:01:28.671
+And the components then informally
+are the maximal portions of this graph,
+
+31
+00:01:28.671 --> 00:01:32.480
+the maximal regions,
+which are internally strongly connected.
+
+32
+00:01:32.480 --> 00:01:36.086
+So the maximum regions from within
+which you can get from any one
+
+33
+00:01:36.086 --> 00:01:39.158
+,point a to any other point
+b along a directed graph.
+
+34
+00:01:39.158 --> 00:01:42.539
+For the record, let me go ahead and
+give you a formal definition,
+
+35
+00:01:42.539 --> 00:01:44.950
+although this intuition
+is perfectly valid.
+
+36
+00:01:44.950 --> 00:01:47.560
+Just regions where you can get
+from anywhere to anywhere else.
+
+37
+00:01:49.970 --> 00:01:53.120
+So we say that the strongly connected
+components of directed graph, or
+
+38
+00:01:53.120 --> 00:01:54.600
+the SCCs for short.
+
+39
+00:01:55.910 --> 00:01:59.129
+And as in the undirected case, we're
+going to give a somewhat slick definition
+
+40
+00:01:59.129 --> 00:02:02.061
+rather than talking about maximal
+region satisfying some property.
+
+41
+00:02:02.061 --> 00:02:04.424
+We're going to talk about
+the equivalence classes of a particular
+
+42
+00:02:04.424 --> 00:02:05.490
+equivalence relation.
+
+43
+00:02:05.490 --> 00:02:06.860
+But really it means the same thing.
+
+44
+00:02:06.860 --> 00:02:10.681
+This is just sort of the more
+mathematically more mature way of writing
+
+45
+00:02:10.681 --> 00:02:11.206
+it down.
+
+46
+00:02:11.206 --> 00:02:15.597
+So the equivalence relation we're going to
+use, if it's on nodes of the graph, and
+
+47
+00:02:15.597 --> 00:02:19.223
+we'll say that u and node is related
+to a node v if you can get from u to v
+
+48
+00:02:19.223 --> 00:02:22.880
+via directed path, and also from v
+to u in some other directed path.
+
+49
+00:02:26.150 --> 00:02:28.240
+I'm not going to bore you with
+the verification that this is
+
+50
+00:02:28.240 --> 00:02:29.040
+an equivalence relation.
+
+51
+00:02:29.040 --> 00:02:31.000
+That's something you can work
+out in the privacy of your home.
+
+52
+00:02:32.600 --> 00:02:35.290
+So remember what it means to be
+an equivalence relation, that's reflexive,
+
+53
+00:02:35.290 --> 00:02:37.520
+that is everybody's related to itself.
+
+54
+00:02:37.520 --> 00:02:40.190
+But of course there is a path
+from every node to itself.
+
+55
+00:02:40.190 --> 00:02:44.494
+It also means that it's symmetric, so if u
+is related to v, then v is related to u.
+
+56
+00:02:44.494 --> 00:02:48.484
+Well again, by definition we're saying
+that the vertices are mutually reachable
+
+57
+00:02:48.484 --> 00:02:49.430
+from each other.
+
+58
+00:02:49.430 --> 00:02:51.055
+So that's clearly symmetric by definition.
+
+59
+00:02:51.055 --> 00:02:52.480
+And then it has to be transitive.
+
+60
+00:02:52.480 --> 00:02:55.840
+And the way you prove it's transitive
+is you just paste paths together, and
+
+61
+00:02:55.840 --> 00:02:58.170
+it just works the way you'd expect it to.
+
+62
+00:02:58.170 --> 00:03:01.920
+So let's illustrate this concretely with a
+somewhat more complicated directed graph.
+
+63
+00:03:03.310 --> 00:03:04.934
+So here's a directed graph, and
+
+64
+00:03:04.934 --> 00:03:08.620
+I claim that it has exactly four
+strongly connecting components.
+
+65
+00:03:08.620 --> 00:03:10.040
+There's a triangle on the left.
+
+66
+00:03:11.280 --> 00:03:12.392
+A triangle on the right.
+
+67
+00:03:12.392 --> 00:03:15.439
+It has this single node on top.
+
+68
+00:03:15.439 --> 00:03:19.320
+And then it has this directed forecycle
+with a diagonal at the bottom.
+
+69
+00:03:21.030 --> 00:03:24.540
+So what I hope is pretty clear is that
+each of these circled regions is indeed
+
+70
+00:03:24.540 --> 00:03:25.390
+strongly connected.
+
+71
+00:03:25.390 --> 00:03:29.050
+That is, if you start from one node
+in one of these circled regions,
+
+72
+00:03:29.050 --> 00:03:31.610
+you can have a directed
+path to any other node.
+
+73
+00:03:31.610 --> 00:03:34.460
+So that's symmetric, because on
+a directed cycle you can get from any
+
+74
+00:03:34.460 --> 00:03:36.320
+one starting point to anyother place.
+
+75
+00:03:36.320 --> 00:03:37.750
+And all of these have directed cycles.
+
+76
+00:03:37.750 --> 00:03:40.240
+And then there's the one strong
+component that just has the one node,
+
+77
+00:03:40.240 --> 00:03:42.130
+which is obviously strongly connected.
+
+78
+00:03:42.130 --> 00:03:44.880
+What I also claim is true is that
+all of these regions are maximal.
+
+79
+00:03:44.880 --> 00:03:46.677
+Subject to being strongly connected.
+
+80
+00:03:46.677 --> 00:03:48.160
+That's why they're the strongly
+connected components.
+
+81
+00:03:48.160 --> 00:03:51.060
+That's why they're the equivalence
+classes of this equivalence relation
+
+82
+00:03:51.060 --> 00:03:52.260
+we just defined.
+
+83
+00:03:52.260 --> 00:03:55.760
+So if you take any two pairs of nodes
+which lie in two different circles,
+
+84
+00:03:55.760 --> 00:03:58.470
+you either won't have a path from
+the first one to the second, or
+
+85
+00:03:58.470 --> 00:04:01.390
+you won't have a directed path from
+the second one back to the first one.
+
+86
+00:04:01.390 --> 00:04:05.780
+In fact, the structure of the strong
+components in this black graph
+
+87
+00:04:05.780 --> 00:04:10.440
+exactly mirrors the directed acyclic
+graph that we started in red.
+
+88
+00:04:10.440 --> 00:04:14.580
+So in the same way in the red four-node
+graph, you can't move from right to left.
+
+89
+00:04:14.580 --> 00:04:18.530
+Here in this bigger graph, you can't move
+from any of the circled SCCs to the right
+
+90
+00:04:18.530 --> 00:04:20.374
+to any of the circled SCCs to the left.
+
+91
+00:04:20.374 --> 00:04:22.519
+So for example, from the right-most nodes,
+
+92
+00:04:22.519 --> 00:04:25.000
+there are no directed paths
+to the left-most nodes.
+
+93
+00:04:26.600 --> 00:04:29.640
+So that's a recap of the definition
+of the strongly connected components.
+
+94
+00:04:29.640 --> 00:04:33.083
+I've motivated in a separate video some
+reasons why you might care about computing
+
+95
+00:04:33.083 --> 00:04:34.516
+strongly connected components.
+
+96
+00:04:34.516 --> 00:04:35.537
+And in particular,
+
+97
+00:04:35.537 --> 00:04:39.861
+on extremely large graphs which motivates
+the need for blazingly fast sub routines,
+
+98
+00:04:39.861 --> 00:04:43.840
+so four free primitives that will let
+you compute connectivity information.
+
+99
+00:04:43.840 --> 00:04:46.846
+So you'd love to be able to just
+know the pieces of a directed graph.
+
+100
+00:04:46.846 --> 00:04:48.958
+Maybe you don't even know why
+they're going to be useful but
+
+101
+00:04:48.958 --> 00:04:50.600
+you just compute them because why not?
+
+102
+00:04:50.600 --> 00:04:51.498
+It's four free primitive.
+
+103
+00:04:51.498 --> 00:04:53.455
+So, that's what I'm going to
+give you on this lecture.
+
+104
+00:04:53.455 --> 00:04:57.390
+So the algorithm that we're going to
+present is based on depth-first search.
+
+105
+00:04:57.390 --> 00:05:00.686
+And that's going to be the main reason
+why it's going to be so blazingly fast,
+
+106
+00:05:00.686 --> 00:05:03.440
+is because depth-first
+search is blazingly fast.
+
+107
+00:05:03.440 --> 00:05:05.230
+Now, you might be wondering,
+
+108
+00:05:05.230 --> 00:05:09.490
+what on earth does graph search have
+to do with computing components?
+
+109
+00:05:09.490 --> 00:05:11.640
+They don't seem obviously related.
+
+110
+00:05:11.640 --> 00:05:15.470
+So let's return to the same directed graph
+that I shows you on the previous slide.
+
+111
+00:05:17.310 --> 00:05:22.040
+And to see why something like depth-first
+search might conceivably have some use for
+
+112
+00:05:22.040 --> 00:05:23.610
+computing strong components.
+
+113
+00:05:23.610 --> 00:05:28.295
+Suppose we called depth-first search
+starting from this red node as
+
+114
+00:05:28.295 --> 00:05:29.594
+a starting point.
+
+115
+00:05:29.594 --> 00:05:30.970
+What would it would explore?
+
+116
+00:05:30.970 --> 00:05:34.215
+So remember what the guarantee of
+something like depth-first search or
+
+117
+00:05:34.215 --> 00:05:36.032
+breath first search for that matter is.
+
+118
+00:05:36.032 --> 00:05:40.020
+You find everything that findable,
+but naturally nothing else.
+
+119
+00:05:40.020 --> 00:05:41.730
+So what is findable from this red node?
+
+120
+00:05:41.730 --> 00:05:42.800
+Where by findable I mean,
+
+121
+00:05:42.800 --> 00:05:46.620
+you can reach it from a directed
+path emanating from this red node.
+
+122
+00:05:46.620 --> 00:05:48.105
+Well, there's not much you can do.
+
+123
+00:05:48.105 --> 00:05:50.315
+So from here you can explore this arc.
+
+124
+00:05:50.315 --> 00:05:51.634
+And you can explore this arc.
+
+125
+00:05:51.634 --> 00:05:53.246
+And then you can go backward.
+
+126
+00:05:53.246 --> 00:05:55.825
+And so, if you do DFS or
+BFS from this node,
+
+127
+00:05:55.825 --> 00:05:59.520
+you're going to find precisely
+the nodes in this triangle.
+
+128
+00:05:59.520 --> 00:06:02.240
+All of the other arcs involved
+go the wrong direction and
+
+129
+00:06:02.240 --> 00:06:06.050
+they won't be traversed by,
+say, a depth-first search call.
+
+130
+00:06:06.050 --> 00:06:07.620
+So, why is that interesting?
+
+131
+00:06:07.620 --> 00:06:11.877
+What's interesting is that if we
+invoke DFS from this red node, or
+
+132
+00:06:11.877 --> 00:06:17.425
+any of the three nodes from this triangle,
+then it's going to discover precisely this
+
+133
+00:06:17.425 --> 00:06:22.612
+strongly connected component, precisely
+the three nodes in this circled SCC.
+
+134
+00:06:22.612 --> 00:06:25.590
+So that seems really cool,
+seems like maybe we just do a DFS, and
+
+135
+00:06:25.590 --> 00:06:27.010
+boom we get an SCC.
+
+136
+00:06:27.010 --> 00:06:30.770
+So maybe if we can do that over and
+over again we'll get all the SCCs.
+
+137
+00:06:30.770 --> 00:06:34.330
+So that's a good initial intuition,
+but something can go wrong.
+
+138
+00:06:34.330 --> 00:06:38.570
+Suppose that instead of initiating
+DFS from one of these three nodes on
+
+139
+00:06:38.570 --> 00:06:43.220
+the triangle, we say, initiated from
+this bottom most node in green.
+
+140
+00:06:44.310 --> 00:06:47.960
+So remember, what is the guarantee of
+a graph search subroutine like DFS?
+
+141
+00:06:47.960 --> 00:06:51.680
+It will find everything findable but
+of course, nothing more.
+
+142
+00:06:51.680 --> 00:06:54.550
+So what's findable from this green node?
+
+143
+00:06:54.550 --> 00:06:58.544
+Well, naturally everything in its own SCC,
+right?
+
+144
+00:06:58.544 --> 00:07:01.700
+So the four nodes here,
+it'll certainly find those four nodes.
+
+145
+00:07:01.700 --> 00:07:06.610
+On the other hand, if we start from this
+green node, since there are arcs that
+
+146
+00:07:06.610 --> 00:07:11.530
+go from this bottom-most SCC
+to the right-most the SCC.
+
+147
+00:07:11.530 --> 00:07:15.700
+Not only will this DFS call find the four
+nodes in the green node's strong
+
+148
+00:07:15.700 --> 00:07:19.150
+component, but
+it will also traverse these blue arcs and
+
+149
+00:07:19.150 --> 00:07:22.530
+discover the three nodes
+in the red triangle.
+
+150
+00:07:22.530 --> 00:07:28.032
+So, if we call DFS from this green node,
+we'll capture all seven of these.
+
+151
+00:07:28.032 --> 00:07:29.961
+So the point is, if we call DFS,
+
+152
+00:07:29.961 --> 00:07:34.490
+it looks like we're going to get
+a union of possibly multiple SCCs.
+
+153
+00:07:34.490 --> 00:07:36.300
+In fact, in the worst case,
+
+154
+00:07:36.300 --> 00:07:41.140
+if we invoke DFS from the leftmost node,
+what's it going to discover?
+
+155
+00:07:41.140 --> 00:07:44.160
+It's going to discover the entire graph.
+
+156
+00:07:44.160 --> 00:07:48.584
+And that didn't give us any insight into
+the strong component structure at all.
+
+157
+00:07:48.584 --> 00:07:53.342
+So, what's the takeaway point is,
+the takeaway point is if you call
+
+158
+00:07:53.342 --> 00:07:57.866
+DFS from just the right place,
+you'll actually uncover an SCC.
+
+159
+00:07:57.866 --> 00:08:02.222
+If you call it from the wrong place,
+it will give you no information at all.
+
+160
+00:08:02.222 --> 00:08:06.898
+So the magic of the algorithm that we're
+going to discuss next is we'll show having
+
+161
+00:08:06.898 --> 00:08:11.301
+this super slick pre-processing step
+which ironically is itself is called
+
+162
+00:08:11.301 --> 00:08:13.090
+a depth-first search.
+
+163
+00:08:13.090 --> 00:08:17.615
+We can in linear time compute exactly
+where we want to start the subsequent
+
+164
+00:08:17.615 --> 00:08:20.910
+depth-first searches from,
+so that each indication
+
+165
+00:08:20.910 --> 00:08:24.660
+gets us exactly one strongly
+connected component and nothing more.
+
+166
+00:08:27.640 --> 00:08:30.580
+So the algorithm that I'm going to
+show you is due to Kosaraju and
+
+167
+00:08:32.310 --> 00:08:37.120
+it will show the following theorem,
+that the strongly connected components of
+
+168
+00:08:37.120 --> 00:08:39.430
+a directed graph can be
+computed in linear time.
+
+169
+00:08:39.430 --> 00:08:42.090
+And as we'll see,
+the constants are also very small.
+
+170
+00:08:42.090 --> 00:08:44.280
+It's really just going to be two
+passes of depth first search.
+
+171
+00:08:45.330 --> 00:08:47.290
+And again I'm going to remind you that for
+many problems,
+
+172
+00:08:47.290 --> 00:08:50.560
+it's natural to assume that the number
+of edges is at least the number of nodes
+
+173
+00:08:50.560 --> 00:08:53.100
+because you're only interested in
+cases where the graph is connected.
+
+174
+00:08:53.100 --> 00:08:56.400
+Of course when you're computing connected
+components, that's one of the most natural
+
+175
+00:08:56.400 --> 00:08:59.540
+cases where you might have
+a super sparse broken up graph.
+
+176
+00:08:59.540 --> 00:09:03.540
+So we're not going to assume M is at least
+N so that's why linear time is going to
+
+177
+00:09:03.540 --> 00:09:05.519
+be M plus N because that's
+the size of the input.
+
+178
+00:09:06.850 --> 00:09:09.800
+And we don't know either m could be bigger
+than n or n could be bigger than m.
+
+179
+00:09:09.800 --> 00:09:10.300
+We have no idea.
+
+180
+00:09:11.950 --> 00:09:16.160
+Kosaraju's algorithm is
+shocking in its simplicity.
+
+181
+00:09:16.160 --> 00:09:17.370
+It has three steps.
+
+182
+00:09:17.370 --> 00:09:18.240
+Let me tell you what they are.
+
+183
+00:09:20.220 --> 00:09:23.090
+First very mysteriously we are going to
+
+184
+00:09:23.090 --> 00:09:25.129
+reverse all of the archs
+of the given graph.
+
+185
+00:09:26.680 --> 00:09:30.300
+Totally not clear why that would
+be an interesting thing to do yet.
+
+186
+00:09:30.300 --> 00:09:33.790
+Then we're going to do our first pass,
+our first depth first search,
+
+187
+00:09:33.790 --> 00:09:35.850
+and we're going to do it
+on the reverse graph.
+
+188
+00:09:37.710 --> 00:09:40.570
+Now the naive way to implement this
+would be to literally construct
+
+189
+00:09:40.570 --> 00:09:43.950
+a new copy of the input graph with all
+the the arcs in the reverse direction, and
+
+190
+00:09:43.950 --> 00:09:46.150
+then just run depth first search on it.
+
+191
+00:09:46.150 --> 00:09:49.040
+Of course, the sophisticated,
+the sort of obvious optimization would be
+
+192
+00:09:49.040 --> 00:09:53.770
+to just run DFS on the original graph,
+but going across arcs backwards.
+
+193
+00:09:53.770 --> 00:09:56.590
+So I'll let you think through the details
+of how you'd do that, but that just works.
+
+194
+00:09:56.590 --> 00:10:00.120
+You run DFS, and instead of going forward
+along edges, you go backward along edges,
+
+195
+00:10:00.120 --> 00:10:03.290
+that simulates depth first
+search on the reverse graph.
+
+196
+00:10:03.290 --> 00:10:06.460
+Now I've written here DFS loop and that
+just means the user will check more to
+
+197
+00:10:06.460 --> 00:10:10.500
+make sure that you see all of the nodes
+of the graph even if it's disconnected
+
+198
+00:10:10.500 --> 00:10:14.390
+you have an outer loop where you just
+try each starting point separately.
+
+199
+00:10:14.390 --> 00:10:17.640
+If you haven't already seen it then
+you run DFS from that given node.
+
+200
+00:10:17.640 --> 00:10:18.970
+I'll be more detailed on the next slide.
+
+201
+00:10:20.890 --> 00:10:23.774
+And the third step is just you
+run depth-first search again, but
+
+202
+00:10:23.774 --> 00:10:25.253
+this time on the original graph.
+
+203
+00:10:27.238 --> 00:10:30.951
+Now at this point you should be thinking
+that I'm totally crazy, right, so
+
+204
+00:10:30.951 --> 00:10:32.180
+what are we trying to do?
+
+205
+00:10:32.180 --> 00:10:34.360
+We're trying to compute these
+strongly connected components.
+
+206
+00:10:34.360 --> 00:10:37.940
+We're trying to actually compute real
+objects, these maximal regions and
+
+207
+00:10:37.940 --> 00:10:39.390
+all I'm doing is searching the graph.
+
+208
+00:10:39.390 --> 00:10:40.170
+I do it once forward.
+
+209
+00:10:40.170 --> 00:10:41.370
+I do it once backward.
+
+210
+00:10:41.370 --> 00:10:44.010
+I mean it doesn't seem like
+I'm computing anything.
+
+211
+00:10:44.010 --> 00:10:46.680
+So here's the catch and
+it's a very minor catch.
+
+212
+00:10:46.680 --> 00:10:49.640
+So we're going to get you to do a little
+bit of bookkeeping, it's going to be very
+
+213
+00:10:49.640 --> 00:10:52.500
+little overhead so we'll still
+have a blazingly fast algorithm.
+
+214
+00:10:52.500 --> 00:10:55.350
+So but with a little bit of bookkeeping,
+here's what's going to happen.
+
+215
+00:10:55.350 --> 00:10:57.690
+The second depth first search.
+
+216
+00:10:57.690 --> 00:11:02.760
+Which searches the graph, will in it's
+search process discover the components
+
+217
+00:11:02.760 --> 00:11:04.810
+one at a time in a very natural way.
+
+218
+00:11:04.810 --> 00:11:07.610
+And that will be really
+obvious when we do an example
+
+219
+00:11:07.610 --> 00:11:09.260
+which we'll do in just a second.
+
+220
+00:11:09.260 --> 00:11:13.370
+Now, for the second depth first search
+to work as magical way where it
+
+221
+00:11:13.370 --> 00:11:18.610
+just discovers the connective component
+one at a time, it's really important that
+
+222
+00:11:18.610 --> 00:11:21.760
+executes the depth first
+searches in a particular order,
+
+223
+00:11:21.760 --> 00:11:24.150
+that it goes to the nodes of
+the graph in a particular order.
+
+224
+00:11:24.150 --> 00:11:27.650
+And that is exactly
+the job of the first pass.
+
+225
+00:11:27.650 --> 00:11:32.100
+The depth first search on reverse graph is
+going to compute an ordering of the nodes
+
+226
+00:11:32.100 --> 00:11:36.370
+which, when the second depth first
+search goes through them in that order,
+
+227
+00:11:36.370 --> 00:11:40.060
+it will just discover
+the SCCs one at a time.
+
+228
+00:11:40.060 --> 00:11:40.730
+In linear time.
+
+229
+00:11:42.330 --> 00:11:45.630
+So let me say a little bit more about
+the form of the bookkeeping and
+
+230
+00:11:45.630 --> 00:11:50.030
+then I'll show you how that bookkeeping
+is kept in as we do depth-first search.
+
+231
+00:11:51.040 --> 00:11:53.500
+So we're going to have a notion
+of a finishing time of a vertex.
+
+232
+00:11:53.500 --> 00:11:56.075
+And that's going to be computed
+in the first pass when we do
+
+233
+00:11:56.075 --> 00:11:57.530
+depth-first search in the reverse graph.
+
+234
+00:11:58.830 --> 00:12:01.780
+And we're going to make use of
+this data in the second pass.
+
+235
+00:12:01.780 --> 00:12:05.610
+So rather than just going through the
+nodes of the graph in an arbitrary order,
+
+236
+00:12:05.610 --> 00:12:09.140
+like we usually do when we sort of
+have a loop to depth first search.
+
+237
+00:12:09.140 --> 00:12:12.520
+We're going to make sure that
+we go through the vertices
+
+238
+00:12:12.520 --> 00:12:14.619
+in decreasing order of
+these finishing times.
+
+239
+00:12:15.860 --> 00:12:19.825
+Now there's still the question of what
+sense doe this second depth first search
+
+240
+00:12:19.825 --> 00:12:23.700
+discover and report to the strong
+connected components that it finds?
+
+241
+00:12:23.700 --> 00:12:28.660
+So we're going to label each node in the
+second pass with what we call a leader.
+
+242
+00:12:28.660 --> 00:12:32.060
+And the idea is that the nodes in the same
+strong connected component will be
+
+243
+00:12:32.060 --> 00:12:33.770
+labeled with exactly the same leader node.
+
+244
+00:12:33.770 --> 00:12:37.590
+And again, all of this will be much more
+clear once we do a concrete example, but
+
+245
+00:12:37.590 --> 00:12:39.510
+I want to have it down for
+the record right now.
+
+246
+00:12:41.470 --> 00:12:43.620
+So that's the algorithm at a high level.
+
+247
+00:12:43.620 --> 00:12:46.560
+It's really just two passes of
+DFS with some bookkeeping, but
+
+248
+00:12:46.560 --> 00:12:47.690
+this is under specify.
+
+249
+00:12:47.690 --> 00:12:51.810
+You really shouldn't understand how
+to implement the algorithm just yet.
+
+250
+00:12:51.810 --> 00:12:52.780
+So what do I owe you?
+
+251
+00:12:52.780 --> 00:12:56.990
+I owe you exactly what I mean by the
+DFS-loop, although this is seen more or
+
+252
+00:12:56.990 --> 00:12:57.660
+less in the past.
+
+253
+00:12:57.660 --> 00:13:00.730
+It's just a loop over all
+the vertices of the graph, and
+
+254
+00:13:00.730 --> 00:13:04.070
+if you haven't seen something yet
+in DFS from that starting point,
+
+255
+00:13:04.070 --> 00:13:07.270
+I need to tell you what finishing
+times are and how they get computed.
+
+256
+00:13:07.270 --> 00:13:08.430
+They're just going to be integers 1 to n,
+
+257
+00:13:08.430 --> 00:13:12.460
+which is basically when depth first search
+gets finished with one of the nodes, and
+
+258
+00:13:12.460 --> 00:13:15.100
+then I need to tell you how
+you compute these leaders.
+
+259
+00:13:15.100 --> 00:13:18.080
+So, let me tell you all three of
+those things on the next slot.
+
+260
+00:13:19.770 --> 00:13:23.380
+So the work course for Kosaraju's
+strongly connected components algorithm
+
+261
+00:13:23.380 --> 00:13:27.780
+is this DFS-loop subroutine, and
+it takes, as input, a graph.
+
+262
+00:13:27.780 --> 00:13:30.170
+So it does not take as
+input a starting node,
+
+263
+00:13:30.170 --> 00:13:33.030
+it's going to loop over
+possible starting nodes.
+
+264
+00:13:33.030 --> 00:13:35.220
+Now for the bookkeeping to
+compute finishing nodes,
+
+265
+00:13:35.220 --> 00:13:37.700
+we're going to keep track of a global
+variable of it all called T.
+
+266
+00:13:39.330 --> 00:13:40.710
+Which we initialize to zero.
+
+267
+00:13:42.680 --> 00:13:46.180
+The point of T is to count
+how many nodes we've totally
+
+268
+00:13:46.180 --> 00:13:47.840
+finished exploring at this point.
+
+269
+00:13:49.130 --> 00:13:52.890
+So this is the variable we use to compute
+those finishing times in the first pass,
+
+270
+00:13:52.890 --> 00:13:55.330
+that magical ordering
+that I was talking about.
+
+271
+00:13:55.330 --> 00:13:58.240
+Now we're also going to have a second
+global variable to compute these things I
+
+272
+00:13:58.240 --> 00:14:02.230
+was calling leaders, and these
+are only relevant for the second pass.
+
+273
+00:14:02.230 --> 00:14:05.330
+So what S is going to keep
+track of is the most recent
+
+274
+00:14:05.330 --> 00:14:08.630
+vertex from which a DFS was initiated.
+
+275
+00:14:09.930 --> 00:14:13.090
+So to keep the code simple, I'm just
+going to do all of the bookkeeping
+
+276
+00:14:13.090 --> 00:14:16.770
+in the DFS-Loop, so
+really DFS-Loop gets called twice,
+
+277
+00:14:16.770 --> 00:14:19.500
+once in a reverse graph,
+once in the forward graph.
+
+278
+00:14:19.500 --> 00:14:22.900
+And we only need to compute these
+finishing times in the first pass
+
+279
+00:14:22.900 --> 00:14:24.210
+on the reverse graph and
+
+280
+00:14:24.210 --> 00:14:27.770
+we only need to compute these leaders on
+the second pass for the forward graph.
+
+281
+00:14:27.770 --> 00:14:30.320
+But let's just keep them both
+in there just for kicks.
+
+282
+00:14:31.670 --> 00:14:33.420
+Now we're going to need to
+loop through the vertices.
+
+283
+00:14:33.420 --> 00:14:36.750
+And so the question is in what order
+are we going to loop through the vertices?
+
+284
+00:14:36.750 --> 00:14:39.250
+And that's going to happen differently
+in the two different passes, but
+
+285
+00:14:39.250 --> 00:14:41.140
+let me just use some common notation.
+
+286
+00:14:41.140 --> 00:14:42.030
+Let's just assume,
+
+287
+00:14:42.030 --> 00:14:44.770
+in this sub-routine, that the nodes
+are somehow labeled from 1 to n.
+
+288
+00:14:46.620 --> 00:14:50.370
+In our first depth first search it's
+going to be labeled totally arbitrary, so
+
+289
+00:14:50.370 --> 00:14:54.130
+these are basically just the names of the
+node or their position in the node array,
+
+290
+00:14:54.130 --> 00:14:56.290
+whatever, you just do it
+in some arbitrary order.
+
+291
+00:14:56.290 --> 00:15:00.670
+Now the second time we run DFS loop,
+as indicated on the previous slide,
+
+292
+00:15:00.670 --> 00:15:03.500
+we're going to use the finishing
+times as the labeling.
+
+293
+00:15:03.500 --> 00:15:07.138
+As we'll see, the finishing times
+are indeed numbers between 1 in it, so
+
+294
+00:15:07.138 --> 00:15:10.737
+now what do we do is we just iterate
+through the nodes in decreasing order.
+
+295
+00:15:12.578 --> 00:15:16.363
+And if we haven't already seen node i,
+then we initiate a DFS from it, so
+
+296
+00:15:16.363 --> 00:15:20.463
+as usual we're going to be maintaining a
+local boolean to keep track of what we had
+
+297
+00:15:20.463 --> 00:15:22.969
+already seen a node yet
+in one of the DFS passes.
+
+298
+00:15:24.480 --> 00:15:28.820
+Now remember, the global variable s is
+responsible for keeping track of the most
+
+299
+00:15:28.820 --> 00:15:33.650
+recent node from which Depth First Search
+had been initiated, so if i's not explored
+
+300
+00:15:33.650 --> 00:15:36.740
+and we initiate a Depth First Search
+from it, we better reset s.
+
+301
+00:15:36.740 --> 00:15:43.530
+And then we do the usual DFS ng
+starting from the source node i.
+
+302
+00:15:43.530 --> 00:15:47.850
+So for completeness let me just remind you
+what the depth first search sub-routine
+
+303
+00:15:47.850 --> 00:15:50.620
+looks like, so now we're given a graph and
+a starting node.
+
+304
+00:15:52.120 --> 00:15:56.706
+So the first time we see
+a node we mark it as explored.
+
+305
+00:15:56.706 --> 00:16:00.833
+And just a side note that once a node
+is marked explored, it's explored for
+
+306
+00:16:00.833 --> 00:16:02.876
+this entire indication of DFS loop.
+
+307
+00:16:02.876 --> 00:16:06.888
+Okay so even if this DFS from a given
+node i finishes, and then the outer for
+
+308
+00:16:06.888 --> 00:16:11.510
+loop marches on, and encounters i again,
+it's still going to be marked as explored.
+
+309
+00:16:12.750 --> 00:16:17.070
+Now one of our bookkeeping jobs
+is to keep track of from which
+
+310
+00:16:17.070 --> 00:16:20.620
+vertex did the DFS that
+discovered i get called.
+
+311
+00:16:20.620 --> 00:16:23.100
+So when i is first encountered,
+
+312
+00:16:23.100 --> 00:16:27.960
+we remember that s was the node
+from which this DFS originated.
+
+313
+00:16:27.960 --> 00:16:31.188
+And that by definition is the leader of i.
+
+314
+00:16:31.188 --> 00:16:35.350
+And then we do what we always do with
+depth first search, we immediately look at
+
+315
+00:16:35.350 --> 00:16:38.770
+the arcs going our of i and
+we try recursively DFS on any of those.
+
+316
+00:16:38.770 --> 00:16:41.380
+Although we don't bother to do it
+if we've already seen those nodes.
+
+317
+00:16:42.660 --> 00:16:44.460
+Now once this for loop has completed,
+
+318
+00:16:44.460 --> 00:16:47.710
+once we've examined every outgoing
+arc from i and for each node j.
+
+319
+00:16:47.710 --> 00:16:51.588
+Either we already saw it in the past or
+we've recursively explored from j and
+
+320
+00:16:51.588 --> 00:16:52.445
+have returned.
+
+321
+00:16:52.445 --> 00:16:55.496
+At the point,
+we call ourselves done with node i,
+
+322
+00:16:55.496 --> 00:16:58.120
+there's no more outgoing arc to explore.
+
+323
+00:16:58.120 --> 00:17:02.670
+We think of it being finished, remember
+t is the global variable that's keeping
+
+324
+00:17:02.670 --> 00:17:04.790
+track of how many nodes we're done with,
+so
+
+325
+00:17:04.790 --> 00:17:07.520
+we increment t because
+now we're done with i.
+
+326
+00:17:07.520 --> 00:17:13.000
+And we also remember that i was
+the t-th vertex with which we finished.
+
+327
+00:17:14.310 --> 00:17:17.416
+That is,
+we said i's finishing time to be t.
+
+328
+00:17:17.416 --> 00:17:21.420
+Because depth first search is guaranteed
+to visit every node exactly once,
+
+329
+00:17:21.420 --> 00:17:24.170
+and that therefore finish
+with every node exactly once.
+
+330
+00:17:24.170 --> 00:17:27.722
+This global counter t, well when the first
+node is finished it'll be value 1,
+
+331
+00:17:27.722 --> 00:17:30.320
+then when the next node gets
+finished I'll have value 2,
+
+332
+00:17:30.320 --> 00:17:31.927
+then it'll have value 3 and so on.
+
+333
+00:17:31.927 --> 00:17:35.010
+When the final node gets
+finished with it'll have value n.
+
+334
+00:17:35.010 --> 00:17:38.610
+So the finishing times of the nodes
+are going to be exactly the integers
+
+335
+00:17:38.610 --> 00:17:40.640
+from 1 to n.
+
+336
+00:17:40.640 --> 00:17:44.110
+Let's make this much more concrete
+by going through a careful example.
+
+337
+00:17:45.640 --> 00:17:47.690
+In fact, I think it'll be better for
+everybody if you,
+
+338
+00:17:47.690 --> 00:17:52.090
+yourself, traced through part of this
+algorithm on a concrete example.
+
+339
+00:17:52.090 --> 00:17:53.911
+So let me draw a nine node graph for you.
+
+340
+00:17:53.911 --> 00:17:58.401
+So to be clear, let's assume that
+we've already executed step one
+
+341
+00:17:58.401 --> 00:18:02.455
+of the algorithm, and
+we've already reversed the graph.
+
+342
+00:18:02.455 --> 00:18:06.675
+So that is, this blue graph that I've
+drawn on the slide, this is the reversal.
+
+343
+00:18:06.675 --> 00:18:08.008
+We've already reversed the arcs.
+
+344
+00:18:08.008 --> 00:18:11.175
+Moreover the nodes are labeled in
+some arbitrary way from 1 to 9.
+
+345
+00:18:11.175 --> 00:18:15.205
+Just assume these are how they show
+up in the node array for example and
+
+346
+00:18:15.205 --> 00:18:19.470
+remember in the DFS loop routine you're
+supposed to process the nodes from
+
+347
+00:18:20.520 --> 00:18:22.740
+top to bottom from n down to 1.
+
+348
+00:18:22.740 --> 00:18:23.710
+So my question for
+
+349
+00:18:23.710 --> 00:18:27.654
+you then is in the second step of
+the algorithm when we run DFS-Loop, and
+
+350
+00:18:27.654 --> 00:18:32.000
+we process the nodes from the highest name
+9 in order down to the lowest name 1.
+
+351
+00:18:32.000 --> 00:18:36.770
+What are the finishing times that we're
+going to compute as we run DFS-Loop?
+
+352
+00:18:36.770 --> 00:18:40.970
+Now, it is true that you can get different
+finishing times depending on the different
+
+353
+00:18:40.970 --> 00:18:45.580
+choices that the DFS-Loop has to make
+about which outgoing arc to explore next.
+
+354
+00:18:45.580 --> 00:18:49.310
+But I've given you four options for what
+the finishing times of the nodes 1,2,3,
+
+355
+00:18:49.310 --> 00:18:51.600
+all the way up to 9,
+respectively, might be.
+
+356
+00:18:51.600 --> 00:18:56.600
+And only one of these four could
+conceivably be an output of the finishing
+
+357
+00:18:56.600 --> 00:19:02.150
+time of DFS loop on this graph,
+so which one is it?
+
+358
+00:19:02.150 --> 00:19:05.321
+All right so
+the answer is the fourth option,
+
+359
+00:19:05.321 --> 00:19:09.827
+that is the only one of these four
+sets of finishing times that you
+
+360
+00:19:09.827 --> 00:19:13.927
+might see being computed by
+DFS-Loop on this blue graph.
+
+361
+00:19:13.927 --> 00:19:16.171
+So let's go ahead and
+trace through DFS-Loop and
+
+362
+00:19:16.171 --> 00:19:19.010
+see how we might get this
+set of finishing times.
+
+363
+00:19:19.010 --> 00:19:22.600
+So remember in the main loop we
+start from the highest node 9 and
+
+364
+00:19:22.600 --> 00:19:25.830
+then we descend down to the lowest node 1.
+
+365
+00:19:25.830 --> 00:19:28.995
+So we start by invoking
+DFS from the node 9.
+
+366
+00:19:30.180 --> 00:19:33.150
+So now from here there's only one
+outgoing arc, we have to go to so
+
+367
+00:19:33.150 --> 00:19:35.100
+we mark 9 as explored.
+
+368
+00:19:35.100 --> 00:19:37.500
+And then there's only one place we can go,
+we can go to 6.
+
+369
+00:19:37.500 --> 00:19:39.030
+So we mark 6 as explored.
+
+370
+00:19:39.030 --> 00:19:41.090
+Now there's two places we can go next,
+
+371
+00:19:41.090 --> 00:19:46.330
+we can either go to 3 or we can go to 8
+and in general DFS could do either one.
+
+372
+00:19:46.330 --> 00:19:49.480
+Now to generate this fourth
+set of finishing times
+
+373
+00:19:49.480 --> 00:19:52.640
+I'm going to need to assume
+that I go to 3 first okay?
+
+374
+00:19:52.640 --> 00:19:56.990
+So again, what DFS does, what we're
+assuming it does, it starts at 9, and
+
+375
+00:19:56.990 --> 00:20:01.420
+it has to go to 6, it marks those
+as explored, then it goes to 3.
+
+376
+00:20:01.420 --> 00:20:03.790
+It does not go to 8 first
+it goes to 3 first.
+
+377
+00:20:03.790 --> 00:20:06.624
+Now, from 3, there's only one
+outgoing arc which goes to 9, but 9,
+
+378
+00:20:06.624 --> 00:20:08.470
+we've already marked as explored.
+
+379
+00:20:08.470 --> 00:20:11.438
+So it's not going to re-explore 9,
+it's going to skip that arc.
+
+380
+00:20:11.438 --> 00:20:15.770
+Since that's 3's only outgoing arc,
+then that for loop completes, and
+
+381
+00:20:15.770 --> 00:20:18.510
+then 3 is the first node to finish.
+
+382
+00:20:18.510 --> 00:20:22.670
+So when we finish with 3, we increment t,
+it started at 0, now it's 1, and
+
+383
+00:20:22.670 --> 00:20:27.700
+we set the finishing time of 3 to be 1.
+
+384
+00:20:27.700 --> 00:20:30.104
+Just like we said it was in the example.
+
+385
+00:20:30.104 --> 00:20:32.980
+So, now we backtrack to 6.
+
+386
+00:20:32.980 --> 00:20:36.300
+Now we have another outgoing arc from
+6 to explore, so now we go to 8.
+
+387
+00:20:36.300 --> 00:20:39.770
+From 8 we have to go to 2, from 2 we
+have to go to 5, from 5 we have to go 8.
+
+388
+00:20:39.770 --> 00:20:42.820
+8 we've already seen, so
+then we're going to be done with 5,
+
+389
+00:20:42.820 --> 00:20:44.930
+because that was its only outgoing arc.
+
+390
+00:20:44.930 --> 00:20:46.720
+So then we increment t, now it's 2, and
+
+391
+00:20:46.720 --> 00:20:51.500
+the finishing time of 5 is
+going to be 2 as promised.
+
+392
+00:20:53.100 --> 00:20:57.120
+So now we've backtracked to 2,
+there's no more outgoing arcs from 2.
+
+393
+00:20:57.120 --> 00:21:02.440
+So 2 is going to be the third
+one that we finish as promised.
+
+394
+00:21:02.440 --> 00:21:04.975
+Then we finish with 8, so
+the finishing time for
+
+395
+00:21:04.975 --> 00:21:09.640
+8 is going to be the fourth
+node to be done as promised.
+
+396
+00:21:09.640 --> 00:21:14.440
+And now I back track back to 6, now at 6,
+
+397
+00:21:14.440 --> 00:21:17.740
+that's the fifth node to
+be completed as promised.
+
+398
+00:21:17.740 --> 00:21:23.059
+And finally we got all the way
+back to where we started at 9 and
+
+399
+00:21:23.059 --> 00:21:27.350
+9 is the sixth node to be
+completed as promised.
+
+400
+00:21:28.480 --> 00:21:32.130
+Now if we were computing those leaders all
+of these nodes would get the leader 9,
+
+401
+00:21:32.130 --> 00:21:34.380
+but again the leaders are only
+relevant for the second pass.
+
+402
+00:21:34.380 --> 00:21:37.090
+So we're just going to ignore
+the leaders as we're doing this tree so
+
+403
+00:21:37.090 --> 00:21:39.450
+we're just going to keep
+track of finishing times.
+
+404
+00:21:39.450 --> 00:21:44.310
+So now we're not done so all we did is we
+finished with the DFS that is invoked from
+
+405
+00:21:44.310 --> 00:21:50.080
+the node 9 and we found 6 of the nodes
+total in that depth first search.
+
+406
+00:21:50.080 --> 00:21:53.501
+So now we return to the outer for
+loop and we decrement i.
+
+407
+00:21:53.501 --> 00:21:56.130
+So it started at 9, we're done with that,
+now we go down to 8.
+
+408
+00:21:56.130 --> 00:21:59.750
+We say, have we already seen 8,
+yes 8's already explored so we skip it.
+
+409
+00:21:59.750 --> 00:22:03.020
+We go, we decrement i down to 7,
+we say have we already seen node 7?
+
+410
+00:22:03.020 --> 00:22:04.845
+No we have not okay?
+
+411
+00:22:04.845 --> 00:22:06.600
+7 is not yet explored.
+
+412
+00:22:06.600 --> 00:22:11.770
+So we invoke DFS now from node
+sever 7 has two outgoing arcs,
+
+413
+00:22:11.770 --> 00:22:13.950
+it can either go to 4 or it can go to 9.
+
+414
+00:22:13.950 --> 00:22:16.820
+Let's say it checks
+the outgoing arc to 9 first.
+
+415
+00:22:16.820 --> 00:22:18.260
+Now 9 we already explored.
+
+416
+00:22:18.260 --> 00:22:20.940
+Granted, that was an earlier part of
+the for loop, but we remember that.
+
+417
+00:22:20.940 --> 00:22:24.673
+We're going to keep track of who got
+explored on previous iterations of the for
+
+418
+00:22:24.673 --> 00:22:27.656
+loop so we don't bother to re-explore 9,
+so we skip that.
+
+419
+00:22:27.656 --> 00:22:30.698
+So now from 7 we have to go to 4,
+from 4 we have to go to 1,
+
+420
+00:22:30.698 --> 00:22:32.350
+from 1 we have to go back to 7.
+
+421
+00:22:32.350 --> 00:22:36.530
+7's already been exploratory backtrack and
+now we're done with 1.
+
+422
+00:22:36.530 --> 00:22:38.300
+So 1 is the next one
+we're completed with and
+
+423
+00:22:38.300 --> 00:22:43.240
+the finishing count of 1 is
+going to be 7 as promised.
+
+424
+00:22:43.240 --> 00:22:46.320
+We backtrack to 4, there's no more
+outgoing arcs from 4 to explore,
+
+425
+00:22:46.320 --> 00:22:48.629
+so that's going to be
+the eighth one to finish.
+
+426
+00:22:49.850 --> 00:22:54.491
+As promised, and
+the last one to finish is poor node 7.
+
+427
+00:22:54.491 --> 00:22:58.253
+It is last.
+
+428
+00:22:58.253 --> 00:23:02.686
+So that would be an example of how
+the DFS-Loop subroutine computes finishing
+
+429
+00:23:02.686 --> 00:23:04.750
+times on a reversed graph.
+
+430
+00:23:04.750 --> 00:23:08.860
+So now, let's work through the second pass
+on the forward version of the graph using
+
+431
+00:23:08.860 --> 00:23:10.300
+the same example.
+
+432
+00:23:10.300 --> 00:23:14.040
+Now remember, the point of the first pass
+is to compute a magical ordering, and
+
+433
+00:23:14.040 --> 00:23:16.720
+the magical ordering is
+these finishing times.
+
+434
+00:23:16.720 --> 00:23:18.800
+So now we're going to throw
+out the original node names,
+
+435
+00:23:18.800 --> 00:23:23.530
+and we're going to replace the node names
+in blue by the finishing times in red.
+
+436
+00:23:23.530 --> 00:23:25.200
+We're also going to work
+with the original graphs,
+
+437
+00:23:25.200 --> 00:23:28.170
+which means we have to reverse the arcs
+back to where they were originally.
+
+438
+00:23:28.170 --> 00:23:31.560
+So those are the two changes you're
+going to see when I redraw this graph.
+
+439
+00:23:31.560 --> 00:23:34.420
+First of all,
+all the arcs were reverse orientation.
+
+440
+00:23:34.420 --> 00:23:38.120
+Second of all, all of nodes will
+change names from their original ones
+
+441
+00:23:38.120 --> 00:23:40.710
+to the finishing times
+that we just computed.
+
+442
+00:23:43.360 --> 00:23:45.869
+So here's our new graph
+with the new node names and
+
+443
+00:23:45.869 --> 00:23:48.390
+all of the arcs with their
+orientation reversed.
+
+444
+00:23:48.390 --> 00:23:50.568
+And now we run DFS again on this graph.
+
+445
+00:23:50.568 --> 00:23:55.064
+And again we're going to process the nodes
+in order from the highest label 9 down to
+
+446
+00:23:55.064 --> 00:23:56.235
+the lowest label 1.
+
+447
+00:23:56.235 --> 00:23:59.426
+Moreover, we don't need to compute
+finishing times in the second pass,
+
+448
+00:23:59.426 --> 00:24:01.180
+we only need to do that in the first pass.
+
+449
+00:24:01.180 --> 00:24:05.837
+In the second pass we have to keep track
+of the leaders, and remember the leader of
+
+450
+00:24:05.837 --> 00:24:10.510
+a vertex Is the vertex from which DFS was
+called that first discovered that node.
+
+451
+00:24:10.510 --> 00:24:12.333
+All right, so what's going to happen?
+
+452
+00:24:12.333 --> 00:24:16.803
+Well, in the outer for loop, again,
+we start with i equal to nine, and
+
+453
+00:24:16.803 --> 00:24:18.753
+we invoke DFS from the node 9.
+
+454
+00:24:22.492 --> 00:24:25.289
+So, that's going to be the current
+leader because that's where
+
+455
+00:24:25.289 --> 00:24:27.450
+the current DFS got initiated.
+
+456
+00:24:27.450 --> 00:24:28.790
+Now, from 9, there's only one choice.
+
+457
+00:24:28.790 --> 00:24:29.590
+We have to go to 7.
+
+458
+00:24:29.590 --> 00:24:31.950
+From 7, there's only one choice,
+we have to go to 8.
+
+459
+00:24:31.950 --> 00:24:34.180
+From 8, there's only one choice,
+we have to go back to 9.
+
+460
+00:24:34.180 --> 00:24:37.590
+And then, 9's already been seen,
+so we backtrack.
+
+461
+00:24:37.590 --> 00:24:40.525
+We go back to 8, we go back to 7,
+we go back to 9, and that's it.
+
+462
+00:24:40.525 --> 00:24:43.482
+So, when we invoke DFS for node 9,
+
+463
+00:24:43.482 --> 00:24:49.012
+the only things that we encounter are,
+the nodes 7, 8, and 9.
+
+464
+00:24:49.012 --> 00:24:53.550
+And these are all going to be
+given the leader vertex 9.
+
+465
+00:24:53.550 --> 00:24:56.710
+You will notice that this is indeed one
+
+466
+00:24:56.710 --> 00:24:59.820
+of the strongly connected
+components of the graph.
+
+467
+00:24:59.820 --> 00:25:04.320
+We just sort of found it with this
+indication of DFS from the node 9.
+
+468
+00:25:04.320 --> 00:25:07.170
+So, now we go back to the outer for loop.
+
+469
+00:25:07.170 --> 00:25:09.626
+And we say, okay, let's go to node 8,
+have we already seen 8?
+
+470
+00:25:09.626 --> 00:25:10.287
+Yes.
+
+471
+00:25:10.287 --> 00:25:11.867
+What about 7, have we already seen 7?
+
+472
+00:25:11.867 --> 00:25:12.865
+Yes.
+
+473
+00:25:12.865 --> 00:25:13.505
+What about 6?
+
+474
+00:25:13.505 --> 00:25:14.970
+Have we have already seen 6?
+
+475
+00:25:14.970 --> 00:25:18.684
+We have not, we have not yet
+discovered 6, so
+
+476
+00:25:18.684 --> 00:25:24.230
+we invoke DFS from node 6,
+we reset the global source vortex s to 6.
+
+477
+00:25:24.230 --> 00:25:26.980
+From 6, we can go to 9, we can go to 1.
+
+478
+00:25:26.980 --> 00:25:28.708
+So, let's say we explore 9 first.
+
+479
+00:25:28.708 --> 00:25:32.080
+Well, we already saw 9 in an earlier
+iteration in the for loop, so
+
+480
+00:25:32.080 --> 00:25:36.336
+we don't explore it again, so, we don't
+discover 9 now, so we backtrack to 6.
+
+481
+00:25:36.336 --> 00:25:39.090
+We go to 1, from 1, we have to go to 5,
+and 5 we have to go to 6,
+
+482
+00:25:39.090 --> 00:25:41.470
+and then we start backtracking again.
+
+483
+00:25:41.470 --> 00:25:45.157
+So, the only new nodes that we
+encounter when we invoke DFS
+
+484
+00:25:45.157 --> 00:25:48.330
+from the node 6 are the vertices 6,
+1, and 5.
+
+485
+00:25:48.330 --> 00:25:53.500
+And all of these will
+have a leader vertex of
+
+486
+00:25:53.500 --> 00:25:58.690
+6 because that's where we called DFS from
+when we first discovered these 3 nodes.
+
+487
+00:25:58.690 --> 00:26:05.140
+And you'll notice, this is another
+FCC of this directed graph.
+
+488
+00:26:05.140 --> 00:26:07.900
+So, we invoke DFS again,
+not from a new node, the new node 6.
+
+489
+00:26:07.900 --> 00:26:08.987
+And what it discovered,
+
+490
+00:26:08.987 --> 00:26:11.591
+the new nodes it discovered was
+exactly an FCC of the graph.
+
+491
+00:26:11.591 --> 00:26:14.178
+Nothing more, nothing less.
+
+492
+00:26:14.178 --> 00:26:17.853
+So, now we return to the outer for loop,
+we go to node 5, have we already seen 5?
+
+493
+00:26:17.853 --> 00:26:18.631
+Yes.
+
+494
+00:26:18.631 --> 00:26:19.897
+Have we already seen 4?
+
+495
+00:26:19.897 --> 00:26:22.050
+No, we haven't seen 4 yet.
+
+496
+00:26:22.050 --> 00:26:24.044
+So, now we invoke DFS from 4.
+
+497
+00:26:24.044 --> 00:26:26.421
+Again, we could try to explore 5,
+but we've seen that before,
+
+498
+00:26:26.421 --> 00:26:28.080
+we're not going to explore it again.
+
+499
+00:26:28.080 --> 00:26:30.710
+So from 4 then, we have to go to 2,
+from 2 we have to go to 3,
+
+500
+00:26:30.710 --> 00:26:34.150
+from 3 have to go back to 4, and then,
+after all the backtracking, we're done.
+
+501
+00:26:34.150 --> 00:26:37.916
+So, the final call to DFS
+will be from the node 4.
+
+502
+00:26:40.157 --> 00:26:43.691
+And, that DFS will discover precisely,
+newly discover,
+
+503
+00:26:43.691 --> 00:26:45.817
+precisely the nodes 2, 3 and 4.
+
+504
+00:26:45.817 --> 00:26:50.662
+They will all have the leader vertex
+4 because that was where this DFS was
+
+505
+00:26:50.662 --> 00:26:51.688
+called from.
+
+506
+00:26:51.688 --> 00:26:54.620
+It's true we'll go back to the for
+loop and we'll check have we seen 3 yet?
+
+507
+00:26:54.620 --> 00:26:55.653
+Yes.
+Have we seen 2 yet?
+
+508
+00:26:55.653 --> 00:26:56.176
+Yes.
+
+509
+00:26:56.176 --> 00:26:57.013
+Have we seen 1 yet?
+
+510
+00:26:57.013 --> 00:26:59.670
+Yes, and then the whole thing completes.
+
+511
+00:26:59.670 --> 00:27:01.258
+And, what we see is that,
+
+512
+00:27:01.258 --> 00:27:05.961
+using the finishing times computed from
+that first depth first search pass,
+
+513
+00:27:05.961 --> 00:27:10.519
+somehow the strongly connected components
+of this graph just showed up and
+
+514
+00:27:10.519 --> 00:27:14.454
+presented themselves to us and
+one at a time on a silver platter.
+
+515
+00:27:14.454 --> 00:27:18.739
+Every time we invoke DFS,
+the nodes we discovered newly were
+
+516
+00:27:18.739 --> 00:27:22.870
+precisely one of the FCCs,
+nothing more, nothing less.
+
+517
+00:27:22.870 --> 00:27:25.030
+And, that's really what's
+going on in this algorithm,
+
+518
+00:27:25.030 --> 00:27:26.760
+turns out this was true in general.
+
+519
+00:27:26.760 --> 00:27:30.740
+The first pass, DFS on the reverse graph,
+computes finishing times so
+
+520
+00:27:30.740 --> 00:27:35.570
+that if you then process nodes according
+to decreased order in finishing times.
+
+521
+00:27:35.570 --> 00:27:37.260
+In the second pass,
+
+522
+00:27:37.260 --> 00:27:42.430
+each invocation to DFS will discover
+one new FCC and exactly one FCC.
+
+523
+00:27:42.430 --> 00:27:44.820
+So, they'll just present
+themselves to you,
+
+524
+00:27:44.820 --> 00:27:48.601
+one per DFS call in that second pass' for
+loop.
+
+525
+00:27:49.700 --> 00:27:52.180
+This is, of course, merely an example.
+
+526
+00:27:52.180 --> 00:27:56.330
+You should not just take a single example
+as proof that this algorithm always works.
+
+527
+00:27:56.330 --> 00:27:58.730
+I will give you a general
+argument in the next video.
+
+528
+00:27:58.730 --> 00:28:01.800
+But hopefully there is at
+least a plausibility arcing.
+
+529
+00:28:01.800 --> 00:28:05.160
+No longer does this three-step
+algorithm seem totally insane.
+
+530
+00:28:05.160 --> 00:28:08.300
+And maybe you could imagine,
+perhaps it works.
+
+531
+00:28:08.300 --> 00:28:10.760
+At least there's some principles going on.
+
+532
+00:28:10.760 --> 00:28:13.890
+Where you first compute the right
+ordering to process the nodes, and
+
+533
+00:28:13.890 --> 00:28:19.950
+then the second pass peels off FCCs one
+at a time like layers from an onion.
+
+534
+00:28:19.950 --> 00:28:23.040
+One thing that I hope is pretty clear
+is that this algorithm, correct or
+
+535
+00:28:23.040 --> 00:28:24.640
+not, is blazingly fast.
+
+536
+00:28:26.420 --> 00:28:29.708
+Pretty much all you do is
+two depth per searches.
+
+537
+00:28:29.708 --> 00:28:34.003
+And, since depth per search as we've
+seen in the past, runs in time linear in
+
+538
+00:28:34.003 --> 00:28:37.721
+the size of the graph, so
+does Kosaraju's two-pass algorithm.
+
+539
+00:28:37.721 --> 00:28:41.298
+There are a couple subtleties and
+I encourage you to think about this and
+
+540
+00:28:41.298 --> 00:28:45.247
+you'll be forced to think about this in
+the program and project for week four.
+
+541
+00:28:45.247 --> 00:28:47.342
+So, for example, in the second pass,
+
+542
+00:28:47.342 --> 00:28:51.260
+how do you process the nodes in
+decreasing order of finishing time?
+
+543
+00:28:51.260 --> 00:28:53.580
+You don't want to sort the nodes
+by their finishing time,
+
+544
+00:28:53.580 --> 00:28:55.170
+because that would take n log and time.
+
+545
+00:28:55.170 --> 00:28:58.230
+So, you need to make sure that
+you remember in the first pass,
+
+546
+00:28:58.230 --> 00:29:00.930
+that you sort of remember the nodes
+in a way that you can just do
+
+547
+00:29:00.930 --> 00:29:02.480
+a linear scan through
+them in a second pass.
+
+548
+00:29:02.480 --> 00:29:05.740
+So, there are some details, but, if your
+intuition is that this is really just
+
+549
+00:29:05.740 --> 00:29:08.899
+double DFS properly implemented,
+that's pretty much exactly right.
+
+550
+00:29:10.020 --> 00:29:12.180
+So, having spelled out
+the full implementation,
+
+551
+00:29:12.180 --> 00:29:14.340
+argued that it's definitely
+a linear time algorithm and
+
+552
+00:29:14.340 --> 00:29:17.360
+given at least a plausibility
+argument via an example that it
+
+553
+00:29:17.360 --> 00:29:21.020
+might conceivably be correct,
+let's now turn to the general argument.

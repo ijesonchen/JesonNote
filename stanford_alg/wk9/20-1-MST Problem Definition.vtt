@@ -1,0 +1,891 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:03.630
+So in this sequence of videos, we're 
+going to apply the greedy algorithm 
+
+2
+00:00:03.630 --> 00:00:07.663
+design paradigm to a fundamental graph 
+problem, the problem of computing minimum 
+
+3
+00:00:07.663 --> 00:00:10.033
+spanning trees. 
+The MST problem is a really fun 
+
+4
+00:00:10.033 --> 00:00:13.663
+playground for greedy algorithm design, 
+because it's the singular problem in 
+
+5
+00:00:13.663 --> 00:00:17.192
+which pretty much any greedy algorithm 
+you come up with seems to work. 
+
+6
+00:00:17.192 --> 00:00:20.872
+So we'll talk about a couple of the 
+famous ones, show why they're correct, 
+
+7
+00:00:20.872 --> 00:00:24.603
+and show how they can be implemented 
+using suitable data structures to be 
+
+8
+00:00:24.603 --> 00:00:27.288
+blazingly fast. 
+So, I'll give you the formal problem 
+
+9
+00:00:27.288 --> 00:00:31.412
+definition on the next slide but first 
+let me just say informally what it is 
+
+10
+00:00:31.412 --> 00:00:35.268
+we're trying to accomplish. 
+Essentially, what we want do is connect a 
+
+11
+00:00:35.268 --> 00:00:37.839
+bunch of points together as cheaply as 
+possible. 
+
+12
+00:00:37.839 --> 00:00:41.963
+And, as usual with an abstract problem 
+the objects can mean something very 
+
+13
+00:00:41.963 --> 00:00:44.320
+literal. 
+So maybe the points we're trying to 
+
+14
+00:00:44.320 --> 00:00:48.444
+connect are servers in some computer 
+network, or it could represent something 
+
+15
+00:00:48.444 --> 00:00:51.336
+more abstract. 
+Like maybe we have a model of documents 
+
+16
+00:00:51.336 --> 00:00:54.443
+like Web Pages where we represent them as 
+points in space. 
+
+17
+00:00:54.443 --> 00:00:57.100
+And we want to somehow connect those 
+together. 
+
+18
+00:00:57.100 --> 00:01:01.249
+Now the main reason I'm going to spend 
+time on the minimum expenditure problem 
+
+19
+00:01:01.249 --> 00:01:04.082
+is pedagogical. 
+It's just a great problem for sharpening 
+
+20
+00:01:04.082 --> 00:01:07.421
+your skills with greedy algoritum design 
+and proof of correctness. 
+
+21
+00:01:07.421 --> 00:01:11.621
+It'll also give us another opportunity to 
+see the beautiful interplay between data 
+
+22
+00:01:11.621 --> 00:01:14.202
+structures and fast limitation of graph 
+algorithms. 
+
+23
+00:01:14.202 --> 00:01:17.541
+That said that minimum expenditure 
+problem does have applications. 
+
+24
+00:01:17.541 --> 00:01:21.639
+One very cool one is in clustering, and 
+that I'll talk about in detail in a later 
+
+25
+00:01:21.639 --> 00:01:25.434
+video, it also comes up in networking. 
+So if you do a web search on spanning 
+
+26
+00:01:25.434 --> 00:01:28.800
+tree protocol you'll also find some 
+information about that. 
+
+27
+00:01:28.800 --> 00:01:32.611
+So as I said at the beginning the minimum 
+spanning tree problem is remarkable in 
+
+28
+00:01:32.611 --> 00:01:36.281
+that it doesn't just admit one greedy 
+algorithm that's correct, but in fact it 
+
+29
+00:01:36.281 --> 00:01:38.680
+admits multiple greedy algorithms that 
+are correct. 
+
+30
+00:01:38.680 --> 00:01:41.974
+we're going to talk about two of them, 
+the two most well known ones. 
+
+31
+00:01:41.974 --> 00:01:44.680
+But there are even some others believe it 
+or not. 
+
+32
+00:01:44.680 --> 00:01:49.219
+So the first one we're going to discuss 
+beginning in the next video is Prim's MST 
+
+33
+00:01:49.219 --> 00:01:51.978
+algorithm. 
+This dates back over 50 years to 1957. 
+
+34
+00:01:51.978 --> 00:01:56.805
+in fact as you'll see Prim's algorithm 
+shows a remarkable number of similarities 
+
+35
+00:01:56.805 --> 00:02:01.287
+with Dijkstra's shortest path algorithm. 
+So you might not be surprised to know 
+
+36
+00:02:01.287 --> 00:02:05.540
+that Dijkstra also independently had 
+discovered this algorithm a couple of 
+
+37
+00:02:05.540 --> 00:02:08.167
+years later. 
+But in fact it was only noticed much 
+
+38
+00:02:08.167 --> 00:02:12.358
+later that this exact same algorithm had 
+been first discovered over 25 years 
+
+39
+00:02:12.358 --> 00:02:16.495
+earlier by a mathematician named Jarnick. 
+For that reason you'll sometimes hear 
+
+40
+00:02:16.495 --> 00:02:19.743
+this called Jarnick's algorithm or the 
+Prim-Jarnick algorithm. 
+
+41
+00:02:19.743 --> 00:02:24.143
+for gravity and to be consistent with 
+some of the main text books in the area 
+
+42
+00:02:24.143 --> 00:02:27.600
+I'm just going to call this Prim's 
+algorithm throughout the lectures. 
+
+43
+00:02:27.600 --> 00:02:32.338
+The other algorithm we're going to cover 
+which is also rightfully famous is 
+
+44
+00:02:32.338 --> 00:02:36.266
+Kruskal's MST algorithm. 
+As far as I know this was indeed first 
+
+45
+00:02:36.266 --> 00:02:41.191
+discovered by Kruskal roughly the same 
+time as Prim was doing his algorithm in 
+
+46
+00:02:41.191 --> 00:02:44.308
+the mid 50s. 
+And in what sense do I say these 
+
+47
+00:02:44.308 --> 00:02:48.138
+algorithms are blazingly fast? 
+Well, they run in almost linear time, 
+
+48
+00:02:48.138 --> 00:02:50.633
+linear in the number of edges of the 
+graph. 
+
+49
+00:02:50.633 --> 00:02:54.985
+Specifically we'll see how using 
+appropriate data structures will get each 
+
+50
+00:02:54.985 --> 00:02:59.510
+of them to run in time big O of M log N, 
+where M is the number of edges in the 
+
+51
+00:02:59.510 --> 00:03:02.470
+graph, and N is the number of vertices in 
+the graph. 
+
+52
+00:03:02.470 --> 00:03:06.384
+We'll employ data structures to speed up 
+Prim's algorithm in exactly the same way 
+
+53
+00:03:06.384 --> 00:03:10.299
+we did for Dijkstra's algorithm, that is 
+we'll be using the heap data structure, 
+
+54
+00:03:10.299 --> 00:03:14.119
+One thing that's cool about Crystal's 
+algorithm is it'll give us an opportunity 
+
+55
+00:03:14.119 --> 00:03:17.938
+to study a new data structure, mainly the 
+union fine data structure and that's a 
+
+56
+00:03:17.938 --> 00:03:20.660
+lot of fun to think about, in its own 
+right, as you'll see. 
+
+57
+00:03:20.660 --> 00:03:24.757
+So to put this amazing running time on 
+perspective I want to emphasize that only 
+
+58
+00:03:24.757 --> 00:03:28.232
+is it awesome in the sense it's you know, 
+barely, it's almost linear. 
+
+59
+00:03:28.232 --> 00:03:32.278
+It takes almost barely more time to 
+compute the spanning tree than it does to 
+
+60
+00:03:32.278 --> 00:03:35.390
+read the input graph. 
+Reading the input graph alone, remember 
+
+61
+00:03:35.390 --> 00:03:37.205
+would take linear time. 
+O of M time. 
+
+62
+00:03:37.205 --> 00:03:40.681
+But more over, graphs can have an 
+enormous number of spanning trees. 
+
+63
+00:03:40.681 --> 00:03:44.000
+An exponential number. 
+So some of these algorithms are honing in 
+
+64
+00:03:44.000 --> 00:03:48.253
+really quickly on a needle in a haystack. 
+There's no way they have time to look at 
+
+65
+00:03:48.253 --> 00:03:52.247
+all these spanning tees, and yet they 
+find the one which is the best which is 
+
+66
+00:03:52.247 --> 00:03:56.800
+optimal amongst all of them. 
+How do these seemingly magical algorithms 
+
+67
+00:03:56.800 --> 00:03:59.822
+do it? 
+Well, to discuss the details let's start 
+
+68
+00:03:59.822 --> 00:04:04.620
+by formalizing the Minimum Spanning Tree, 
+or MST problem on the next slot. 
+
+69
+00:04:07.560 --> 00:04:14.094
+So in the MSD problem this is a graph 
+problem so the main part of the input is 
+
+70
+00:04:14.094 --> 00:04:20.140
+a graph comprising verticies and edges. 
+I do want to emphasize for the MST 
+
+71
+00:04:20.140 --> 00:04:22.957
+problem we are be considering only 
+undirected graphs. 
+
+72
+00:04:22.957 --> 00:04:27.157
+This is different notice, than when we 
+discussed shortest-path problems in Part 
+
+73
+00:04:27.157 --> 00:04:30.080
+one of the course. 
+There we worked with directed graphs. 
+
+74
+00:04:30.080 --> 00:04:33.323
+There is an analogous problem to the 
+[INAUDIBLE] signature problem for 
+
+75
+00:04:33.323 --> 00:04:36.300
+directed graphs. 
+It's often called the optimal branching 
+
+76
+00:04:36.300 --> 00:04:38.904
+problem. 
+And there are fast algorithms for it, but 
+
+77
+00:04:38.904 --> 00:04:42.466
+those algorithms are just slightly beyond 
+the scope of this course. 
+
+78
+00:04:42.466 --> 00:04:45.868
+So we're not going to cover it. 
+We're going to discuss only undirected 
+
+79
+00:04:45.868 --> 00:04:48.420
+graphs, and then minimum spanning trees 
+for them. 
+
+80
+00:04:49.540 --> 00:04:53.364
+Now, whenever you talk about graph 
+problems, you need to talk about, how is 
+
+81
+00:04:53.364 --> 00:04:56.874
+the graph actually represented. 
+So that's something we discussed at 
+
+82
+00:04:56.874 --> 00:04:59.861
+length in part one. 
+If you don't remember, I suggest going 
+
+83
+00:04:59.861 --> 00:05:02.690
+back and reviewing the video on graph 
+representations. 
+
+84
+00:05:02.690 --> 00:05:06.672
+For the MST problem, we're going to 
+assume that the graph is given as an 
+
+85
+00:05:06.672 --> 00:05:09.291
+adjacency list. 
+That means, we're given an array of 
+
+86
+00:05:09.291 --> 00:05:12.802
+vertices, an array of edges. 
+And we have pointers, wiring vertices to 
+
+87
+00:05:12.802 --> 00:05:16.260
+their incident edges and wiring edges 
+back to their two endpoints. 
+
+88
+00:05:17.460 --> 00:05:21.346
+In addition to the graph of self the 
+input includes a cost, for each of the 
+
+89
+00:05:21.346 --> 00:05:25.284
+edges, we're going to use the notation C 
+sebies of note the cost of a edge, E. 
+
+90
+00:05:25.284 --> 00:05:28.807
+And in another contrast, to are 
+discussion of shortest path problems, 
+
+91
+00:05:28.807 --> 00:05:32.952
+we're actually not going to care if the 
+edge cost are positive or negative, they 
+
+92
+00:05:32.952 --> 00:05:36.268
+can be any number whatsoever. 
+So no prizes for guessing what the 
+
+93
+00:05:36.268 --> 00:05:40.414
+outputs supposed to be, it's right there 
+in the problem definition, the output is 
+
+94
+00:05:40.414 --> 00:05:44.455
+supposed to be a minimum cost spanning 
+tree of the graph, but let's drill down 
+
+95
+00:05:44.455 --> 00:05:48.900
+and explain exactly what we mean by that. 
+So first of all what do we mean by the 
+
+96
+00:05:48.900 --> 00:05:53.482
+cost of a tree or generally the cost of a 
+sub graph, as a subset of the edges. 
+
+97
+00:05:53.482 --> 00:05:58.243
+Well we're just going to be looking at 
+summing up the edges in the tree that we 
+
+98
+00:05:58.243 --> 00:06:01.715
+output. 
+Now the other question is what do I mean 
+
+99
+00:06:01.715 --> 00:06:06.556
+by a tree that spans all vertices? 
+So let me tell you exactly what this 
+
+100
+00:06:06.556 --> 00:06:11.942
+means, the sub graph T should have two 
+properties, first of all there can not be 
+
+101
+00:06:11.942 --> 00:06:16.060
+any cycles, there can not be any loops in 
+this tree. 
+
+102
+00:06:16.060 --> 00:06:21.522
+And by spanning all vertices, what I mean 
+is that this sub graph is what's called 
+
+103
+00:06:21.522 --> 00:06:24.826
+connected. 
+That is, there's a path, using the edges 
+
+104
+00:06:24.826 --> 00:06:28.535
+and t, from any vertex of the graph to 
+any other vertex. 
+
+105
+00:06:28.535 --> 00:06:32.520
+That's what it means to span all of the 
+vertices. 
+
+106
+00:06:32.520 --> 00:06:37.804
+So for example, consider the following 
+graph with four vertices and five edges. 
+
+107
+00:06:37.804 --> 00:06:43.089
+I've labeled each of the five edges with 
+a cost, which in this case, is just an 
+
+108
+00:06:43.089 --> 00:06:47.764
+integer between one and five. 
+So, let's look at some example subgraphs, 
+
+109
+00:06:47.764 --> 00:06:52.080
+let's start with the three edges, A, B, 
+B, D and CD. 
+
+110
+00:06:52.080 --> 00:06:55.241
+This sub-graph satisfies properties one 
+and two. 
+
+111
+00:06:55.241 --> 00:07:00.180
+That is, it has no cycles, there's no 
+loops and it spans all of the vertices. 
+
+112
+00:07:00.180 --> 00:07:05.383
+If you start at any one of these four 
+vertices, you can get to any of the other 
+
+113
+00:07:05.383 --> 00:07:10.586
+four vertices by using only red edges. 
+So in that sense, this red sub-graph is a 
+
+114
+00:07:10.586 --> 00:07:13.813
+spanning tree. 
+However, it is not the minimum cost 
+
+115
+00:07:13.813 --> 00:07:17.370
+spanning tree. 
+There is another spanning tree which is 
+
+116
+00:07:17.370 --> 00:07:22.310
+even cheaper, has a smaller sum of edge 
+costs, namely the edges AC, AB, and BD. 
+
+117
+00:07:22.310 --> 00:07:28.455
+This also has no cycles and it's also 
+connected but the sum of the edge cost is 
+
+118
+00:07:28.455 --> 00:07:33.371
+only seven, smaller than the eight of the 
+previous spanning tree. 
+
+119
+00:07:33.371 --> 00:07:38.978
+In fact, this pixograph is the unique 
+minimum spanning tree of this graph. 
+
+120
+00:07:38.978 --> 00:07:45.124
+There is a sub graph that has three edges 
+which has an even smaller sum, of edge 
+
+121
+00:07:45.124 --> 00:07:50.208
+costs, namely the triangle AB, BD and AD. 
+But this light blue sub graph, this 
+
+122
+00:07:50.208 --> 00:07:54.028
+triangle, is not a spanning tree. 
+In fact, it fails on both counts. 
+
+123
+00:07:54.028 --> 00:07:56.713
+It does obviously have a cycle. 
+It has a loop. 
+
+124
+00:07:56.713 --> 00:08:01.070
+That's, what it is by definition. 
+It's also not connected, so there's no 
+
+125
+00:08:01.070 --> 00:08:05.665
+way to get from C, the vertex, to any of 
+the other three vertices by following 
+
+126
+00:08:05.665 --> 00:08:09.186
+only light blue edges. 
+It's disconnected, and so it fails 
+
+127
+00:08:09.186 --> 00:08:12.827
+property one as well. 
+So the MST problem in general is you're 
+
+128
+00:08:12.827 --> 00:08:17.064
+given it under a graph, like, for 
+example, this four note, five edge graph, 
+
+129
+00:08:17.064 --> 00:08:20.454
+or presumably. 
+something much larger and an interesting 
+
+130
+00:08:20.454 --> 00:08:24.866
+problem and your suppose to quickly 
+identify the minimum spanding tree like 
+
+131
+00:08:24.866 --> 00:08:29.235
+in this example the pink subgraph. 
+So what I want to do next is something 
+
+132
+00:08:29.235 --> 00:08:33.439
+you're probably quite accustomed to me 
+doing by this point, is I want to make a 
+
+133
+00:08:33.439 --> 00:08:36.525
+couple of mild simplifying assumptions 
+just among friends. 
+
+134
+00:08:36.525 --> 00:08:40.941
+So these assumptions are not important in 
+the sense that all of the conclusions of 
+
+135
+00:08:40.941 --> 00:08:44.985
+these lectures will remain true, will 
+remain valid even if these assumptions 
+
+136
+00:08:44.985 --> 00:08:48.231
+are violated but it'll make the lectures 
+a little bit easier. 
+
+137
+00:08:48.231 --> 00:08:52.329
+It'll allow us to focus on the main 
+points and not get distracted by less 
+
+138
+00:08:52.329 --> 00:08:56.266
+relevant details so here are the two 
+assumptions that we're going to make 
+
+139
+00:08:56.266 --> 00:08:59.740
+throughout all of the lectures on minimum 
+spanning trees. 
+
+140
+00:08:59.740 --> 00:09:03.989
+The first assumption we're going to make 
+is that the input graph G is itself 
+
+141
+00:09:03.989 --> 00:09:06.858
+connected. 
+That is G contains a path from any vertex 
+
+142
+00:09:06.858 --> 00:09:09.893
+to any other vertex. 
+So why am I making this assumption? 
+
+143
+00:09:09.893 --> 00:09:14.032
+Well if this assumptions violated then 
+the problem isn't even well defined. 
+
+144
+00:09:14.032 --> 00:09:17.950
+If the graph isn't connected then 
+certainly none of it's subgraphs are 
+
+145
+00:09:17.950 --> 00:09:23.400
+connected so it has no spanning trees and 
+it's not clear what we're trying to do. 
+
+146
+00:09:23.400 --> 00:09:26.605
+So, those of you who still remember the 
+stuff we covered in part one in 
+
+147
+00:09:26.605 --> 00:09:29.450
+particular, graph search. 
+Should recognize that this condition's 
+
+148
+00:09:29.450 --> 00:09:32.927
+easy to check in a pre-processing step. 
+Just run something like breadth first 
+
+149
+00:09:32.927 --> 00:09:36.042
+search or depth first search. 
+Remember, we know how to implement those 
+
+150
+00:09:36.042 --> 00:09:38.435
+in linear time. 
+And those will, in particular, tell you 
+
+151
+00:09:38.435 --> 00:09:40.558
+whether or not the input graph is 
+connected. 
+
+152
+00:09:40.558 --> 00:09:43.809
+Now, another thing you might be wondering 
+is, suppose it was disconnected. 
+
+153
+00:09:43.809 --> 00:09:46.021
+Then what? 
+Should be really just sort of throw up 
+
+154
+00:09:46.021 --> 00:09:48.820
+our hands and give up? 
+You can define a version of the minimum 
+
+155
+00:09:48.820 --> 00:09:51.349
+spanning tree problem. 
+A more general one called minimum 
+
+156
+00:09:51.349 --> 00:09:53.742
+spanning forest. 
+Where, basically you want the minimum 
+
+157
+00:09:53.742 --> 00:09:56.090
+cost sub graph that spans as much stuff 
+as possible. 
+
+158
+00:09:56.090 --> 00:10:00.115
+Essentially, it's responsible for 
+computing a spanning tree within each of 
+
+159
+00:10:00.115 --> 00:10:02.478
+the connected components of the original 
+graph. 
+
+160
+00:10:02.478 --> 00:10:05.796
+And using the algorithms I'll show you 
+here, Prim's algorithm, Kruskal's 
+
+161
+00:10:05.796 --> 00:10:09.517
+algorithm, they're easily modified to 
+solve the more general problem with 
+
+162
+00:10:09.517 --> 00:10:13.187
+disconnected input graphs as well. 
+But again, for simplicity among friends, 
+
+163
+00:10:13.187 --> 00:10:17.260
+let's just focus on the connected graph 
+case that contains all of the main ideas. 
+
+164
+00:10:17.260 --> 00:10:21.705
+Our second standing assumption throughout 
+all of the minimum of spanning tree 
+
+165
+00:10:21.705 --> 00:10:25.638
+lectures will be that in the input graph 
+the edge costs are distinct. 
+
+166
+00:10:25.638 --> 00:10:30.197
+So you're already use to this sort of no 
+ties kind of assumption from our foray 
+
+167
+00:10:30.197 --> 00:10:34.301
+into scheduling algorithms, and we're 
+going to do something similar here. 
+
+168
+00:10:34.301 --> 00:10:38.006
+Now again this assumption is not 
+important in the sense that the 
+
+169
+00:10:38.006 --> 00:10:41.539
+algorithms that we cover prims algorithm 
+crustgrals algorithm. 
+
+170
+00:10:41.539 --> 00:10:46.042
+They remain correct even if the input has 
+equal cost edges, irrespective of how 
+
+171
+00:10:46.042 --> 00:10:49.234
+ties are broken. 
+So the algorithms are correct as widely 
+
+172
+00:10:49.234 --> 00:10:50.771
+as you would want. 
+That's it. 
+
+173
+00:10:50.771 --> 00:10:54.299
+I'm not going to actually prove for you 
+that they are correct with ties. 
+
+174
+00:10:54.299 --> 00:10:58.186
+Remember we had our scheduling, 
+application it was a little bit easier to 
+
+175
+00:10:58.186 --> 00:11:02.072
+get a proof of correctness without ties, 
+I gave you that, and then optionally 
+
+176
+00:11:02.072 --> 00:11:05.396
+there was a slightly more complicated 
+argument that handled ties. 
+
+177
+00:11:05.396 --> 00:11:08.924
+You can do the same thing here, but I'm 
+just not going to give it to you. 
+
+178
+00:11:08.924 --> 00:11:12.300
+I'll leave that for the keen viewer to 
+work out for themselves. 

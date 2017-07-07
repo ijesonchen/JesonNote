@@ -1,0 +1,28 @@
+I. INTRODUCTION
+
+Welcome and Week 1 Overview10 分
+Overview, Resources, and Policies10 分
+Lecture slides10 分
+Why Study Algorithms?4 分
+Integer Multiplication8 分
+Karatsuba Multiplication12 分
+About the Course17 分
+Merge Sort: Motivation and Example8 分
+Merge Sort: Pseudocode12 分
+Merge Sort: Analysis9 分
+Guiding Principles for Analysis of Algorithms15 分
+II. ASYMPTOTIC ANALYSIS
+
+The Gist14 分
+Big-Oh Notation4 分
+Basic Examples7 分
+Big Omega and Theta7 分
+Additional Examples [Review - Optional]7 分
+Problem Set #1
+
+购买课程以解锁此项目。
+测验: Problem Set #15 个试题
+Programming Assignment #1
+
+购买课程以解锁此项目。
+测验: Programming Assignment #11 个试题

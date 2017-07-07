@@ -1,0 +1,7 @@
+SUMMARY: This week is the climax of all our work on graph search --- Dijkstra's shortest-path algorithm, surely one of the greatest hits of algorithms (Part XI). It works in any directed graph with non-negative edge lengths, and it computes the shortest paths from a source vertex to all other vertices. Particularly nice is the blazingly fast implementation that uses a heap data structure (more on heaps next week).
+THE HOMEWORK: Problem Set #2 should solidify your understanding of Dijkstra's shortest-path algorithm. In the programming assignment you'll implement Dijkstra's algorithm. You can just implement the basic version, but those of you who want a bigger challenge are encouraged to devise a heap-based implementation.
+SUGGESTED READINGS FOR WEEK 2:
+CLRS Chapter 24 (Sections 3,4)
+DPV Sections 4.4
+KT Section 4.4
+SW Section 4.4

@@ -1,0 +1,22 @@
+WELCOME: Welcome to Part 2 of the Algorithms Specialization: Graph Search, Shortest Paths, and Data Structures! Like the previous part, the course will have four weeks of lectures and assignments, followed by a final exam. Here are the highlights of the course's first week.
+
+SUMMARY: Week 1 is all about graph search and its applications (section X). We'll cover a selection of fundamental primitives for reasoning about graphs. One very cool aspect of this material is that all of the algorithms that we'll cover are insanely fast (linear time with small constants); and, it can be quite subtle to understand why they work! The culmination of these lectures --- computing the strongly connected components of a directed graph with just two passes of depth-first search --- vividly illustrates the point that fast algorithms often require deep insight into the structure of the problem that you're solving. There are also lecture notes for this last topic (available for download underneath the videos). (If you're feeling REALLY motivated, you might read up on Tarjan's earlier algorithm for computing SCCs that needs only a single DFS pass!)
+
+THE VIDEOS: We begin with an overview video, which gives some reasons why you should care about graph search, a general strategy for searching a graph without doing any redundant work, and a high-level introduction to the two most important search strategies, breadth-first search (BFS) and depth-first search (DFS). The second video discusses BFS in more detail, including applications to computing shortest paths and the connected components of an undirected graph. The third video drills down on DFS, and shows how to use it to compute a toplogical ordering of a directed acyclic graph (i.e., to sequence tasks in a way that respects precedence constraints). The fourth and fifth videos cover the description and analysis, respectively, of the aforementioned algorithm for computing SCCs. A final optional video --- hopefully one of the more fun ones in the course --- discusses the structure of the Web, and lightly touches on topics like Google's PageRank algorithm and the "six degrees of separation" phenomenon in social networks.
+
+DISCUSSION FORUMS: The discussion forums play a crucial role in massive online courses like this one. If you have trouble understanding a lecture or completing an assignment, you should turn to the forums for help. After you've mastered the lectures and assignments for a given week, I hope you'll contribute to the forums and help out your fellow students. While I won't have time to carefully monitor the discussion forums, I'll check in and answer questions whenever I find the time.
+
+VIDEOS AND SLIDES: Videos can be streamed or downloaded and watched offline (recommended for commutes, etc.). We are also providing PDF lecture slides (typed versions of what's written in the lecture videos), as well as subtitle files (in English and in some cases other languages as well). And if you find yourself wishing that I spoke more quickly or more slowly, note that you can adjust the video speed to accommodate your preferred pace.
+
+THE HOMEWORK: Problem Set #1 should help you solidify your understanding of graph representations and graph search. The programming assignment asks you to implement the SCC algorithm from the lectures, and report your findings about the SCCs of a large graph. Programming Assignment #1 is the most difficult one of the course (and one of the more difficult ones in the entire specialization); as always, I encourage you to use the discussion forums to exchange ideas, tips, and test cases. If you can get through the first week of the course, it should be all downhill from there!
+
+SUGGESTED READINGS FOR WEEK 1: Abbreviations in suggested readings refer to the following textbooks:
+
+CLRS - Cormen, Leiserson, Rivest, and Stein, Introduction to Algorithms (3rd edition)
+DPV - Dasgupta, Papadimitriou, and Vazirani, Algorithms
+KT - Kleinberg and Tardos, Algorithm Design
+SW - Sedgewick and Wayne, Algorithms (4th edition)
+CLRS Chapter 22
+DPV Chapter 3
+KT Chapter 3, Section 3.5, 3.6
+SW Chapter 4, Section 4.1,4.2

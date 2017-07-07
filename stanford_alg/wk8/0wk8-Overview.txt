@@ -1,0 +1,6 @@
+SUMMARY: This week wraps up our discussion of data structures. We'll finish with a bang by covering hash tables --- certainly one of the most important data structures --- in detail. First (Part XIV) we discuss hash table basics --- the supported operations, the types of problems they're useful for, and an overview of implementation approaches. Part XV has one required video about "pathological data sets" for hash functions, and three optional videos that cover great stuff --- how randomization dodges pathological data sets, a construction of simple hash functions that are guaranteed to (in expectation over the choice of a random hash function) spread every data set out evenly, and performance analyses of hashing with both chaining and open addressing. Part XVI contains two required videos on the implementation and performance of bloom filters, which are like hash tables except that they are insanely space-efficient and occasionally suffer from false positives.
+THE HOMEWORK: Problem Set #4 should solidify your understanding of hash tables and bloom filters. In the programming assignment you'll implement another slick data structure application covered in the lectures (solving the 2-SUM problem using hash tables).
+SUGGESTED READINGS FOR WEEK 4:
+CLRS Chapter 11
+KT Chapter 13 (Section 13.6)
+SW Section 3.5

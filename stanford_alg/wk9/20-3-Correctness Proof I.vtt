@@ -1,0 +1,1195 @@
+WEBVTT
+
+1
+00:00:02.760 --> 00:00:07.589
+Okay. So in this video we're going to 
+begin our discussion about why Prim's 
+
+2
+00:00:07.589 --> 00:00:11.517
+algorithm is correct. 
+Why always, for every connected graph 
+
+3
+00:00:11.517 --> 00:00:14.480
+outputs a minimum spanning tree of that 
+graph. 
+
+4
+00:00:14.480 --> 00:00:18.815
+For this video, we're going to content 
+ourselves with a much more modest school. 
+
+5
+00:00:18.815 --> 00:00:23.206
+We're only going to prove for now the 
+Prim's algorithm outputs a spanning tree. 
+
+6
+00:00:23.206 --> 00:00:26.280
+We're not going to make any claims yet 
+about optimality. 
+
+7
+00:00:26.280 --> 00:00:30.274
+Even just this fact is not trivial and 
+proving it will give us a good 
+
+8
+00:00:30.274 --> 00:00:34.611
+opportunity to get our hands dirty with 
+some basic properties of graphs and 
+
+9
+00:00:34.611 --> 00:00:38.434
+specifically graph cuts. 
+Graduates of part 1 of this online class 
+
+10
+00:00:38.434 --> 00:00:43.000
+of course are already familiar with graph 
+cuts. We studied them at length via 
+
+11
+00:00:43.000 --> 00:00:47.223
+Karger's randomized algorithm for 
+computing the minimum cut of a graph. 
+
+12
+00:00:47.223 --> 00:00:52.100
+So, the concept is the same here, let me 
+state it again to jog your memory. 
+
+13
+00:00:52.100 --> 00:00:58.186
+So a cut of a graph is simply a partition 
+of its vertex set, two groups, and each 
+
+14
+00:00:58.186 --> 00:01:03.885
+of those two groups should be non-empty. 
+So pictorially, we envision some of the 
+
+15
+00:01:03.885 --> 00:01:06.949
+vertices of G, this blob A being in one 
+group, 
+
+16
+00:01:06.949 --> 00:01:11.851
+and the rest of the vertices, this graph 
+B being in a different group. 
+
+17
+00:01:11.851 --> 00:01:16.277
+Now, what's up with the edges? 
+How can they be distributed in this 
+
+18
+00:01:16.277 --> 00:01:19.137
+picture? 
+Well, the two endpoints of an edge, 
+
+19
+00:01:19.137 --> 00:01:23.154
+there's three cases, 
+either both of the endpoints can be in 
+
+20
+00:01:23.154 --> 00:01:26.490
+the set A. 
+So there's various edges internal to A. 
+
+21
+00:01:26.490 --> 00:01:30.780
+Similarly, an edge might have both of its 
+endpoints inside of B. 
+
+22
+00:01:30.780 --> 00:01:34.811
+But we're going to be most interested in 
+the third case, 
+
+23
+00:01:34.811 --> 00:01:38.842
+edges that have one point exactly in each 
+of A and B. 
+
+24
+00:01:38.842 --> 00:01:42.570
+So these are edges that we say cross the 
+cut, A, B. 
+
+25
+00:01:42.570 --> 00:01:46.771
+So hopefully the definition of a cut 
+seems simple enough, but cuts in 
+
+26
+00:01:46.771 --> 00:01:51.439
+particular their relationship to edges 
+can be quite interesting, quite useful. 
+
+27
+00:01:51.439 --> 00:01:55.873
+So as shown here in the picture, of 
+course for a given cut, there can be many 
+
+28
+00:01:55.873 --> 00:01:59.433
+edges crossing it. 
+by the same token for a given edge of a 
+
+29
+00:01:59.433 --> 00:02:02.583
+graph, in general, there will be many 
+cuts of the grap, 
+
+30
+00:02:02.583 --> 00:02:05.968
+that's, that edge crosses. 
+So, to understand this a little bit 
+
+31
+00:02:05.968 --> 00:02:10.052
+better, let's just review a simple 
+property that cuts through the graph. 
+
+32
+00:02:10.052 --> 00:02:12.620
+Let me just ask you just how many there 
+are. 
+
+33
+00:02:15.440 --> 00:02:20.184
+Specifically, for a graph that has n 
+vertices, roughly how many cuts does it 
+
+34
+00:02:20.184 --> 00:02:22.778
+have? 
+Roughly n, roughly n squared, roughly 
+
+35
+00:02:22.778 --> 00:02:27.143
+2^n, or roughly n^n? 
+Now, none of these four answers is 
+
+36
+00:02:27.143 --> 00:02:32.140
+exactly right, but one of the four is a 
+lot closer to the exact expression than 
+
+37
+00:02:32.140 --> 00:02:35.620
+the other three and I'm asking you, which 
+of them is it? 
+
+38
+00:02:37.240 --> 00:02:40.479
+Alright. 
+So the correct answer is the third one, 
+
+39
+00:02:40.479 --> 00:02:44.111
+2^n. 
+A graph of n vertices has essentially 2^n 
+
+40
+00:02:44.111 --> 00:02:48.088
+cut, so there's an exponential number of 
+cuts there's a lot of them. 
+
+41
+00:02:48.088 --> 00:02:51.497
+So why is this true? 
+Well, in effect you can imagine making a 
+
+42
+00:02:51.497 --> 00:02:53.940
+binary decision for each of the n 
+vertices. 
+
+43
+00:02:53.940 --> 00:02:56.744
+They either go into A. 
+What were they going to be? 
+
+44
+00:02:56.744 --> 00:03:00.485
+So n binary decisions results in 2^n 
+different outcomes. 
+
+45
+00:03:00.485 --> 00:03:04.515
+Now why is this slightly incorrect? 
+Well, in fact, a cut has to have two 
+
+46
+00:03:04.515 --> 00:03:07.047
+non-empty sets. 
+A is not allowed to be empty, 
+
+47
+00:03:07.047 --> 00:03:10.386
+B is not allowed to be empty, 
+so that rules out two of the 
+
+48
+00:03:10.386 --> 00:03:13.955
+possibilities. 
+So actually, strictly speaking, it's 2^n 
+
+49
+00:03:13.955 --> 00:03:20.646
+- 1 different cuts of a graph. 
+So what we're going to do next is we're 
+
+50
+00:03:20.646 --> 00:03:24.783
+going to state and prove three easy facts 
+about cuts in graphs. 
+
+51
+00:03:24.783 --> 00:03:29.904
+Once we have these three easy facts, we 
+will be able to prove the claim at the 
+
+52
+00:03:29.904 --> 00:03:33.844
+beginning of this video, 
+namely the Prim's Algorithm always 
+
+53
+00:03:33.844 --> 00:03:38.177
+outputs a spanning tree. 
+The first of these three properties about 
+
+54
+00:03:38.177 --> 00:03:40.870
+cuts, I'm going to call the empty cuts 
+lemma. 
+
+55
+00:03:40.870 --> 00:03:46.016
+The point of the empty cut lemma is to 
+give us a characterization that is a new 
+
+56
+00:03:46.016 --> 00:03:51.294
+way of saying when a graph is connected. 
+So in particular, I'm going to phrase in 
+
+57
+00:03:51.294 --> 00:03:56.411
+terms of a graph not connected. 
+And the claim is that a graph is not 
+
+58
+00:03:56.411 --> 00:04:00.875
+connected if and only if we can find a 
+cut of the graph that has no edges 
+
+59
+00:04:00.875 --> 00:04:04.072
+crossing it. 
+So remember how we defined a graph being 
+
+60
+00:04:04.072 --> 00:04:07.028
+connected, 
+that means for any two vertices in the 
+
+61
+00:04:07.028 --> 00:04:11.069
+graph we can find a path in the graph 
+from one vertex to the other. 
+
+62
+00:04:11.069 --> 00:04:14.025
+So what we're saying is that being not 
+connected, 
+
+63
+00:04:14.025 --> 00:04:18.308
+that is, there existing a pair of 
+vertices with no path between them is 
+
+64
+00:04:18.308 --> 00:04:21.626
+equivalent to there being a cut with no 
+crossing edges. 
+
+65
+00:04:21.626 --> 00:04:24.220
+So let's go ahead and prove this real 
+quick. 
+
+66
+00:04:24.220 --> 00:04:28.327
+So as an if and only if statement, 
+really this proof, we have to do in two 
+
+67
+00:04:28.327 --> 00:04:30.972
+parts. 
+First, we have to prove that assuming the 
+
+68
+00:04:30.972 --> 00:04:33.279
+first statement, we can derive the 
+second. 
+
+69
+00:04:33.279 --> 00:04:37.443
+Then we have to show that assuming the 
+second statement, we can derive the 
+
+70
+00:04:37.443 --> 00:04:40.144
+first. 
+I think the easier direction is to assume 
+
+71
+00:04:40.144 --> 00:04:43.239
+the right-hand side and then derive the 
+left-hand side. 
+
+72
+00:04:43.239 --> 00:04:46.841
+So let's start with that one. 
+That is, consider a graph G so that 
+
+73
+00:04:46.841 --> 00:04:49.880
+there's a cut, A, B with no edges of G 
+crossing this cut. 
+
+74
+00:04:49.880 --> 00:04:54.460
+The plan is to exhibit a pair of vertices 
+that do not have a path between them, 
+
+75
+00:04:54.460 --> 00:04:57.997
+there, thereby certifying that the graph 
+is not connected. 
+
+76
+00:04:57.997 --> 00:05:02.346
+So, it's pretty easy to figure out which 
+pair of vertices we should look at, 
+
+77
+00:05:02.346 --> 00:05:06.695
+just take one vertex from each side of 
+the cut which has no crossing edges. 
+
+78
+00:05:06.695 --> 00:05:10.232
+So why is it that there's no path from U 
+to V in the graph G? 
+
+79
+00:05:10.232 --> 00:05:14.697
+Well the path from U to V would surely 
+have to cross the cuts, A, B, but there's 
+
+80
+00:05:14.697 --> 00:05:19.046
+no edges available for crossing the cut. 
+So therefore, this path from U to V 
+
+81
+00:05:19.046 --> 00:05:22.521
+cannot exist. 
+So that completes the first part of the 
+
+82
+00:05:22.521 --> 00:05:25.775
+proof. We assume the right-hand side, we 
+derive the left-hand side, 
+
+83
+00:05:25.775 --> 00:05:29.578
+now we start all over again, but we 
+assume the left-hand side and we have to 
+
+84
+00:05:29.578 --> 00:05:33.970
+prove the right-hand side. 
+So by virtue of, by the assumption that 
+
+85
+00:05:33.970 --> 00:05:38.732
+the graph is not connected, there has to 
+exist a pair of verticies U and V that 
+
+86
+00:05:38.732 --> 00:05:43.351
+have no path between them. 
+We are now responsible for exhibiting 
+
+87
+00:05:43.351 --> 00:05:47.237
+some cut A, B such that no edges of the 
+graph G crossing. 
+
+88
+00:05:47.237 --> 00:05:51.942
+So where are we going to get these sets 
+capital A and capital B from? 
+
+89
+00:05:51.942 --> 00:05:57.124
+Well, here is the trick, which is going 
+to make the proof go really nicely. 
+
+90
+00:05:57.124 --> 00:06:02.783
+We define the set of verticies of capital 
+A to be those reachable from U in the 
+
+91
+00:06:02.783 --> 00:06:06.056
+graph G. 
+Another way to think about this is that 
+
+92
+00:06:06.056 --> 00:06:11.307
+capital A is simply used connected 
+components in the sense that we discussed 
+
+93
+00:06:11.307 --> 00:06:15.504
+in part 1 of the course. 
+Now because we want to cut and a cut is 
+
+94
+00:06:15.504 --> 00:06:19.808
+our partition, we better well put in the 
+group, capital B, all of the verticies 
+
+95
+00:06:19.808 --> 00:06:23.769
+that are not in A. 
+If you like, this is all of the connected 
+
+96
+00:06:23.769 --> 00:06:26.540
+components other than the one that 
+contains U. 
+
+97
+00:06:26.540 --> 00:06:29.070
+Note that by definition, U is in capital 
+A, 
+
+98
+00:06:29.070 --> 00:06:33.347
+certainly U is reachable from itself. 
+And by assumption, V and U are not 
+
+99
+00:06:33.347 --> 00:06:36.721
+reachable from each other, 
+so V is going to be in capital B. 
+
+100
+00:06:36.721 --> 00:06:41.239
+So neither of these sets is non-empty. 
+This is indeed a bonafide cut of the 
+
+101
+00:06:41.239 --> 00:06:44.190
+graph G. 
+All that remains is to notice that there 
+
+102
+00:06:44.190 --> 00:06:49.160
+are no crossing edges across this cut. 
+And why is that true? 
+
+103
+00:06:49.160 --> 00:06:54.309
+Well, if there was an edge crossing the 
+cut A, B with one endpoint in A, one 
+
+104
+00:06:54.309 --> 00:06:58.809
+endpoint in B. Well, by definition, there 
+are paths from U to everything else in A, 
+
+105
+00:06:58.809 --> 00:07:03.083
+so if there is any edge sticking out of 
+A, that would give us a path to some 
+
+106
+00:07:03.083 --> 00:07:05.614
+vertex in B. 
+But, B definition of vertices not 
+
+107
+00:07:05.614 --> 00:07:08.483
+reachable from capital A, so that's a 
+contradiction. 
+
+108
+00:07:08.483 --> 00:07:12.532
+So again, the point is that if there were 
+edges crossing this cut, then we can 
+
+109
+00:07:12.532 --> 00:07:16.413
+expand A and make it even bigger. So 
+therefore, there aren't any edges 
+
+110
+00:07:16.413 --> 00:07:19.563
+crossing the cut. 
+The cut is empty, that's what we needed 
+
+111
+00:07:19.563 --> 00:07:22.262
+to prove. 
+Assuming the graph was disconnected, we 
+
+112
+00:07:22.262 --> 00:07:25.700
+have exhibited a cut, A, B with no 
+crossing edges. 
+
+113
+00:07:25.700 --> 00:07:29.437
+So that wraps up of the first of our 
+three facts, and in fact, the most 
+
+114
+00:07:29.437 --> 00:07:32.107
+difficult of our three facts about cuts 
+in graphs. 
+
+115
+00:07:32.107 --> 00:07:34.349
+And again,, what did the empty cut lemma 
+say? 
+
+116
+00:07:34.349 --> 00:07:38.354
+It gives us a new way of talking about 
+whether or not a graph is connected. 
+
+117
+00:07:38.354 --> 00:07:41.397
+So it's disconnected if and only if 
+there's an empty cut. 
+
+118
+00:07:41.397 --> 00:07:44.280
+It's connected if and only if there are 
+no empty cuts. 
+
+119
+00:07:44.280 --> 00:07:48.552
+So that's the keypoint from this slide. 
+Let's now knock off the other two facts 
+
+120
+00:07:48.552 --> 00:07:51.946
+we're going to need. 
+The first one I'm going to call the 
+
+121
+00:07:51.946 --> 00:07:56.469
+double crossing lemma. 
+In essence, what the double crossing 
+
+122
+00:07:56.469 --> 00:08:02.823
+lemma says, is that, if a cycle in a 
+graph crosses a cut, then it has to cross 
+
+123
+00:08:02.823 --> 00:08:06.440
+it twice, 
+it cannot cross it only once. 
+
+124
+00:08:06.440 --> 00:08:11.787
+So pictorially, we look at a cut of a 
+graph, so there's the two vertex groups A 
+
+125
+00:08:11.787 --> 00:08:14.872
+and B. 
+By hypothesis, there's some edge E with 
+
+126
+00:08:14.872 --> 00:08:19.260
+one endpoint in each side, 
+and by assumption, this E, this edge E, 
+
+127
+00:08:19.260 --> 00:08:23.100
+participates in some cycle that we're 
+calling capital C. 
+
+128
+00:08:23.100 --> 00:08:27.294
+And if you look at the picture, you 
+realize that the claim in this lemma is 
+
+129
+00:08:27.294 --> 00:08:30.014
+obvious, 
+that, because the cycle has to loop back 
+
+130
+00:08:30.014 --> 00:08:34.435
+on itself, if it has an edge with one 
+endpoint on either side, there has to be 
+
+131
+00:08:34.435 --> 00:08:38.459
+a path connecting the two dots, 
+connecting those two endpoints back to 
+
+132
+00:08:38.459 --> 00:08:41.689
+each other and that path has to cross 
+back for, over this cut A, 
+
+133
+00:08:41.689 --> 00:08:44.717
+B. 
+Indeed, the double crossing lemma is a 
+
+134
+00:08:44.717 --> 00:08:49.333
+special case of a stronger statement 
+which is equally easier to see, which is 
+
+135
+00:08:49.333 --> 00:08:53.881
+that if you take any cut of a graph and 
+you take any cycle you know, it starts 
+
+136
+00:08:53.881 --> 00:08:57.340
+and ends at the same point, 
+then it has to cross this cut an even 
+
+137
+00:08:57.340 --> 00:09:00.427
+number of times. 
+It might cross it 0 times, but it's not 
+
+138
+00:09:00.427 --> 00:09:02.768
+going to cross it once. 
+It could cross it twice. 
+
+139
+00:09:02.768 --> 00:09:06.121
+It could cross it four times, if it 
+crisscrosses back and forth. 
+
+140
+00:09:06.121 --> 00:09:10.538
+It could cross it six times, and so on. 
+But if it crosses it strictly more than 0 
+
+141
+00:09:10.538 --> 00:09:12.933
+times, then it has to cross it at least 
+twice. 
+
+142
+00:09:12.933 --> 00:09:15.381
+That's the point of the double crossing 
+lemma. 
+
+143
+00:09:15.381 --> 00:09:17.723
+So, we'll use this in its own rights 
+later on. 
+
+144
+00:09:17.723 --> 00:09:22.140
+But I'm also, for the moment, interested 
+in easy corollary of the double crossing 
+
+145
+00:09:22.140 --> 00:09:25.126
+lemma. 
+I will call this the lonely cut 
+
+146
+00:09:25.126 --> 00:09:28.044
+corollary. 
+Let me tell you the point of the lonely 
+
+147
+00:09:28.044 --> 00:09:31.661
+cut corollary. 
+In general, in these spanning tree 
+
+148
+00:09:31.661 --> 00:09:34.403
+algorithms, 
+to ensure that we output a spanning tree, 
+
+149
+00:09:34.403 --> 00:09:38.312
+then we have to, in particular, make sure 
+we don't create any cycles. 
+
+150
+00:09:38.312 --> 00:09:42.571
+The point of this corollary is it's a 
+tool to argue that we don't create 
+
+151
+00:09:42.571 --> 00:09:46.171
+cycles. 
+So how can we be sure that an edge 
+
+152
+00:09:46.171 --> 00:09:48.402
+doesn't create cycles? Well, here is a 
+way. 
+
+153
+00:09:48.402 --> 00:09:52.752
+Suppose there's a cut, so we're looking 
+at an edge E, suppose we can identify a 
+
+154
+00:09:52.752 --> 00:09:57.101
+cut A, B so that edge E is the only cut 
+crossing it, it's the lonely edge 
+
+155
+00:09:57.101 --> 00:10:00.280
+crossing this cut. 
+Well then, by the double crossing lemma, 
+
+156
+00:10:00.280 --> 00:10:02.678
+there is no way this thing is in any 
+cycle. 
+
+157
+00:10:02.678 --> 00:10:07.195
+If it were in a cycle and a cross to cut, 
+that cycle would have to cross it again 
+
+158
+00:10:07.195 --> 00:10:10.262
+and it's edge wouldn't be lonely, it 
+would have company. 
+
+159
+00:10:10.262 --> 00:10:13.720
+So if you're lonely on a cut, it mean's 
+you cannot be in a cycle. 
+
+160
+00:10:16.040 --> 00:10:20.615
+So now we've got all of our ducks lined 
+up in a row and we're ready to prove the 
+
+161
+00:10:20.615 --> 00:10:25.077
+first part of the correctness of Prim. 
+That is, we're ready to argue that Prim's 
+
+162
+00:10:25.077 --> 00:10:28.353
+algorithm, given a connected graph, 
+outputs a spanning tree. 
+
+163
+00:10:28.353 --> 00:10:32.702
+Again, for the moment, we're making no 
+claims about optimality, that will be in 
+
+164
+00:10:32.702 --> 00:10:35.557
+the next video. 
+So we're going to make this argument in 
+
+165
+00:10:35.557 --> 00:10:38.367
+three steps. 
+And for the first step, you might want to 
+
+166
+00:10:38.367 --> 00:10:42.281
+go look again at the pseudocode of Prim's 
+algorithm just to remember what the 
+
+167
+00:10:42.281 --> 00:10:44.690
+notation was. 
+The first step, we're just going to 
+
+168
+00:10:44.690 --> 00:10:47.551
+notice that the semantics of the 
+algorithm are respected. 
+
+169
+00:10:47.551 --> 00:10:50.963
+So the algorithm maintains two different 
+sets throughout its evolution. 
+
+170
+00:10:50.963 --> 00:10:54.426
+On the one hand it maintains a set 
+capital x, intended to be the vertices 
+
+171
+00:10:54.426 --> 00:10:57.035
+spanned so far. 
+The other hand, it maintains a set of 
+
+172
+00:10:57.035 --> 00:10:59.795
+edges, capital T, the edges that have 
+been picked so far. 
+
+173
+00:10:59.795 --> 00:11:04.835
+And the intent was that the current edges 
+capital T always spans the current vertex 
+
+174
+00:11:04.835 --> 00:11:08.061
+at capital x. 
+So the first thing is just to verify that 
+
+175
+00:11:08.061 --> 00:11:11.362
+that is in fact true. 
+This I'm not going to prove formally. 
+
+176
+00:11:11.362 --> 00:11:15.789
+In my experience, students find this kind 
+of obvious and the intuition is correct. 
+
+177
+00:11:15.789 --> 00:11:19.834
+if you want a rigorous proof, go go ahead 
+and fill in the details yourself. 
+
+178
+00:11:19.834 --> 00:11:22.950
+It's a straightforward induction with no 
+nasty surprises. 
+
+179
+00:11:22.950 --> 00:11:27.491
+[SOUND] Now, we're trying to argue the 
+output of this algorithm is a spanning 
+
+180
+00:11:27.491 --> 00:11:29.369
+tree. 
+So let's recall what that means. 
+
+181
+00:11:29.369 --> 00:11:32.363
+What is it that we have to check? 
+So there's two properties. 
+
+182
+00:11:32.363 --> 00:11:35.610
+First of all, there can't be any cycles, 
+there can't be any loops. 
+
+183
+00:11:35.610 --> 00:11:38.097
+Second of all, it has to span all of the 
+vertices. 
+
+184
+00:11:38.097 --> 00:11:42.055
+It has to be a path inside the tree edges 
+from any vertex to any other vertex. 
+
+185
+00:11:42.055 --> 00:11:45.252
+So let's go ahead and prove both those 
+things in reverse order. 
+
+186
+00:11:45.252 --> 00:11:49.667
+So, the second step of the proof is going 
+to be to argue that the algorithm outputs 
+
+187
+00:11:49.667 --> 00:11:52.001
+something which does span all of the 
+vertices. 
+
+188
+00:11:52.001 --> 00:11:56.010
+So at the end of the day, we'll have a 
+path from any vertex to any other vertex 
+
+189
+00:11:56.010 --> 00:11:59.900
+using only the edges in our chosen set, 
+capital T. Now, by part one of this 
+
+190
+00:11:59.900 --> 00:12:04.340
+proof, all we need to prove is that the 
+algorithm halts with capital X equal to 
+
+191
+00:12:04.340 --> 00:12:07.712
+capital V, then we know that capital T 
+spans everything in V. 
+
+192
+00:12:07.712 --> 00:12:11.646
+So how could that not happen? 
+How could Prim's algorithm somehow halts 
+
+193
+00:12:11.646 --> 00:12:15.974
+with this spanned vertices capital X, not 
+being all of capital B,? We'll go back 
+
+194
+00:12:15.974 --> 00:12:19.125
+and check out the pseudocode and look at 
+the main wild loop. 
+
+195
+00:12:19.125 --> 00:12:23.197
+So every wild loop, every iteration, we 
+add one new vertex to capital X. What 
+
+196
+00:12:23.197 --> 00:12:27.540
+could go wrong? The only thing that could 
+go wrong would be is if some iteration, 
+
+197
+00:12:27.540 --> 00:12:32.262
+before we're spanning everything, when we 
+scan the frontier around capital X, there 
+
+198
+00:12:32.262 --> 00:12:35.199
+aren't any edges. 
+That's the only way we can fail to 
+
+199
+00:12:35.199 --> 00:12:38.367
+increase the vertices in capital X in a 
+given duration. 
+
+200
+00:12:38.367 --> 00:12:42.168
+But what would that mean? 
+What would it mean if in some iteration 
+
+201
+00:12:42.168 --> 00:12:46.949
+we couldn't find edges with one endpoint 
+in capital X and the other endpoint in V 
+
+202
+00:12:46.949 --> 00:12:49.080
+- X? 
+Well then we would have exhibited an 
+
+203
+00:12:49.080 --> 00:12:53.688
+empty cut. 
+The cut X, V - X would have no crossing 
+
+204
+00:12:53.688 --> 00:12:57.204
+edges. 
+And now we can use the empty cut lemma, 
+
+205
+00:12:57.204 --> 00:13:01.934
+which says if there's an empty cut, then 
+the graph is disconnected. 
+
+206
+00:13:01.934 --> 00:13:05.799
+But by assumption, we're working with a 
+connected input graph, so that can't 
+
+207
+00:13:05.799 --> 00:13:08.170
+happen. 
+Okay? So the algorithm never gets stuck, 
+
+208
+00:13:08.170 --> 00:13:11.983
+we always increase capital X by one 
+vertex because the original graph was 
+
+209
+00:13:11.983 --> 00:13:15.900
+connected, that means that halt was 
+something spanning all of the verticies. 
+
+210
+00:13:17.140 --> 00:13:22.711
+For the final step, we need to argue that 
+Prim's algorithm never creates any cycles 
+
+211
+00:13:22.711 --> 00:13:25.731
+in the edges that it, it's choosing 
+capital T. 
+
+212
+00:13:25.731 --> 00:13:29.826
+So, why are there no cycles? 
+Well, what we're going to do is we're 
+
+213
+00:13:29.826 --> 00:13:33.987
+going to talk about each edge in turn, 
+the Prim's algorithm adds, 
+
+214
+00:13:33.987 --> 00:13:39.290
+and argue that whenever a new edge gets 
+added, there's no way that edge creates 
+
+215
+00:13:39.290 --> 00:13:43.988
+any cycles in the set capital T. 
+And, to see why, take a snapshot of the 
+
+216
+00:13:43.988 --> 00:13:48.959
+algorithm of some given iteration, 
+to the sum current set capital T, and 
+
+217
+00:13:48.959 --> 00:13:53.540
+there's some set verticies capital X that 
+the edges in T span. 
+
+218
+00:13:57.160 --> 00:14:03.232
+V - X to the verticies not yet spanned by 
+T and of course we can think of X, V - X 
+
+219
+00:14:03.232 --> 00:14:07.028
+as a cut of the graph. 
+And at this moment in time, at this 
+
+220
+00:14:07.028 --> 00:14:10.444
+snapshot, the edges of capital T, they're 
+all of one type. 
+
+221
+00:14:10.444 --> 00:14:15.315
+They all have both of their endpoints 
+inside capital X, none of them have any 
+
+222
+00:14:15.315 --> 00:14:19.237
+endpoints inside V - X. 
+So in particular, none of the edges 
+
+223
+00:14:19.237 --> 00:14:24.678
+chosen thus far cross the cut X, V - X. 
+That's by construction, they only span 
+
+224
+00:14:24.678 --> 00:14:30.464
+the verticies of X. 
+Now what type of edge is going to get 
+
+225
+00:14:30.464 --> 00:14:34.372
+added in this iteration. 
+Well, Prim's algorithm searches only over 
+
+226
+00:14:34.372 --> 00:14:38.159
+edges that have one endpoint inside X and 
+one endpoint outside. 
+
+227
+00:14:38.159 --> 00:14:42.187
+That is, it searches only over edges that 
+cross the cut X, V - X. 
+
+228
+00:14:42.187 --> 00:14:46.696
+So the edge that gets added in this 
+iteration is going to be a trailblazer 
+
+229
+00:14:46.696 --> 00:14:50.002
+for this cut. 
+None of the edges yet shows and cross the 
+
+230
+00:14:50.002 --> 00:14:52.527
+cut, 
+but the edge showed in this iteration 
+
+231
+00:14:52.527 --> 00:14:56.675
+will definitely, cross the cut. 
+So the moment edge E gets added to the 
+
+232
+00:14:56.675 --> 00:15:01.543
+tree capital T, it is going to be lonely 
+across the cut V sorry, X, V - X. 
+
+233
+00:15:01.543 --> 00:15:06.404
+So by the lonely cut corollary as the 
+sole member crossing this cut in capital 
+
+234
+00:15:06.404 --> 00:15:09.297
+T, it cannot possibly participate in any 
+cycles. 
+
+235
+00:15:09.297 --> 00:15:14.035
+Remember, if it participated in a cycle 
+in capital T, that cycle would have to 
+
+236
+00:15:14.035 --> 00:15:18.466
+cross this cut somewhere else. 
+But there aren't any other edges crossing 
+
+237
+00:15:18.466 --> 00:15:22.590
+this cut, this is the only one. 
+So that's why when we add a new edge, 
+
+238
+00:15:22.590 --> 00:15:26.748
+there's no way it can create any cycles. 
+It's the sole member crossing this 
+
+239
+00:15:26.748 --> 00:15:27.580
+particular cut. 

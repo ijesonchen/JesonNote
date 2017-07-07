@@ -1,0 +1,1552 @@
+WEBVTT
+
+1
+00:00:00.410 --> 00:00:03.480
+In this video, I'll prove to you that
+Dijkstra's algorithm does indeed
+
+2
+00:00:03.480 --> 00:00:06.910
+compute to correct shortest
+paths in any directed graph
+
+3
+00:00:06.910 --> 00:00:08.899
+where all edge links are non negative.
+
+4
+00:00:08.899 --> 00:00:12.940
+So let me remind you about what is
+Dijkstra's algorithm, it's very much in
+
+5
+00:00:12.940 --> 00:00:16.310
+the spirit of our graph search primitives,
+in particular breath first search.
+
+6
+00:00:16.310 --> 00:00:18.366
+So there's going to be
+a subset x of vertices,
+
+7
+00:00:18.366 --> 00:00:20.653
+which are the ones that
+have been processed so far.
+
+8
+00:00:20.653 --> 00:00:24.070
+Initially x contains
+only the source vertex.
+
+9
+00:00:24.070 --> 00:00:26.640
+Of course the distance from
+the source vertex to itself is 0,
+
+10
+00:00:26.640 --> 00:00:29.990
+and the shortest path from s
+to itself is the empty path.
+
+11
+00:00:29.990 --> 00:00:33.240
+So then we'll have a main while loop,
+that's going to be n-1 iteration, and
+
+12
+00:00:33.240 --> 00:00:37.980
+each iteration will bring one vertex which
+is not currently in x into capital X.
+
+13
+00:00:39.350 --> 00:00:41.080
+And a variant that we
+are going to maintain,
+
+14
+00:00:41.080 --> 00:00:45.220
+is that all the vertices in x we will have
+computed estimates of the shortest path
+
+15
+00:00:45.220 --> 00:00:47.340
+distance from x to that vertex and
+
+16
+00:00:47.340 --> 00:00:51.350
+also we'll have computed the shortest
+path itself from x to that vertex.
+
+17
+00:00:51.350 --> 00:00:54.385
+Remember our standing assumption
+stated in the previous video,
+
+18
+00:00:54.385 --> 00:00:58.081
+we're always going to assume there's at
+least one path from the source vertex s to
+
+19
+00:00:58.081 --> 00:00:59.419
+every other destination v.
+
+20
+00:00:59.419 --> 00:01:01.980
+Our job is just to
+compute the shortest one.
+
+21
+00:01:01.980 --> 00:01:05.200
+And also, we have to assume that
+the edge links are non negative
+
+22
+00:01:05.200 --> 00:01:08.320
+as we've seen otherwise
+Dijkstra's algorithm might fail.
+
+23
+00:01:08.320 --> 00:01:13.116
+Now, the key idea in Dijkstra's
+algorithm is a very careful
+
+24
+00:01:13.116 --> 00:01:18.204
+choice of which vertex to bring
+from outside of x into capital X.
+
+25
+00:01:18.204 --> 00:01:22.590
+So what we do is we scan
+the edges crossing the frontier.
+
+26
+00:01:22.590 --> 00:01:26.380
+Meaning given the current edges
+vertices that we've already processed,
+
+27
+00:01:26.380 --> 00:01:29.470
+we look at all of the edges whose
+tail has been processed and
+
+28
+00:01:29.470 --> 00:01:31.800
+whose head has not been processed.
+
+29
+00:01:31.800 --> 00:01:34.890
+So the tails in capital X,
+the head is outside of x that is,
+
+30
+00:01:34.890 --> 00:01:39.560
+they cross the cut from left to right
+in the diagrams that we usually draw.
+
+31
+00:01:40.620 --> 00:01:42.190
+Now, there may be many such edges.
+
+32
+00:01:42.190 --> 00:01:43.850
+How do we decide amongst them?
+
+33
+00:01:43.850 --> 00:01:46.650
+Well, we compute the Dijkstra's
+greedy score for each.
+
+34
+00:01:46.650 --> 00:01:50.617
+The Dijkstra greedy score is defined as
+the shortest path distance we computed for
+
+35
+00:01:50.617 --> 00:01:54.313
+the tail and that's been previously
+computed because the tail's in capital X.
+
+36
+00:01:54.313 --> 00:01:58.416
+And then we add to that the length
+contributed by this edge itself by
+
+37
+00:01:58.416 --> 00:02:02.410
+the edge vw which is crossing
+the cut from left to right.
+
+38
+00:02:02.410 --> 00:02:06.547
+So amongst all edges crossing the cut
+from left to right we compute all those
+
+39
+00:02:06.547 --> 00:02:10.883
+Dijkstra greedy scores we pick the edge
+with the smallest greedy score Calling
+
+40
+00:02:10.883 --> 00:02:12.209
+that edge just v* w*.
+
+41
+00:02:12.209 --> 00:02:16.029
+For the purposes of notation,
+w* is the one that gets added to x.
+
+42
+00:02:16.029 --> 00:02:20.920
+So it's the head of the arc for the
+smallest three score, and then we compute
+
+43
+00:02:20.920 --> 00:02:26.120
+the shortest path distance of that new
+vertex w* to be the shortest path distance
+
+44
+00:02:26.120 --> 00:02:31.980
+to v* plus the length contributed by this
+edge v* w* and then was the shortest path.
+
+45
+00:02:31.980 --> 00:02:34.990
+It's just the shortest path
+previously computed to v star
+
+46
+00:02:34.990 --> 00:02:39.350
+plus this extra edge v*
+w* tacked onto the end.
+
+47
+00:02:39.350 --> 00:02:40.860
+Here's the formal statement
+we're going to prove.
+
+48
+00:02:42.570 --> 00:02:44.637
+For this video, we're not going to
+worry at all about running time,
+
+49
+00:02:44.637 --> 00:02:46.040
+that'll be the discussion
+of the next video.
+
+50
+00:02:46.040 --> 00:02:49.100
+We'll discuss both the running
+time of the basic algorithm and
+
+51
+00:02:49.100 --> 00:02:52.880
+a super fast implementation that
+uses the heat data structure.
+
+52
+00:02:52.880 --> 00:02:54.860
+For now,
+we're going to just focus on correctness.
+
+53
+00:02:56.140 --> 00:02:59.980
+So the claim is that for every directed
+graph, not just the four node,
+
+54
+00:02:59.980 --> 00:03:01.590
+five arc example we studied.
+
+55
+00:03:01.590 --> 00:03:05.030
+As long as there's no negative edge links,
+Dijkstra's algorithm works perfectly.
+
+56
+00:03:05.030 --> 00:03:07.550
+It computes all the correct
+shortest path distances.
+
+57
+00:03:07.550 --> 00:03:09.230
+So just to remind you about the notation,
+
+58
+00:03:09.230 --> 00:03:13.150
+what does it mean to correct all
+shortest path distances correctly?
+
+59
+00:03:13.150 --> 00:03:17.301
+It means that what the algorithm
+actually computes,
+
+60
+00:03:17.301 --> 00:03:22.466
+which is a(v), is exactly
+the correct shortest path distance,
+
+61
+00:03:22.466 --> 00:03:26.820
+which we were denoting by
+L(v) in the previous video.
+
+62
+00:03:28.300 --> 00:03:31.340
+Both the algorithm and the proof of
+correctness where established by
+
+63
+00:03:31.340 --> 00:03:35.530
+Esther Dijkstra this was
+back in the late 1950s.
+
+64
+00:03:35.530 --> 00:03:38.580
+Dijkstra was a Dutch computer scientist,
+and certainly
+
+65
+00:03:38.580 --> 00:03:43.930
+one of the forefathers of the field as
+a science, as an intellectual discipline.
+
+66
+00:03:43.930 --> 00:03:46.150
+He was awarded the ACM Turing award, so
+
+67
+00:03:46.150 --> 00:03:48.890
+that is the Nobel Prize in
+computer science effectively.
+
+68
+00:03:48.890 --> 00:03:52.980
+I believe it was 1972, and
+he worked a long time in the Netherlands,
+
+69
+00:03:52.980 --> 00:03:56.760
+but then also spent a lot of
+his later career at UT Austin.
+
+70
+00:03:56.760 --> 00:03:59.500
+So the way this proof is going to
+go is going to be by induction.
+
+71
+00:04:01.370 --> 00:04:03.940
+And basically, what we're going to do
+is we're going to say every iteration,
+
+72
+00:04:03.940 --> 00:04:07.870
+when we have to commit to shortest
+path distance to some new vertex,
+
+73
+00:04:07.870 --> 00:04:09.080
+we do it correctly.
+
+74
+00:04:09.080 --> 00:04:10.640
+And so
+then the form of the induction will be,
+
+75
+00:04:10.640 --> 00:04:13.350
+well given that we made all of
+our previous decisions correctly,
+
+76
+00:04:13.350 --> 00:04:16.620
+we computed all our earlier
+shortest paths in the correct way.
+
+77
+00:04:16.620 --> 00:04:18.780
+That remains true for
+the current iteration.
+
+78
+00:04:18.780 --> 00:04:23.980
+So formally, it's induction on the number
+of iterations of Dijkstra's algorithm.
+
+79
+00:04:23.980 --> 00:04:27.100
+And as is more often than not the case
+in proofs by inductions the base case
+
+80
+00:04:27.100 --> 00:04:27.673
+is trivial.
+
+81
+00:04:27.673 --> 00:04:31.075
+So that just says before we
+start the y loop, what do we do?
+
+82
+00:04:31.075 --> 00:04:33.900
+Well we commit to the shortest
+path distance from s to itself.
+
+83
+00:04:33.900 --> 00:04:36.428
+We set it to 0, we set the shortest
+path to be the empty path,
+
+84
+00:04:36.428 --> 00:04:37.428
+that is of course true.
+
+85
+00:04:37.428 --> 00:04:37.974
+Of course,
+
+86
+00:04:37.974 --> 00:04:42.030
+even here we're using the fact that there
+are no edges with negative edge length.
+
+87
+00:04:42.030 --> 00:04:45.570
+That makes it obvious that sort of having
+a non empty path can get you negative
+
+88
+00:04:45.570 --> 00:04:46.925
+edge length better than 0.
+
+89
+00:04:49.280 --> 00:04:53.096
+So the first choice path computation
+we do s to s is trivially correct.
+
+90
+00:04:53.096 --> 00:04:57.047
+The hard part of course is the inductive
+step justifying all of the future
+
+91
+00:04:57.047 --> 00:04:58.943
+decisions done by the algorithm.
+
+92
+00:04:58.943 --> 00:05:03.449
+And of course, mindful of that example
+that not example we had at the end of
+
+93
+00:05:03.449 --> 00:05:06.285
+the previous video in
+the proof by induction,
+
+94
+00:05:06.285 --> 00:05:11.255
+we'd better make use of the hypothesis
+that every edge has non negative length.
+
+95
+00:05:11.255 --> 00:05:13.630
+Otherwise the theorem would be false.
+
+96
+00:05:13.630 --> 00:05:17.990
+So we better somewhere in the proof use
+the fact that edges cannot be negative.
+
+97
+00:05:19.010 --> 00:05:20.400
+So let's move on to the inductive step.
+
+98
+00:05:22.240 --> 00:05:23.250
+Remember in the inductive step,
+
+99
+00:05:23.250 --> 00:05:26.020
+the first thing to do is state
+the inductive hypothesis.
+
+100
+00:05:26.020 --> 00:05:28.320
+You're assuming you haven't made
+any mistakes up to this point.
+
+101
+00:05:29.630 --> 00:05:31.850
+Let's be a little bit
+more formal about that.
+
+102
+00:05:31.850 --> 00:05:34.483
+So that is everything we
+computed in the past.
+
+103
+00:05:34.483 --> 00:05:36.540
+What did we compute in the past?
+
+104
+00:05:36.540 --> 00:05:40.380
+Well for each vertex which is in our
+set capital X for each vertex that
+
+105
+00:05:40.380 --> 00:05:44.440
+we've already processed, we want to claim
+that our computed shortest path distance
+
+106
+00:05:44.440 --> 00:05:48.860
+matches up exactly with the true
+correct shortest path distance.
+
+107
+00:05:48.860 --> 00:05:53.604
+So in our running notation, for
+every already processed vertex, so for
+
+108
+00:05:53.604 --> 00:05:56.107
+all vertices v, in our set capital X.
+
+109
+00:05:56.107 --> 00:06:00.579
+What we computed as our estimate
+of the shortest path distance for
+
+110
+00:06:00.579 --> 00:06:03.840
+v is in fact,
+the real shortest path distance.
+
+111
+00:06:05.070 --> 00:06:09.911
+And also,
+the computed shortest path is in fact,
+
+112
+00:06:09.911 --> 00:06:13.037
+a true shortest path from s to v.
+
+113
+00:06:13.037 --> 00:06:15.497
+So again remember,
+this is a proof by induction.
+
+114
+00:06:15.497 --> 00:06:17.064
+We are assuming this is true,
+
+115
+00:06:17.064 --> 00:06:20.076
+and we're going to certainly
+make use of this assumption
+
+116
+00:06:20.076 --> 00:06:24.422
+when we establish the correctness of
+the new iteration, the current iteration.
+
+117
+00:06:24.422 --> 00:06:26.546
+What happens in an iteration?
+
+118
+00:06:26.546 --> 00:06:31.082
+Well, we pick an edge which
+we've been calling v* w*.
+
+119
+00:06:32.260 --> 00:06:34.667
+And we add the head of
+sets w* to the set X.
+
+120
+00:06:34.667 --> 00:06:39.424
+So let's get our bearings and remember
+what Dijkstra's algorithm computes as
+
+121
+00:06:39.424 --> 00:06:43.615
+the shortest path and shortest bath
+distance for this new vertex w*.
+
+122
+00:06:44.640 --> 00:06:52.090
+So by the definition of the algorithm we
+assign as a shortest path from s to w*.
+
+123
+00:06:52.090 --> 00:06:57.649
+The previously computed purportedly
+shortest path from s to v*,
+
+124
+00:06:57.649 --> 00:07:01.934
+and then we tack on the end
+the direct arc, v* w*.
+
+125
+00:07:01.934 --> 00:07:07.180
+So pictorially, we already had some path
+
+126
+00:07:07.180 --> 00:07:11.380
+that started at s and ended up at v*, and
+
+127
+00:07:11.380 --> 00:07:16.990
+then we tack on the ends this
+arc going to w* in one hop.
+
+128
+00:07:16.990 --> 00:07:22.492
+And this whole shebang is what
+we're going to assign as B of w*.
+
+129
+00:07:22.492 --> 00:07:26.720
+So let's use the inductive hypothesis.
+
+130
+00:07:26.720 --> 00:07:30.430
+Inductive hypothesis says that all
+previous iterations are correct.
+
+131
+00:07:30.430 --> 00:07:33.790
+So that is any shortest path we've
+computed in a previous iteration
+
+132
+00:07:33.790 --> 00:07:39.160
+is in fact a bona fide shortest path
+from the source x to the vertex.
+
+133
+00:07:39.160 --> 00:07:42.261
+Now v*, remember is in x.
+
+134
+00:07:42.261 --> 00:07:43.950
+So that was previously computed.
+
+135
+00:07:45.180 --> 00:07:49.430
+So by the inductive hypothesis,
+this path bv*,
+
+136
+00:07:49.430 --> 00:07:54.650
+from s to v*, is in fact a true shortest
+path from s to v* in the graph.
+
+137
+00:07:54.650 --> 00:07:58.550
+So therefore, it has length l of v*.
+
+138
+00:07:58.550 --> 00:08:01.650
+Remember, l of v* is just by
+definition the true shortest
+
+139
+00:08:01.650 --> 00:08:04.590
+path distance in the graph from s to v*.
+
+140
+00:08:04.590 --> 00:08:07.752
+Now, given that the path that
+we've exhibited s to w*,
+
+141
+00:08:07.752 --> 00:08:12.330
+is just the same one as we inherited
+the v* plus this extra edge tacked on.
+
+142
+00:08:12.330 --> 00:08:14.885
+It's pretty obvious what the length
+of the left hand side is.
+
+143
+00:08:14.885 --> 00:08:20.548
+It has length, just the length of the old
+path which we just argued is the shortest
+
+144
+00:08:20.548 --> 00:08:26.040
+path distance from sw* plus the length
+of this arc that we tacked on.
+
+145
+00:08:26.040 --> 00:08:28.825
+That's going to be lv* w*.
+
+146
+00:08:30.115 --> 00:08:31.565
+So by the definition of the algorithm,
+
+147
+00:08:31.565 --> 00:08:35.765
+what we compute for w* is just
+the Dijkstra's greedy score which is just
+
+148
+00:08:35.765 --> 00:08:38.027
+the computer choice path
+distance to the tail.
+
+149
+00:08:38.027 --> 00:08:39.954
+The v* plus the length of the direct edge.
+
+150
+00:08:39.954 --> 00:08:41.686
+By the inductive hypothesis,
+
+151
+00:08:41.686 --> 00:08:45.380
+we've correctly computed all
+previous choice path distances.
+
+152
+00:08:45.380 --> 00:08:49.640
+V* is something we computed in the past
+by inductive hypothesis is correct.
+
+153
+00:08:49.640 --> 00:08:54.310
+So this is equal to l of v*
+by the inductive hypothesis.
+
+154
+00:08:54.310 --> 00:08:57.270
+So don't worry if you're feeling
+a little lost at this point.
+
+155
+00:08:57.270 --> 00:09:00.030
+We've actually really done no
+content in this proof yet.
+
+156
+00:09:00.030 --> 00:09:02.230
+We haven't done the interesting
+part of the argument.
+
+157
+00:09:02.230 --> 00:09:04.540
+All we've been doing is
+setting up our dominoes,
+
+158
+00:09:04.540 --> 00:09:06.200
+getting them ready to be knocked down.
+
+159
+00:09:06.200 --> 00:09:08.819
+So what have we done in
+the current iteration?
+
+160
+00:09:10.250 --> 00:09:14.185
+Well first of all, our estimate of the
+shortest path distance from the source to
+
+161
+00:09:14.185 --> 00:09:17.930
+w*, to the new vertex that we're
+including in the set capital X,
+
+162
+00:09:17.930 --> 00:09:23.650
+is the true shortest path distance to v*
+plus the length of the edge from v* to w*,
+
+163
+00:09:23.650 --> 00:09:25.000
+that's the first thing.
+
+164
+00:09:25.000 --> 00:09:28.920
+Secondly, the path that
+we have in the v array
+
+165
+00:09:28.920 --> 00:09:32.949
+is a bona fide path from s to
+w* with exactly this distance.
+
+166
+00:09:34.200 --> 00:09:38.650
+And the point is,
+now it's clear what has to be proven for
+
+167
+00:09:38.650 --> 00:09:41.120
+us to complete the inductive step and
+
+168
+00:09:41.120 --> 00:09:44.490
+therefore, the proof of correctness
+of Dijkstra's algorithm.
+
+169
+00:09:44.490 --> 00:09:45.800
+So what do we need to proof?
+
+170
+00:09:45.800 --> 00:09:49.920
+We need to proof that this isn't just
+any old path that we've exhibited from
+
+171
+00:09:49.920 --> 00:09:54.664
+s to this vertex w*, but
+that it's the shortest path of them all.
+
+172
+00:09:54.664 --> 00:09:58.980
+But differently we need to show
+that every other sw* pattern
+
+173
+00:09:58.980 --> 00:10:03.290
+in this graph has length at
+least this circled value.
+
+174
+00:10:04.400 --> 00:10:08.849
+So let's proceed let's show that no
+matter how you get from the source for
+
+175
+00:10:08.849 --> 00:10:10.726
+test to this destination w*.
+
+176
+00:10:10.726 --> 00:10:16.265
+The total length of the path you travel is
+going to be at least this circled value,
+
+177
+00:10:16.265 --> 00:10:18.395
+at least L(v*) + lv*w*.
+
+178
+00:10:18.395 --> 00:10:21.369
+Now on the one hand,
+we don't have a lot going for us,
+
+179
+00:10:21.369 --> 00:10:23.964
+because this path P could
+be almost anything.
+
+180
+00:10:23.964 --> 00:10:26.260
+It could be a crazy looking path.
+
+181
+00:10:26.260 --> 00:10:28.750
+So how do we argue that it has to be long?
+
+182
+00:10:28.750 --> 00:10:31.640
+Well, here's the one thing
+we've got going for us for
+
+183
+00:10:31.640 --> 00:10:36.120
+any path P that starts in s and
+goes to w*.
+
+184
+00:10:36.120 --> 00:10:40.190
+Any such path must cross the frontier.
+
+185
+00:10:40.190 --> 00:10:43.870
+Remember, it starts on the left side of
+the frontier, it starts at the source
+
+186
+00:10:43.870 --> 00:10:48.850
+vertex, which is initially and
+forever in the set capital X.
+
+187
+00:10:48.850 --> 00:10:52.730
+And remember that we only choose edges
+that cross the frontier whose head
+
+188
+00:10:52.730 --> 00:10:53.772
+is outside of x.
+
+189
+00:10:53.772 --> 00:10:57.410
+And w* is exactly the head of
+the edge we chose in this iteration,
+
+190
+00:10:57.410 --> 00:10:59.010
+so this is not an x.
+
+191
+00:11:01.030 --> 00:11:03.210
+So any path that starts in x and
+
+192
+00:11:03.210 --> 00:11:05.660
+goes outside of x at some point
+it crosses from one to the other.
+
+193
+00:11:07.460 --> 00:11:09.455
+So let's think about the graph and
+it's two pieces,
+
+194
+00:11:09.455 --> 00:11:11.596
+that it's the left of the front tier and
+not to the right.
+
+195
+00:11:11.596 --> 00:11:14.590
+The stuff is already processed and
+the stuff which is not been processed.
+
+196
+00:11:14.590 --> 00:11:17.467
+S of course, is on the left hand side, and
+
+197
+00:11:17.467 --> 00:11:23.320
+at the beginning of this iteration of the
+while loop, w* was on the right hand side.
+
+198
+00:11:24.650 --> 00:11:30.270
+Any path, no matter how wacky has to
+at some point, cross this frontier.
+
+199
+00:11:30.270 --> 00:11:33.590
+Maybe it does it a bunch of times,
+who knows but it's gotta do it once.
+
+200
+00:11:33.590 --> 00:11:38.450
+Let's focus on the first time it crosses
+the frontier, and let's say that
+
+201
+00:11:39.830 --> 00:11:43.940
+it crosses the front here with
+the vertex y going to the vertex z.
+
+202
+00:11:45.360 --> 00:11:49.406
+That is any path P has the form where
+there's an initial prefix,where
+
+203
+00:11:49.406 --> 00:11:50.922
+are the vertices are in x.
+
+204
+00:11:50.922 --> 00:11:56.057
+And then there's some first point at
+which it crosses the frontier and goes to
+
+205
+00:11:56.057 --> 00:12:01.436
+a vertex which is not an x, we're calling
+the first such vertex outside of x, z.
+
+206
+00:12:01.436 --> 00:12:04.270
+And then it can skip back and
+forth who knows, but
+
+207
+00:12:04.270 --> 00:12:08.400
+certainly it ends up in this
+vertex w* which is not an x.
+
+208
+00:12:08.400 --> 00:12:11.350
+So we're going to make use of just
+this minimal information about
+
+209
+00:12:11.350 --> 00:12:12.820
+an arbitrary path P.
+
+210
+00:12:12.820 --> 00:12:16.376
+And yet this will give us enough of
+a foothold to lower bound its length.
+
+211
+00:12:16.376 --> 00:12:20.497
+And this lower bound to be strong enough,
+we conclude that our path that we
+
+212
+00:12:20.497 --> 00:12:24.030
+computed is the best,
+smaller than any possible competitor.
+
+213
+00:12:25.580 --> 00:12:29.070
+So let's just summarize where
+we left on the previous slide.
+
+214
+00:12:29.070 --> 00:12:36.130
+We established that every
+directed path from s to w* p,
+
+215
+00:12:36.130 --> 00:12:40.730
+no matter what it is has to have
+a prescribed form, where it ambles for
+
+216
+00:12:40.730 --> 00:12:45.280
+a while inside x and then the portal
+through which it escapes x for
+
+217
+00:12:45.280 --> 00:12:47.910
+the first time we're calling y.
+
+218
+00:12:47.910 --> 00:12:53.870
+And then the first vertex it sees outside
+of x is z and there has to be one.
+
+219
+00:12:53.870 --> 00:12:58.906
+And then it perhaps ambles further and
+eventually reaches w*.
+
+220
+00:12:58.906 --> 00:13:03.233
+It could well be that z and w* are exactly
+the same, that's totally fine for
+
+221
+00:13:03.233 --> 00:13:05.040
+this argument.
+
+222
+00:13:05.040 --> 00:13:07.210
+So here's one of our competitors,
+this path p and
+
+223
+00:13:07.210 --> 00:13:10.270
+I have to show it's at
+least as long as our path.
+
+224
+00:13:10.270 --> 00:13:15.450
+So we need a lower bound on the length
+of this arbitrary path from s to w*.
+
+225
+00:13:15.450 --> 00:13:19.419
+So let's get that lower bound by arguing
+about each piece separately, and
+
+226
+00:13:19.419 --> 00:13:21.942
+then invoking Dijkstra's greedy criterion.
+
+227
+00:13:21.942 --> 00:13:25.543
+So remember, we said we better use
+the hypothesis that edge links are non
+
+228
+00:13:25.543 --> 00:13:30.330
+negative, otherwise we're toast, otherwise
+we know the algorithm is not correct.
+
+229
+00:13:30.330 --> 00:13:31.092
+So here's where we use it.
+
+230
+00:13:31.092 --> 00:13:34.262
+This final part of the path from z to w*,
+
+231
+00:13:34.262 --> 00:13:39.600
+if it's not empty then it's gotta
+have non negative length right.
+
+232
+00:13:39.600 --> 00:13:43.978
+Every edge as part of this subpath
+has non negative edge length, so
+
+233
+00:13:43.978 --> 00:13:47.750
+the total length of this part
+of the path is non negative.
+
+234
+00:13:47.750 --> 00:13:49.664
+So y to z by construction is direct arc.
+
+235
+00:13:49.664 --> 00:13:55.396
+Remember, this is the first arc that path
+p uses to go from x to get outside of x.
+
+236
+00:13:55.396 --> 00:13:59.421
+So that's how it escapes,
+the conquer territory x and
+
+237
+00:13:59.421 --> 00:14:02.055
+this just has some length, l of yz.
+
+238
+00:14:03.400 --> 00:14:05.274
+So that leaves the first
+part of this path,
+
+239
+00:14:05.274 --> 00:14:07.733
+the prefix of this path that
+lies entirely in capital X.
+
+240
+00:14:07.733 --> 00:14:10.996
+So how do we get a lower bound
+in the length of this path?
+
+241
+00:14:10.996 --> 00:14:14.200
+Well, let's begin with something trivial.
+
+242
+00:14:14.200 --> 00:14:18.360
+This is some path from s to y, so
+
+243
+00:14:18.360 --> 00:14:22.530
+certainly it's as least as long
+as a shortest path from s to y.
+
+244
+00:14:24.080 --> 00:14:27.000
+And now, we're going to use
+the inductive hypothesis again.
+
+245
+00:14:27.000 --> 00:14:30.860
+So this vertex y, this is something
+we treated in a previous iteration.
+
+246
+00:14:30.860 --> 00:14:33.370
+This belongs to the set capital X,
+we've already processed it,
+
+247
+00:14:33.370 --> 00:14:37.210
+we've already computed our estimate
+of it's shortest path length, and
+
+248
+00:14:37.210 --> 00:14:40.900
+the inductive hypothesis assures
+us that we did it correctly.
+
+249
+00:14:40.900 --> 00:14:44.610
+So whatever value we have hanging
+out in our array capital A,
+
+250
+00:14:44.610 --> 00:14:47.580
+that is indeed the length
+of the true shortest path.
+
+251
+00:14:49.180 --> 00:14:54.376
+So the length of the shortest sy
+path is l(y) by definition, and
+
+252
+00:14:54.376 --> 00:15:00.540
+it's A(y) by the inductive hypothesis,
+and now we're in business.
+
+253
+00:15:00.540 --> 00:15:07.595
+So what does this mean we can say about
+the total length of this arbitrary path P?
+
+254
+00:15:07.595 --> 00:15:09.989
+Well, we've broken it
+into three pieces and
+
+255
+00:15:09.989 --> 00:15:13.626
+we have a lower bound on the length for
+each of the three pieces.
+
+256
+00:15:13.626 --> 00:15:18.783
+Our lower bounds are,
+our computed shortest path distance to y,
+
+257
+00:15:18.783 --> 00:15:22.461
+the length of the direct
+edge from y to z and 0.
+
+258
+00:15:22.461 --> 00:15:27.384
+So adding those up,
+we get that the length of
+
+259
+00:15:27.384 --> 00:15:32.307
+path P is at least our
+computed shortest path
+
+260
+00:15:32.307 --> 00:15:37.910
+distance to y plus the length
+of the arc from y to z.
+
+261
+00:15:39.380 --> 00:15:40.700
+So why is this useful?
+
+262
+00:15:40.700 --> 00:15:44.760
+Well, we've got one remaining
+trick up our sleeve.
+
+263
+00:15:44.760 --> 00:15:49.030
+There's a hypothesis which is
+presumably very important,
+
+264
+00:15:49.030 --> 00:15:51.400
+which we have not yet invoked.
+
+265
+00:15:51.400 --> 00:15:55.710
+And that is the choice of
+Dijkstra's greedy criterion
+
+266
+00:15:55.710 --> 00:16:01.150
+at no point in the proof yet
+have we used the facts that we select
+
+267
+00:16:01.150 --> 00:16:05.990
+which vertex to add next according
+to Dykstra's greedy score.
+
+268
+00:16:05.990 --> 00:16:08.010
+So that is going to be
+the final nail in the coffin,
+
+269
+00:16:08.010 --> 00:16:09.330
+that's what's going to complete the proof.
+
+270
+00:16:10.370 --> 00:16:11.410
+How do we do that?
+
+271
+00:16:11.410 --> 00:16:16.257
+Well we have taken an arbitrary path P,
+we have lower abounded it's length,
+
+272
+00:16:16.257 --> 00:16:20.509
+in terms of the computed shortest
+path distance up to the last vertex
+
+273
+00:16:20.509 --> 00:16:24.626
+of this prefix y plus the arc length
+to get from x to l set of X, zyz.
+
+274
+00:16:24.626 --> 00:16:30.940
+So remember, this means y is on the left
+part of the frontier and z is not.
+
+275
+00:16:33.690 --> 00:16:35.910
+And therefore in this iteration,
+
+276
+00:16:35.910 --> 00:16:41.370
+the edge yz was totally a candidate for
+us to use to enlarge our frontier.
+
+277
+00:16:41.370 --> 00:16:45.290
+Remember, we looked at all of
+the edges crossing from left to right.
+
+278
+00:16:45.290 --> 00:16:48.920
+Yz is one such edge and
+amongst all of them,
+
+279
+00:16:48.920 --> 00:16:52.920
+we chose the one with the smallest
+Dijkstra's greedy score.
+
+280
+00:16:52.920 --> 00:16:54.510
+That was the Dijkstra's greedy criterion.
+
+281
+00:16:56.480 --> 00:16:57.220
+So what have we shown?
+
+282
+00:16:57.220 --> 00:17:00.300
+We've shown that the length of our path
+
+283
+00:17:02.750 --> 00:17:07.520
+is no more than what's a lower bound on
+the length of this arbitrary other path P.
+
+284
+00:17:08.610 --> 00:17:09.593
+So this completes the proof.
+
+285
+00:17:09.593 --> 00:17:11.931
+So let me just remind you
+of all the ingredients,
+
+286
+00:17:11.931 --> 00:17:14.070
+in case you got lost along the way.
+
+287
+00:17:14.070 --> 00:17:17.529
+So what we started out with is
+we realized our algorithm or
+
+288
+00:17:17.529 --> 00:17:21.360
+Dijkstra's algorithm it does
+compute some path from s to w*.
+
+289
+00:17:21.360 --> 00:17:25.164
+It just takes the path it
+computed previously to v*, and
+
+290
+00:17:25.164 --> 00:17:28.180
+it just depends this final hop at the end.
+
+291
+00:17:28.180 --> 00:17:30.627
+So that gives us some path
+from s to w* moreover,
+
+292
+00:17:30.627 --> 00:17:33.864
+it was easy to figure out exactly
+what the length of that path is.
+
+293
+00:17:33.864 --> 00:17:38.187
+And the length of the path that we came up
+with is exactly the circled quantity at
+
+294
+00:17:38.187 --> 00:17:39.860
+the bottom of the slot.
+
+295
+00:17:39.860 --> 00:17:43.500
+It's the shortest path
+distance from s to v* plus
+
+296
+00:17:43.500 --> 00:17:46.710
+the length of the direct
+arc from v* to w*.
+
+297
+00:17:46.710 --> 00:17:48.320
+So that was how well we did.
+
+298
+00:17:48.320 --> 00:17:50.828
+But we had to ask the question,
+is it possible to do better?
+
+299
+00:17:50.828 --> 00:17:54.749
+We're trying to argue that our
+algorithm does the best possible,
+
+300
+00:17:54.749 --> 00:17:58.730
+that no competing path could
+possibly be shorter than ours.
+
+301
+00:17:58.730 --> 00:17:59.780
+So how did we do that?
+
+302
+00:17:59.780 --> 00:18:03.040
+Well, we considered
+an arbitrary competing path P.
+
+303
+00:18:03.040 --> 00:18:06.640
+The only thing we know about it is that
+it starts at s and it ends up at w*.
+
+304
+00:18:06.640 --> 00:18:10.340
+And we observe that any path can
+be decomposed into three pieces.
+
+305
+00:18:10.340 --> 00:18:13.390
+A prefix, a direct edge, and a suffix.
+
+306
+00:18:13.390 --> 00:18:15.285
+Then we give a lower bound on this path P.
+
+307
+00:18:15.285 --> 00:18:18.770
+The direct edge,
+the length is just whatever it is.
+
+308
+00:18:18.770 --> 00:18:21.127
+The suffix, we just use the trivial
+lower bound that's at least 0.
+
+309
+00:18:21.127 --> 00:18:24.787
+And that's where we use the hypothesis
+that every edge has non negative
+
+310
+00:18:24.787 --> 00:18:25.970
+edge length.
+
+311
+00:18:25.970 --> 00:18:29.588
+And for the prefix, because that's
+all in the stuff we already computed,
+
+312
+00:18:29.588 --> 00:18:33.208
+we can vote the inductive hypothesis and
+say, well whatever this path is,
+
+313
+00:18:33.208 --> 00:18:34.889
+it goes from s to come vertex and y.
+
+314
+00:18:34.889 --> 00:18:37.850
+So at least the shortest path
+distance from s to y which is
+
+315
+00:18:37.850 --> 00:18:41.300
+something we computed in
+a previous iteration.
+
+316
+00:18:41.300 --> 00:18:45.826
+We lower bounded the length of any other
+path in terms of the Dijkstra's greedy
+
+317
+00:18:45.826 --> 00:18:47.130
+score for that path.
+
+318
+00:18:47.130 --> 00:18:50.210
+Since we choose the path
+with the best greedy score,
+
+319
+00:18:50.210 --> 00:18:54.920
+that's why we wind up with the shortest
+path of them all, from s to w*.
+
+320
+00:18:54.920 --> 00:18:57.880
+This of course, is embedded in an outer
+proof by induction on the number of
+
+321
+00:18:57.880 --> 00:19:01.860
+iterations, but this is the inductive
+step, which justifies a single iteration.
+
+322
+00:19:01.860 --> 00:19:05.270
+Since we can justify every iteration
+giving correctness to the previous ones.
+
+323
+00:19:05.270 --> 00:19:07.099
+That means by induction,
+all of them are correct.
+
+324
+00:19:07.099 --> 00:19:10.030
+So all of the shortest paths are correct.
+
+325
+00:19:10.030 --> 00:19:14.287
+And that is why Dijkstra's algorithm
+correctly computes shortest paths and
+
+326
+00:19:14.287 --> 00:19:17.179
+any directed graph with
+non negative edge lengths.

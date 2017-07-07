@@ -1,0 +1,566 @@
+WEBVTT
+
+1
+00:00:03.240 --> 00:00:07.320
+So in this video, we're going to revisit 
+our greedy algorithm for minimizing the 
+
+2
+00:00:07.320 --> 00:00:10.910
+wait and somewhat completion times. 
+And we're going to give a more robust 
+
+3
+00:00:10.910 --> 00:00:15.040
+more general correctness proof that also 
+accommodates ties amongst the ratios of 
+
+4
+00:00:15.040 --> 00:00:17.695
+the different jobs. 
+The main reason I'm doing this is not 
+
+5
+00:00:17.695 --> 00:00:21.481
+because you know, I think the result is, 
+is so earth-shattering in its own right, 
+
+6
+00:00:21.481 --> 00:00:25.169
+but rather to give you further examples 
+of exchange arguments in action, in 
+
+7
+00:00:25.169 --> 00:00:28.480
+particular outside of a proof by 
+contradiction. 
+
+8
+00:00:28.480 --> 00:00:31.520
+So let's be formal about our new more 
+general correctness proof. 
+
+9
+00:00:31.520 --> 00:00:35.369
+So we're again talking about the greedy 
+algorithm which orders jobs by the ratio 
+
+10
+00:00:35.369 --> 00:00:38.173
+of weight to the length. 
+We're no longer assuming these are 
+
+11
+00:00:38.173 --> 00:00:40.501
+distinct. 
+So we can't really say decreasing order. 
+
+12
+00:00:40.501 --> 00:00:43.874
+We'll say non-increasing order. 
+And ties can be broken any way you want. 
+
+13
+00:00:43.874 --> 00:00:46.820
+We'll prove the algorithms commit, 
+correct, no matter how the ties are 
+
+14
+00:00:46.820 --> 00:00:49.053
+resolved. 
+So fortunately,, we'll be able to reuse 
+
+15
+00:00:49.053 --> 00:00:52.094
+much of the work that we did for the 
+previous correctness proof. 
+
+16
+00:00:52.094 --> 00:00:55.183
+But actually, our overall proof plan is 
+going to change a little bit. 
+
+17
+00:00:55.183 --> 00:00:57.559
+we're no longer going to proceed by 
+contradiction. 
+
+18
+00:00:57.559 --> 00:01:00.220
+So here's the high level, here's the high 
+level plan of that. 
+
+19
+00:01:00.220 --> 00:01:03.796
+So as before, we're going to argue 
+correctness on every separate instance, 
+
+20
+00:01:03.796 --> 00:01:08.043
+so fix an arbitrary one. 
+So, the notation will be similar to last 
+
+21
+00:01:08.043 --> 00:01:12.514
+time, so on this input, we'll let sigma 
+denote the output of our greedy algorithm 
+
+22
+00:01:12.514 --> 00:01:16.929
+and then we'll let sigma star denote an 
+arbitrary other competitor, any other 
+
+23
+00:01:16.929 --> 00:01:20.561
+schedule of the jobs. 
+So now, we're going to do is were going 
+
+24
+00:01:20.561 --> 00:01:24.864
+to show that sigma, the output of our 
+greedy algorithm, is at least as good as 
+
+25
+00:01:24.864 --> 00:01:28.441
+sigma star, since sigma star was 
+arbitrary, that means the greedy 
+
+26
+00:01:28.441 --> 00:01:32.688
+algorithms output is at least as good as 
+every other schedule, and therefore, 
+
+27
+00:01:32.688 --> 00:01:35.634
+sigma has to be optimal. 
+So, let's now fill in the details. 
+
+28
+00:01:35.634 --> 00:01:39.475
+We're going to make a similar notational 
+assumption as last time and that we're 
+
+29
+00:01:39.475 --> 00:01:43.705
+going to assume that the greedy schedule 
+is just 1, 2, 3, all the way up to n. And 
+
+30
+00:01:43.705 --> 00:01:47.595
+again, that's a content free assumption, 
+we can get away with it just by changing 
+
+31
+00:01:47.595 --> 00:01:51.370
+the names of the jobs, changing notation. 
+So, recall the proof plan, we have to 
+
+32
+00:01:51.370 --> 00:01:55.388
+take any other competing schedule sigma 
+star and show that it's no better than 
+
+33
+00:01:55.388 --> 00:01:57.778
+sigma, show that sigma is at least as 
+good as it. 
+
+34
+00:01:57.778 --> 00:02:01.541
+So fix any such schedule sigma star, 
+obviously, if sigma star is sigma, then 
+
+35
+00:02:01.541 --> 00:02:05.508
+they're they same or just as good as each 
+other so there's nothing to do. 
+
+36
+00:02:05.508 --> 00:02:09.526
+Now, if sigma star is not the same thing 
+as sigma, if it's not just the sequence 
+
+37
+00:02:09.526 --> 00:02:13.696
+1, 2, 3, all the way up to n, we're going 
+to reuse a key observation from our 
+
+38
+00:02:13.696 --> 00:02:17.917
+previous proof, namely any schedule other 
+than just 1 through n has to contain in 
+
+39
+00:02:17.917 --> 00:02:23.716
+it a consecutive pair of jobs, i and j, 
+where j is executed immediately after i 
+
+40
+00:02:23.716 --> 00:02:28.083
+where i has the higher index. 
+So now we argue similarly to last time. 
+
+41
+00:02:28.083 --> 00:02:31.621
+What does it matter that's, one job has a 
+higher index than another. 
+
+42
+00:02:31.621 --> 00:02:36.139
+Well, that means it's further along in 
+the ordering, which means its ratio can 
+
+43
+00:02:36.139 --> 00:02:39.079
+only be smaller. 
+Remember, the ratios are non-increasing, 
+
+44
+00:02:39.079 --> 00:02:42.672
+they can only go down in the order. 
+So higher index, means lower ratio. 
+
+45
+00:02:42.672 --> 00:02:46.864
+But there may be ties, so we can't claim 
+a strict inequality, just a weak 
+
+46
+00:02:46.864 --> 00:02:49.150
+inequality. 
+And so again, by clearing denominators, 
+
+47
+00:02:49.150 --> 00:02:53.884
+this boils down to the weight of job i 
+times the length of job j is at most the 
+
+48
+00:02:53.884 --> 00:02:57.288
+weight of job j times the length of job 
+i. 
+
+49
+00:02:57.288 --> 00:03:03.611
+Now, the next thing I want you to recall 
+from our previous proof is that there are 
+
+50
+00:03:03.611 --> 00:03:10.257
+nice semantics with wilj and wjli namely 
+as the cost in the benefit of exchanging 
+
+51
+00:03:10.257 --> 00:03:17.222
+jobs i and j in the schedule sigma star. 
+So arguing as in the previous videos, we 
+
+52
+00:03:17.222 --> 00:03:24.350
+can argue, we can claim that exchanging i 
+and j [SOUND] from a schedule sigma star 
+
+53
+00:03:24.350 --> 00:03:30.989
+has a net benefit, that is a benefit 
+minus cost of wjli, that's because job 
+
+54
+00:03:30.989 --> 00:03:34.696
+j's completion time drops by li minus 
+wilj. 
+
+55
+00:03:34.696 --> 00:03:41.939
+That's because job i's completion time 
+increases by lj with this exchange and so 
+
+56
+00:03:41.939 --> 00:03:45.160
+this is non-negative. 
+[SOUND] So in comparison with our 
+
+57
+00:03:45.160 --> 00:03:49.393
+previous proof, in our previous proof, 
+with the assumption of bought us, it 
+
+58
+00:03:49.393 --> 00:03:54.006
+bought us the stronger fact than we 
+exchange i and j, in fact sigma star gets 
+
+59
+00:03:54.006 --> 00:03:57.044
+strictly better. 
+It's we get a better schedule than what 
+
+60
+00:03:57.044 --> 00:03:59.920
+we started with. 
+Here with ties, that need not be true. 
+
+61
+00:03:59.920 --> 00:04:03.936
+If i and j have exactly the same ratio 
+and we exchange them, then the cost 
+
+62
+00:04:03.936 --> 00:04:07.789
+equals the benefit so the net change in 
+the objective function is 0. 
+
+63
+00:04:07.789 --> 00:04:12.021
+So we can only claim that by inverting i 
+and j, we don't make sigma star worse. 
+
+64
+00:04:12.021 --> 00:04:14.321
+It can only get better and might stay the 
+same. 
+
+65
+00:04:14.321 --> 00:04:18.000
+So let's see why that's good enough to 
+nonetheless complete the proof. 
+
+66
+00:04:18.000 --> 00:04:22.188
+So what the previous slide gives us, it 
+gives us a method of changing a schedule, 
+
+67
+00:04:22.188 --> 00:04:26.219
+massaging a schedule, so that, it doesn't 
+get any worse, it can only get better. 
+
+68
+00:04:26.219 --> 00:04:29.831
+Specifically, if we take any schedule 
+sigma star, we take any adjacent 
+
+69
+00:04:29.831 --> 00:04:33.601
+inversion, by which I just mean two 
+consecutive jobs with the higher one 
+
+70
+00:04:33.601 --> 00:04:36.690
+having a higher index. 
+We exchange the jobs in any adjacent 
+
+71
+00:04:36.690 --> 00:04:39.674
+inversion, we get a new schedule which 
+can only be better. 
+
+72
+00:04:39.674 --> 00:04:43.757
+Some of weighted completion times might 
+be the same, but if it's different, it 
+
+73
+00:04:43.757 --> 00:04:46.834
+has to be smaller. 
+So in our previous proof, we knew it was 
+
+74
+00:04:46.834 --> 00:04:51.104
+strictly better because we had no ties 
+and then our proof by contradiction said 
+
+75
+00:04:51.104 --> 00:04:53.560
+we were done. 
+So what are we going to do now? 
+
+76
+00:04:53.560 --> 00:04:57.442
+What we're going to do is take this 
+operation, which massages the schedule 
+
+77
+00:04:57.442 --> 00:05:01.692
+without making it worse, and we're just 
+going to repeat it over and over and over 
+
+78
+00:05:01.692 --> 00:05:03.948
+again, 
+because actually, this operation has a 
+
+79
+00:05:03.948 --> 00:05:08.146
+second property. Not only can it not make 
+a schedule worse, but, it also decreases 
+
+80
+00:05:08.146 --> 00:05:11.871
+the number of inverted job pairs. 
+And here by an inversion, I mean the same 
+
+81
+00:05:11.871 --> 00:05:16.226
+thing as when we counted inversions with 
+the divide and conquer algorithm back in 
+
+82
+00:05:16.226 --> 00:05:18.902
+part 1. 
+I just need a job pair somewhere in the 
+
+83
+00:05:18.902 --> 00:05:22.522
+schedule, where the higher next to one 
+occurs earlier in the ordering. 
+
+84
+00:05:22.522 --> 00:05:26.877
+When we exchange adjacent inversion, we 
+uninvert that aversion and because they 
+
+85
+00:05:26.877 --> 00:05:30.063
+are adjacent, 
+we don't create any new inversions. 
+
+86
+00:05:30.063 --> 00:05:33.630
+So the number of inverted job pairs drops 
+by exactly one, 
+
+87
+00:05:33.630 --> 00:05:36.891
+each time we do one of these exchanges. 
+So what does that mean? 
+
+88
+00:05:36.891 --> 00:05:40.626
+So here is the proof in a nutshell. 
+We take an arbitrary competitor, some 
+
+89
+00:05:40.626 --> 00:05:44.623
+schedule sigma star and we find, either 
+it's the same as the greedy schedule. 
+
+90
+00:05:44.623 --> 00:05:48.411
+If it's not, there is an adjacent 
+inversion, in which case we exchange it. 
+
+91
+00:05:48.411 --> 00:05:51.725
+We get a schedule that's at least as good 
+and fewer inversions. 
+
+92
+00:05:51.725 --> 00:05:55.670
+Either this new schedule is sigma, in 
+which case we're done, or it's not, and 
+
+93
+00:05:55.670 --> 00:05:59.983
+then we find an adjacent inversion, and 
+we exchange it, it only gets better and 
+
+94
+00:05:59.983 --> 00:06:02.672
+we keep going. 
+Why can this not continue forever? 
+
+95
+00:06:02.672 --> 00:06:07.151
+Well, the number of inversions can only 
+be n choose 2 initially, that's if you 
+
+96
+00:06:07.151 --> 00:06:12.434
+start with the schedule n, n - 1, n - 2, 
+all the way 1 if the jobs are initially 
+
+97
+00:06:12.434 --> 00:06:16.396
+backward. So, we can only do this 
+exchange n choose 2 times before we 
+
+98
+00:06:16.396 --> 00:06:20.014
+necessarily terminates witht the greedy 
+schedule, 1 through n. 
+
+99
+00:06:20.014 --> 00:06:24.321
+At that point what have we done? We've 
+taken an arbitrary schedule sigma star, 
+
+100
+00:06:24.321 --> 00:06:28.340
+we've massaged it, making it only better, 
+and better, and better, and better, 
+
+101
+00:06:28.340 --> 00:06:30.810
+terminating with our greedy schedule 
+sigma. 
+
+102
+00:06:30.810 --> 00:06:33.875
+What does that say? 
+That says our greedy schedule sigma is at 
+
+103
+00:06:33.875 --> 00:06:36.338
+least as good as when we started with 
+sigma star. 
+
+104
+00:06:36.338 --> 00:06:40.157
+So the greedy schedule is at least as 
+good as this arbitrary schedule sigma 
+
+105
+00:06:40.157 --> 00:06:42.067
+star, 
+so it's optimal. It's better than 
+
+106
+00:06:42.067 --> 00:06:44.752
+everything. 
+So one final note before I write down the 
+
+107
+00:06:44.752 --> 00:06:48.864
+QED. for those of you familiar with the 
+bubble sort algorithm and it's totally 
+
+108
+00:06:48.864 --> 00:06:52.875
+fine if you're not familar with bubble 
+sort, but if you are familiar with bubble 
+
+109
+00:06:52.875 --> 00:06:56.936
+sort, you will recognize that essentially 
+what we're doing here inside the proof, 
+
+110
+00:06:56.936 --> 00:07:00.643
+not in tour algorithm but inside our 
+proof, we're applying bubble sort in 
+
+111
+00:07:00.643 --> 00:07:04.400
+effect to this arbitrary competing 
+schedule sigma star. And by uninverting 
+
+112
+00:07:04.400 --> 00:07:08.613
+the inversion we transform it in to the, 
+the greedy schedule, making it only 
+
+113
+00:07:08.613 --> 00:07:12.320
+better, thereby justifying as optimal our 
+greedy algorithm schedule sigma. 

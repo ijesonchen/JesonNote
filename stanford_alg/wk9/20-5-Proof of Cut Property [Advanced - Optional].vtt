@@ -1,0 +1,991 @@
+WEBVTT
+
+1
+00:00:01.720 --> 00:00:06.262
+Okay. So to this point we've proven the 
+correctness of Prim's minimum spanning 
+
+2
+00:00:06.262 --> 00:00:10.805
+sheet algorithm under an assumption, 
+under an assumption that the cut property 
+
+3
+00:00:10.805 --> 00:00:13.309
+is true. 
+So, the purpose of this video was to 
+
+4
+00:00:13.309 --> 00:00:17.500
+supply the missing proof to convince you 
+of this cut property. 
+
+5
+00:00:17.500 --> 00:00:21.473
+Let me remind you where we stand. 
+So through all the minimum spanning tree 
+
+6
+00:00:21.473 --> 00:00:23.729
+videos, we're assuming distinct edge 
+costs. 
+
+7
+00:00:23.729 --> 00:00:26.521
+All of this can be extended to edge costs 
+with ties. 
+
+8
+00:00:26.521 --> 00:00:30.764
+In particular, there's a version of the 
+cut property when the edges have ties, 
+
+9
+00:00:30.764 --> 00:00:34.899
+but we're just going to focus on the main 
+ideas which were exposed already with 
+
+10
+00:00:34.899 --> 00:00:37.799
+distinct edge costs. 
+So what does the cut property say? 
+
+11
+00:00:37.799 --> 00:00:41.934
+Well, it's meant to be a guarantee that 
+an edge is safe to include on, in your 
+
+12
+00:00:41.934 --> 00:00:44.780
+tree so far. 
+So it justifies an iteration of a greedy 
+
+13
+00:00:44.780 --> 00:00:48.554
+algorithm like Prim's algorithm. 
+Specifically, consider an edge of a 
+
+14
+00:00:48.554 --> 00:00:52.351
+graph, and suppose you can find some cut 
+A, B. 
+
+15
+00:00:52.351 --> 00:00:56.882
+So that, amongst all the edges that are 
+crossing this cut, E is the cheapest. 
+
+16
+00:00:56.882 --> 00:00:59.722
+So E, the edge E has to not just cross 
+this cut, 
+
+17
+00:00:59.722 --> 00:01:03.407
+but it has to be cheaper than any edge 
+that crosses this cut. 
+
+18
+00:01:03.407 --> 00:01:08.060
+If you can find just one cut of this 
+form, so that E is the cheapest crossing 
+
+19
+00:01:08.060 --> 00:01:10.657
+edge, 
+then it's definitely not a mistake to 
+
+20
+00:01:10.657 --> 00:01:13.437
+include E in your tree. 
+You definitely want it. 
+
+21
+00:01:13.437 --> 00:01:17.122
+It is in the MST. 
+So this is a non-trivial claim and, let's 
+
+22
+00:01:17.122 --> 00:01:20.007
+turn to the proof. 
+At a high level, the plan will be not 
+
+23
+00:01:20.007 --> 00:01:23.650
+that different than the correctness of 
+our greedy scheduling algorithm for 
+
+24
+00:01:23.650 --> 00:01:26.176
+minimizing the weighted sum of the 
+completion times. 
+
+25
+00:01:26.176 --> 00:01:29.479
+That is, we're going to use an exchange 
+argument embedded in a proof by 
+
+26
+00:01:29.479 --> 00:01:32.199
+contradiction. 
+[COUGH] The type of contradiction will be 
+
+27
+00:01:32.199 --> 00:01:34.822
+of the same form. 
+We'll start with an optimal solution. 
+
+28
+00:01:34.822 --> 00:01:37.785
+Suppose it doesn't have the property that 
+we want it to have, 
+
+29
+00:01:37.785 --> 00:01:41.622
+and then we do an exchange to make it 
+even better, contradicting the assumption 
+
+30
+00:01:41.622 --> 00:01:44.807
+that this solution is optimal. 
+So specifically, if we argue by 
+
+31
+00:01:44.807 --> 00:01:47.873
+contradiction we assume, that the cup 
+property is false. 
+
+32
+00:01:47.873 --> 00:01:50.883
+So let's just make sure we understand 
+what that means. 
+
+33
+00:01:50.883 --> 00:01:54.784
+If the cup property is false, then 
+there's a graph and there's an edge, 
+
+34
+00:01:54.784 --> 00:01:58.964
+which actually is the cheapest crossing 
+some cut, and yet, that edge does not 
+
+35
+00:01:58.964 --> 00:02:01.640
+belong to the minimum cost spanning tree 
+T star. 
+
+36
+00:02:02.700 --> 00:02:07.296
+The plan then is to exchange this missing 
+edge E with some edge that isn't a tree T 
+
+37
+00:02:07.296 --> 00:02:11.564
+star, which is more expensive, thereby 
+getting a better spanning tree providing 
+
+38
+00:02:11.564 --> 00:02:15.121
+the contradiction. 
+So, this idea currently is a little bit 
+
+39
+00:02:15.121 --> 00:02:17.857
+hand-wavy. 
+To really execute it, we have to specify 
+
+40
+00:02:17.857 --> 00:02:20.648
+which edge we're going to exchange the 
+edge E with. 
+
+41
+00:02:20.648 --> 00:02:24.862
+That's a subtle point and we'll develop 
+it over the next couple of slides. 
+
+42
+00:02:24.862 --> 00:02:32.800
+So let's begin with a sort of first cut 
+attempt at an exchange argument. 
+
+43
+00:02:32.800 --> 00:02:37.093
+So what's the world look like? 
+Well, we have some cut of a graph. 
+
+44
+00:02:37.093 --> 00:02:42.477
+So at one blob, the vertices is A and 
+then the rest of the vertices are in this 
+
+45
+00:02:42.477 --> 00:02:45.885
+blob B. 
+this is the cut for which edge E is the 
+
+46
+00:02:45.885 --> 00:02:49.156
+cheapest. 
+And by our assumption in this proof by 
+
+47
+00:02:49.156 --> 00:02:54.745
+contradiction, this cheapest edge E does 
+not belong to the minimum spanning tree T 
+
+48
+00:02:54.745 --> 00:02:55.767
+star. 
+That said, 
+
+49
+00:02:55.767 --> 00:03:01.015
+I claim while T star may not have this 
+edge E to cross in this cut, it better 
+
+50
+00:03:01.015 --> 00:03:04.150
+possess some other edge crossing this cut 
+A, D. 
+
+51
+00:03:04.150 --> 00:03:07.301
+So why is that true? 
+Well, suppose the opposite, suppose in 
+
+52
+00:03:07.301 --> 00:03:10.176
+fact T star did not have any edge 
+crossing this cut A, 
+
+53
+00:03:10.176 --> 00:03:13.881
+B, well then, T star wouldn't be 
+connected. It wouldn't span all the 
+
+54
+00:03:13.881 --> 00:03:14.710
+vertices, 
+right? 
+
+55
+00:03:14.710 --> 00:03:19.244
+Remember our proof of empty cut lemma, so 
+if you had this empty cut and there's no 
+
+56
+00:03:19.244 --> 00:03:22.064
+way to have a path from one side to the 
+other side. 
+
+57
+00:03:22.064 --> 00:03:24.662
+Okay? 
+But that's spanning trees have to have 
+
+58
+00:03:24.662 --> 00:03:28.643
+paths between each pair of vertices. 
+So T star as a spanning tree have to 
+
+59
+00:03:28.643 --> 00:03:32.790
+contain something from this cut, by 
+assumption it doesn't contain edge E. So 
+
+60
+00:03:32.790 --> 00:03:36.720
+it contains some other edge, let's call 
+it F, that crosses this cut. 
+
+61
+00:03:36.720 --> 00:03:40.877
+Now of course, since E is the cheapest 
+edge crossing this cut and F is some 
+
+62
+00:03:40.877 --> 00:03:44.480
+other edge crossing this cut, F is 
+strictly more expensive than E. 
+
+63
+00:03:46.680 --> 00:03:51.136
+And at this point, we seem beautifully 
+set up to execute the desired exchange 
+
+64
+00:03:51.136 --> 00:03:55.359
+arguement. We have the edge that the 
+optimal solutions missing. We have a 
+
+65
+00:03:55.359 --> 00:03:58.291
+canvid replacement edge F, which is more 
+expensive. 
+
+66
+00:03:58.291 --> 00:04:02.806
+So if we swap E and F, hopefully we get a 
+new spanning tree that has strictly 
+
+67
+00:04:02.806 --> 00:04:06.040
+smaller cost providing the desired 
+contradiction. 
+
+68
+00:04:06.040 --> 00:04:10.462
+But, things are more settled than they 
+were with these scheduling applications. 
+
+69
+00:04:10.462 --> 00:04:14.090
+The reason being is that schedules are 
+simply sequences of jobs. 
+
+70
+00:04:14.090 --> 00:04:18.059
+So whenever you do an exchange of two 
+jobs, it's clear you get another 
+
+71
+00:04:18.059 --> 00:04:20.893
+schedule. 
+But spanning trees and graphs are subtle 
+
+72
+00:04:20.893 --> 00:04:25.259
+objects and there's a question, if we 
+take a spanning tree and we add one new 
+
+73
+00:04:25.259 --> 00:04:28.830
+edge and delete an edge, 
+do we get another spanning tree of the 
+
+74
+00:04:28.830 --> 00:04:31.948
+graph or not? 
+So the following quiz is going to ask you 
+
+75
+00:04:31.948 --> 00:04:38.742
+to think about that question carefully. 
+Okay. So what we wish that the answer to 
+
+76
+00:04:38.742 --> 00:04:41.321
+this quiz was, was either answer A or 
+answer C. 
+
+77
+00:04:41.321 --> 00:04:45.694
+So A would be the cleanest solution. 
+If it were always true that when you take 
+
+78
+00:04:45.694 --> 00:04:50.323
+a spanning tree, you take an edge outside 
+of the spanning tree and then you swap 
+
+79
+00:04:50.323 --> 00:04:52.424
+those two edges, you get a new spanning 
+tree, 
+
+80
+00:04:52.424 --> 00:04:55.432
+then in fact, our proof of the cut 
+property would be done, right? 
+
+81
+00:04:55.432 --> 00:04:59.108
+We would just go on that previous slide. 
+We would rip out the edge F from the 
+
+82
+00:04:59.108 --> 00:05:00.922
+spanning tree. 
+We'd plug in the edge E, 
+
+83
+00:05:00.922 --> 00:05:03.930
+because E costs less than F, 
+we'd get a spanning tree which was 
+
+84
+00:05:03.930 --> 00:05:04.933
+cheaper. 
+And we'd be done, 
+
+85
+00:05:04.933 --> 00:05:08.180
+that would be our contradiction. 
+Now if A wasn't true, we'd still be okay 
+
+86
+00:05:08.180 --> 00:05:10.615
+if C was true. 
+If maybe not every swap yields a new 
+
+87
+00:05:10.615 --> 00:05:13.145
+spanning tree, 
+but at least if you're swapping in the 
+
+88
+00:05:13.145 --> 00:05:15.198
+edge that's the cheapest crossing some 
+cut, 
+
+89
+00:05:15.198 --> 00:05:18.015
+you get a spanning tree. 
+Then we'd also be golden, because in 
+
+90
+00:05:18.015 --> 00:05:20.260
+fact, we're only are trying to execute 
+the swap, 
+
+91
+00:05:20.260 --> 00:05:24.222
+the exchange, using an edge, which is the 
+cheapest crossing some cut. 
+
+92
+00:05:24.222 --> 00:05:28.599
+If you go back to the previous slide, 
+you'll see that was the only case we 
+
+93
+00:05:28.599 --> 00:05:32.680
+needed this fact to be true. 
+Unfortunately, the correct answer to this 
+
+94
+00:05:32.680 --> 00:05:35.755
+quiz is D. 
+You need not get a new spanning tree when 
+
+95
+00:05:35.755 --> 00:05:40.546
+you execute an exchange, even if you're 
+plugging an edge which is the cheapest 
+
+96
+00:05:40.546 --> 00:05:44.686
+edge crossing some cut. 
+So to understand this better, let me the 
+
+97
+00:05:44.686 --> 00:05:47.170
+picture that we had on the previous 
+slide. 
+
+98
+00:05:47.170 --> 00:05:51.243
+We had our cut A, B, we had our cheapest 
+edge E which by assumption does not 
+
+99
+00:05:51.243 --> 00:05:55.642
+belong to the spanning three T star, but 
+we observed that T star has to contain at 
+
+100
+00:05:55.642 --> 00:06:00.041
+least one other edge crossing this cut 
+because it's connected and we called that 
+
+101
+00:06:00.041 --> 00:06:02.320
+F. 
+And we're wondering if swapping E and F 
+
+102
+00:06:02.320 --> 00:06:06.541
+yields a new spanning tree or not. 
+So, to reason about this, let me just 
+
+103
+00:06:06.541 --> 00:06:10.160
+draw you what the rest of the spanning 
+tree might look like. 
+
+104
+00:06:10.160 --> 00:06:15.558
+So in this picture, this spanning tree T 
+star is given by the pink edges. 
+
+105
+00:06:15.558 --> 00:06:20.131
+And it's just to this path of five edges 
+on the six vertices. 
+
+106
+00:06:20.131 --> 00:06:25.530
+So, what happens if we exchange E and F? 
+Well unfortunately, something bad 
+
+107
+00:06:25.530 --> 00:06:28.281
+happens. 
+So we certainly get a new subgraph of 
+
+108
+00:06:28.281 --> 00:06:30.799
+five edges, 
+after all, we just subtracted one and 
+
+109
+00:06:30.799 --> 00:06:33.475
+added one. 
+But this new spanning, this new subgraph 
+
+110
+00:06:33.475 --> 00:06:36.099
+fails to be a spanning tree. 
+It fails on both counts. 
+
+111
+00:06:36.099 --> 00:06:39.876
+First of all, it obviously has a cycle 
+and it's a four cycle and secondly, it's 
+
+112
+00:06:39.876 --> 00:06:42.657
+not connected. 
+The upper right vertex is just totally 
+
+113
+00:06:42.657 --> 00:06:45.700
+disconnected from the rest of the rest of 
+the vertices. 
+
+114
+00:06:45.700 --> 00:06:48.691
+So that's no good. 
+That's an exchange which just does not 
+
+115
+00:06:48.691 --> 00:06:52.626
+produce a feasible solution and it is 
+therefore not useful in our proof by 
+
+116
+00:06:52.626 --> 00:06:55.302
+contradiction. 
+Now, if you just want to salvage some 
+
+117
+00:06:55.302 --> 00:06:59.552
+hope from this seemingly promising proof 
+plan, we could take solace from the fact 
+
+118
+00:06:59.552 --> 00:07:02.566
+that there is not just one pink edge 
+crossing the cut A, B. 
+
+119
+00:07:02.566 --> 00:07:06.115
+F isn't the only one, there's actually 
+this other one on the bottom. 
+
+120
+00:07:06.115 --> 00:07:10.319
+so let me call that E prime. 
+Now, E being the cheapest edge crossing 
+
+121
+00:07:10.319 --> 00:07:13.202
+this cut overall. 
+Not only is E cheaper than F, it's 
+
+122
+00:07:13.202 --> 00:07:16.886
+cheaper than E prime also. 
+So in some sense with our motivation, we 
+
+123
+00:07:16.886 --> 00:07:20.997
+could care less which edge we exchange E 
+from crossing this cut, because it's 
+
+124
+00:07:20.997 --> 00:07:24.521
+cheaper than all of them. 
+And we see that at least in this example, 
+
+125
+00:07:24.521 --> 00:07:28.365
+swapping with E prime yields a good 
+solution, yields a feasible spanning 
+
+126
+00:07:28.365 --> 00:07:30.549
+tree. 
+So what have we learned? 
+
+127
+00:07:30.549 --> 00:07:35.637
+What we've learned is that if we want to 
+execute this exchange argument, we cannot 
+
+128
+00:07:35.637 --> 00:07:39.608
+blithely exchange with any edge of T star 
+that crosses this cut. 
+
+129
+00:07:39.608 --> 00:07:44.510
+So the best case scenario, so what we're 
+hoping is true that we can always find 
+
+130
+00:07:44.510 --> 00:07:47.860
+some suitable edge, like E prime on the 
+previous slide. 
+
+131
+00:07:47.860 --> 00:07:52.080
+So that when we execute this swap, 
+we do in fact, get a spanning tree. 
+
+132
+00:07:53.680 --> 00:07:57.245
+And I'm happy to report that we can 
+indeed always do this. 
+
+133
+00:07:57.245 --> 00:08:01.733
+So what I need to explain is the 
+procedure by which we exhibit edge, this 
+
+134
+00:08:01.733 --> 00:08:06.589
+edge E Prime, which doesn't get us into 
+trouble after we swap, which still gives 
+
+135
+00:08:06.589 --> 00:08:10.854
+us a spanning tree after the swap. 
+So let me explain the procedure by which 
+
+136
+00:08:10.854 --> 00:08:14.831
+we identify this magical edge E prime 
+that we can swap with and still be a 
+
+137
+00:08:14.831 --> 00:08:17.642
+spanning tree. 
+So here's the way to think about it, so 
+
+138
+00:08:17.642 --> 00:08:21.778
+we've got this spanning tree T star, 
+we've got this edge which is not yet in T 
+
+139
+00:08:21.778 --> 00:08:24.165
+star. 
+Now, if we just plug E into T star, we're 
+
+140
+00:08:24.165 --> 00:08:25.350
+going to get a cycle. 
+Why? 
+
+141
+00:08:25.350 --> 00:08:29.967
+Well, a spanning tree, remember, it has a 
+path between each pair of vertices. So if 
+
+142
+00:08:29.967 --> 00:08:34.641
+this new edge, maybe its endpoints are U 
+and V. T star already has a path between 
+
+143
+00:08:34.641 --> 00:08:38.969
+U and V, so when you plug in this new 
+direct edge between U and V, it closes 
+
+144
+00:08:38.969 --> 00:08:42.892
+the loop, it gives you a cycle. 
+So let's go ahead and call that cycle 
+
+145
+00:08:42.892 --> 00:08:46.705
+capital C. 
+Let me also redraw the picture from the 
+
+146
+00:08:46.705 --> 00:08:51.415
+example on the previous slide so you can 
+see what that cycle was in that special 
+
+147
+00:08:51.415 --> 00:08:53.935
+case. 
+Now, here's the pattern to notice about 
+
+148
+00:08:53.935 --> 00:08:58.215
+this cycle capital C, at least in this 
+example, which is that the lousy edge, 
+
+149
+00:08:58.215 --> 00:09:02.837
+the edge F, for which when we swapped, we 
+didn't get a spanning tree, that's off of 
+
+150
+00:09:02.837 --> 00:09:07.345
+this capital C. Whereas, the good edge, 
+the edge where we could do a swap and get 
+
+151
+00:09:07.345 --> 00:09:10.769
+a spanning tree, E prime that's on this 
+same cycle capital C. 
+
+152
+00:09:10.769 --> 00:09:15.448
+And that turns out to be true in general. 
+So, when you add the edge to the spanning 
+
+153
+00:09:15.448 --> 00:09:19.842
+tree and you get a new cycle, that cycle 
+is what furnishes the candidates for 
+
+154
+00:09:19.842 --> 00:09:22.410
+swaps that will give you a new spanning 
+tree. 
+
+155
+00:09:22.410 --> 00:09:25.632
+So the one lingering concern then, we 
+have this cycle. 
+
+156
+00:09:25.632 --> 00:09:29.585
+We would, all edges of the cycle are 
+going to be good candidates for the 
+
+157
+00:09:29.585 --> 00:09:34.206
+swapping. Wee just need to make sure that 
+there is some edge that actually crosses 
+
+158
+00:09:34.206 --> 00:09:34.206
+this cut A, B like the edge E prime does 
+in the picture. 
+
+159
+00:09:34.206 --> 00:09:37.489
+But here, we're going to rely on a fact 
+from a previous video, the double 
+
+160
+00:09:37.489 --> 00:09:40.833
+crossing lemma. 
+Remember the double crossing lemma says, 
+
+161
+00:09:40.833 --> 00:09:45.637
+that if you have a cycle that crosses a 
+cut at least once, then it has to cross 
+
+162
+00:09:45.637 --> 00:09:46.629
+it twice. 
+All right. 
+
+163
+00:09:46.629 --> 00:09:50.372
+So if it'd cross once, then it has to 
+loop back around, then in looping back 
+
+164
+00:09:50.372 --> 00:09:52.446
+around, it's going to cross it a second 
+time. 
+
+165
+00:09:52.446 --> 00:09:55.430
+So, in this cycle capital C, we know it 
+crosses the cut A, B once, 
+
+166
+00:09:55.430 --> 00:09:59.174
+that's because it includes the original 
+cheapest edge across the cut E. 
+
+167
+00:09:59.174 --> 00:10:02.967
+So, it's got to cross it a second time. 
+There's got to be an E prime in the cycle 
+
+168
+00:10:02.967 --> 00:10:06.610
+crossing the cut and that's going to 
+allow us to do the swap and get a new, 
+
+169
+00:10:06.610 --> 00:10:10.400
+cheaper spanning tree completing the 
+contradiction. 
+
+170
+00:10:10.400 --> 00:10:13.246
+So, just to spell things out in a little 
+more detail. 
+
+171
+00:10:13.246 --> 00:10:16.641
+So what we do is we first say we use the 
+double crossing lemma. 
+
+172
+00:10:16.641 --> 00:10:19.762
+So, we have this reported minimum 
+spanning tree T star. 
+
+173
+00:10:19.762 --> 00:10:23.977
+We have this cheap edge E knot in it. 
+We plug E into the spanning tree, we get 
+
+174
+00:10:23.977 --> 00:10:27.700
+cycle, we call the cycle capital C. 
+The cycle crosses the cut A, B once, 
+
+175
+00:10:27.700 --> 00:10:31.040
+through the edge E. 
+It crosses it a second time by the double 
+
+176
+00:10:31.040 --> 00:10:33.887
+crossing lemma. 
+We're going to call that edge E prime. 
+
+177
+00:10:33.887 --> 00:10:38.158
+Since E prime crosses the same cut as E, 
+we know that E prime is strictly more 
+
+178
+00:10:38.158 --> 00:10:41.388
+expensive than E. 
+Remember we use the cheapest one crossing 
+
+179
+00:10:41.388 --> 00:10:42.045
+this cut, A, 
+B. 
+
+180
+00:10:42.045 --> 00:10:46.642
+So now what we do is we execute the swap 
+with this new edge E prime. 
+
+181
+00:10:46.642 --> 00:10:50.437
+So E prime in T star. 
+The cheapest edge, E, is not in T star so 
+
+182
+00:10:50.437 --> 00:10:51.993
+we can swap them. 
+We can take, 
+
+183
+00:10:51.993 --> 00:10:54.194
+we can rip E prime out, we can stick E 
+in. 
+
+184
+00:10:54.194 --> 00:10:58.649
+Now something I want you to think through 
+carefully at home, convince yourself this 
+
+185
+00:10:58.649 --> 00:11:02.890
+is true, is that because we plucked E 
+prime from the cycle, this new tree which 
+
+186
+00:11:02.890 --> 00:11:06.164
+I'm going to call capital T, this is a 
+spanning tree necessarily. 
+
+187
+00:11:06.164 --> 00:11:10.190
+You know, intuitively, the reason being, 
+you plug in E and you get this one cycle 
+
+188
+00:11:10.190 --> 00:11:13.840
+involving E, and then when you rip out E 
+prime, you destroy the cycle. 
+
+189
+00:11:13.840 --> 00:11:17.518
+And because it's on a cycle, you don't 
+destroy connectivity between any pair of 
+
+190
+00:11:17.518 --> 00:11:19.986
+veriticies, there is still one path 
+between each pair. 
+
+191
+00:11:19.986 --> 00:11:23.760
+But make sure you believe that, convince 
+yourself at home. 
+
+192
+00:11:23.760 --> 00:11:28.247
+And once you're so convinced, you will 
+also realize that we've finished a proof. 
+
+193
+00:11:28.247 --> 00:11:30.633
+We've executed our proof by 
+contradiction. 
+
+194
+00:11:30.633 --> 00:11:35.064
+since E was the cheapest edge crossing 
+the cut, and E prime is another edge 
+
+195
+00:11:35.064 --> 00:11:37.223
+crossing the cut, 
+E is got to be cheaper. 
+
+196
+00:11:37.223 --> 00:11:40.859
+Since T differs from T star only in the 
+swap of these two edges, 
+
+197
+00:11:40.859 --> 00:11:45.461
+it's aggregated cost has gone down and 
+that contradicts the purported optimality 
+
+198
+00:11:45.461 --> 00:11:49.040
+of T star comp completing the proof of 
+the cut property. 

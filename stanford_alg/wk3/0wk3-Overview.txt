@@ -1,0 +1,13 @@
+QUICKSORT - THE ALGORITHM (Part V). One of the greatest algorithms ever, and our first example of a randomized algorithm. These lectures go over the pseudocode --- the high-level approach, how to partition an array around a pivot element in linear time with minimal extra storage, and the ramifications of different pivot choices --- and explain how the algorithm works.
+
+QUICKSORT - THE ANALYSIS (Part VI). These lectures prove that randomized QuickSort (i.e., with random pivot choices) runs in O(n log n) time on average. The analysis is as elegant as the algorithm itself, and is based on a "decomposition principle" that is often useful in the analysis of randomized algorithms. Note that there are some accompanying lecture notes for this part (available for download underneath each video). Also, it may be helpful to watch the first probability review video (below) before watching this sequence.
+
+PROBABILITY REVIEW (Part VII). This first of these videos reviews the concepts from discrete probability that are necessary for the QuickSort analysis --- sample spaces, events, random variables, expectation, and linearity of expectation. The second video covers just two topics, although quite tricky ones! (Namely, conditional probability and independence.) You need to review these two topics (via this video or some other source, as you wish) before studying the analysis of the randomized contraction algorithm in Week 4.
+
+HOMEWORK: This week's quiz will help you understand QuickSort and probability more deeply. Programming Assignment #3 asks you to implement QuickSort and compute the number of comparisons that it makes for three different pivot rules.
+
+SUGGESTED READINGS FOR WEEK 3:
+
+CLRS Chapter 7
+KT Section 13.5
+SW Section 2.3

@@ -1,0 +1,28 @@
+III. DIVIDE & CONQUER ALGORITHMS
+
+Week 2 Overview10 分
+O(n log n) Algorithm for Counting Inversions I12 分
+O(n log n) Algorithm for Counting Inversions II16 分
+Strassen's Subcubic Matrix Multiplication Algorithm22 分
+O(n log n) Algorithm for Closest Pair I [Advanced - Optional]31 分
+继续
+O(n log n) Algorithm for Closest Pair II [Advanced - Optional]18 分
+IV. THE MASTER METHOD
+
+Motivation7 分
+Formal Statement10 分
+Examples13 分
+Proof I9 分
+Interpretation of the 3 Cases10 分
+Proof II16 分
+Problem Set #2
+
+购买课程以解锁此项目。
+测验: Problem Set #25 个试题
+截止时间 六月 4, 11:59 晚上 PDT
+Optional Theory Problems (Batch #1)10 分
+Programming Assignment #2
+
+购买课程以解锁此项目。
+测验: Programming Assignment #21 个试题
+截止时间 六月 4, 11:59 晚上 PDT

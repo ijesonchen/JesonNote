@@ -1,0 +1,866 @@
+WEBVTT
+
+1
+00:00:02.820 --> 00:00:06.698
+The designer analysis of algorithms is 
+the interplay between on the one hand 
+
+2
+00:00:06.698 --> 00:00:10.778
+general principles and on the other hand 
+its stantiations of those principles to 
+
+3
+00:00:10.778 --> 00:00:13.700
+solve specific problems. 
+While there's no silver bullet in 
+
+4
+00:00:13.700 --> 00:00:17.830
+algorithm design, no one technique which 
+solves every computational problem that's 
+
+5
+00:00:17.830 --> 00:00:21.658
+ever going to come up. There are general 
+design principles which have proven 
+
+6
+00:00:21.658 --> 00:00:25.486
+useful over and over again over the 
+decades for solving problems that arise 
+
+7
+00:00:25.486 --> 00:00:29.163
+in different application domains. 
+Those, of course, are the principles that 
+
+8
+00:00:29.163 --> 00:00:32.437
+we focus on in this class. 
+For example, in part one we studied the 
+
+9
+00:00:32.437 --> 00:00:36.064
+divide and conquer algorithm design 
+paradigm, principles of graph search 
+
+10
+00:00:36.064 --> 00:00:39.626
+amongst others. 
+On the other hand, we study specific 
+
+11
+00:00:39.626 --> 00:00:44.391
+substantiations of these techniques. So 
+in part one, we studied divide and 
+
+12
+00:00:44.391 --> 00:00:48.568
+conquer and how it applies to say, 
+Strassen matrix multiplication, merge 
+
+13
+00:00:48.568 --> 00:00:51.892
+short and quicksort. 
+In graph search, we culminated with the 
+
+14
+00:00:51.892 --> 00:00:55.653
+rightfully famous Dijkstra's algorithm 
+for computing shortest paths. 
+
+15
+00:00:55.653 --> 00:00:59.636
+This, of course, is useful not just, 
+because as any card-carrying computer 
+
+16
+00:00:59.636 --> 00:01:04.062
+scientist or programmer, you want to know 
+about what these algorithms are and what 
+
+17
+00:01:04.062 --> 00:01:08.267
+they do, but it also gives us a toolbox, 
+a suite of four free primitives, which we 
+
+18
+00:01:08.267 --> 00:01:12.250
+can apply to our own computational 
+problems as a building block in some 
+
+19
+00:01:12.250 --> 00:01:15.036
+larger program. 
+Part two of the course will continue this 
+
+20
+00:01:15.036 --> 00:01:17.132
+narrative. 
+We'll learn very general algorithm 
+
+21
+00:01:17.132 --> 00:01:19.041
+paradigms. 
+Like greedy algorithms, dynamic 
+
+22
+00:01:19.041 --> 00:01:22.162
+programming algorithms and many 
+applications, including a number of 
+
+23
+00:01:22.162 --> 00:01:24.258
+algorithms for the greatest hits 
+compilation. 
+
+24
+00:01:24.258 --> 00:01:27.984
+And in this video and the next, I want to 
+whet your appetite for what's to come, by 
+
+25
+00:01:27.984 --> 00:01:31.570
+plucking out two of the applications that 
+we'll study in detail later in the 
+
+26
+00:01:31.570 --> 00:01:33.759
+course. 
+Specifically, in the dynamic programming 
+
+27
+00:01:33.759 --> 00:01:36.647
+section of the course. 
+First of all, for both of these problems, 
+
+28
+00:01:36.647 --> 00:01:40.512
+I think their importance is self evident. 
+I don't think I'll have to really discuss 
+
+29
+00:01:40.512 --> 00:01:43.819
+why these are interesting problems. 
+Why, in some sense, we really need to 
+
+30
+00:01:43.819 --> 00:01:46.474
+solve these two problems. 
+Secondly, these are quite tricky 
+
+31
+00:01:46.474 --> 00:01:50.049
+computational problems. 
+And I would expect that most of you do 
+
+32
+00:01:50.049 --> 00:01:53.571
+not currently know good algorithms for 
+these problems and it would be 
+
+33
+00:01:53.571 --> 00:01:56.680
+challenging to design one. 
+Third, by the end of this class you will 
+
+34
+00:01:56.680 --> 00:01:59.065
+know efficient algorithms for both of 
+these problems. 
+
+35
+00:01:59.065 --> 00:02:00.955
+In fact, you'll know something much 
+better. 
+
+36
+00:02:00.955 --> 00:02:04.465
+You'll know general algorithm design 
+techniques which solve as a special case 
+
+37
+00:02:04.465 --> 00:02:08.155
+these two problems and have the potential 
+to solve problems coming up in your own 
+
+38
+00:02:08.155 --> 00:02:11.021
+projects as well. 
+And one comment before we get started on 
+
+39
+00:02:11.021 --> 00:02:13.993
+these two videos. 
+They're both at a higher level than most 
+
+40
+00:02:13.993 --> 00:02:17.375
+of the class, by which I mean there won't 
+be any equations or math. 
+
+41
+00:02:17.375 --> 00:02:21.321
+There won't be any concrete pseudo-code, 
+and I'll be glossing over lots of 
+
+42
+00:02:21.321 --> 00:02:23.884
+details. 
+The point is just to convey the spirit of 
+
+43
+00:02:23.884 --> 00:02:27.778
+what we're going to be studying, and to 
+illustrate the range of applications of 
+
+44
+00:02:27.778 --> 00:02:35.160
+the techniques that we're going to learn. 
+So what I want to talk about first is 
+
+45
+00:02:35.160 --> 00:02:40.045
+distributed shortest path routing and why 
+it is fundamental to how the internet 
+
+46
+00:02:40.045 --> 00:02:42.854
+works. 
+So let me begin with a kind of non very 
+
+47
+00:02:42.854 --> 00:02:46.580
+mathematical claim. 
+I claim that we can usefully think of the 
+
+48
+00:02:46.580 --> 00:02:51.160
+internet as a graph, as a collection of 
+verticies and a collection of edges. 
+
+49
+00:02:51.160 --> 00:02:54.491
+So this is clearly an, clearly an 
+ambiguous statement. 
+
+50
+00:02:54.491 --> 00:02:57.134
+There's many things I might mean as we'll 
+discuss. 
+
+51
+00:02:57.134 --> 00:03:01.206
+But here's the primary interpretation I 
+want you to have for this particular 
+
+52
+00:03:01.206 --> 00:03:03.691
+video. 
+So to specify this, the vertices I intend 
+
+53
+00:03:03.691 --> 00:03:06.440
+to be the end-hosts and the routers of 
+the internet. 
+
+54
+00:03:06.440 --> 00:03:10.036
+So machines that generate traffic, 
+machines that consume traffic, and 
+
+55
+00:03:10.036 --> 00:03:13.050
+machines that help traffic get from one 
+place to another. 
+
+56
+00:03:13.050 --> 00:03:17.856
+So the edges are going to be directed and 
+they are meant to represent physical or 
+
+57
+00:03:17.856 --> 00:03:22.662
+wireless connections indicating that one 
+machine can talk directly to another one 
+
+58
+00:03:22.662 --> 00:03:27.780
+by either a physical link between the two 
+or a direct wireless connection. 
+
+59
+00:03:27.780 --> 00:03:32.572
+So it's common that you'll have edges in 
+both directions, so that if machine A can 
+
+60
+00:03:32.572 --> 00:03:37.131
+talk to machine B directly, then also 
+machine B can talk directly to machine A, 
+
+61
+00:03:37.131 --> 00:03:41.515
+but you definitely want to allow the 
+possibility of asymmetric communication. 
+
+62
+00:03:41.515 --> 00:03:46.250
+So, for example, imagine I send an email 
+from my Stanford account to one of my old 
+
+63
+00:03:46.250 --> 00:03:49.231
+mentors at Cornell, where I did my 
+graduate studies. 
+
+64
+00:03:49.231 --> 00:03:53.965
+So this piece of data, this email, has to 
+somehow migrate from my machine local at 
+
+65
+00:03:53.965 --> 00:03:56.771
+Stanford to my mentor's machine over at 
+Cornell. 
+
+66
+00:03:56.771 --> 00:04:00.623
+So how does that actually happen? 
+Well, initially there's a phase of, sort 
+
+67
+00:04:00.623 --> 00:04:04.519
+of local transportation, so, this piece 
+of data has to get from my local machine 
+
+68
+00:04:04.519 --> 00:04:08.366
+to a place within the Stanford network 
+that can talk to the rest of the world. 
+
+69
+00:04:08.366 --> 00:04:12.262
+Just like if I was trying to travel to 
+Cornell, I would have to first use local 
+
+70
+00:04:12.262 --> 00:04:16.208
+transportation to get to San Francisco 
+airport and only from there could I take 
+
+71
+00:04:16.208 --> 00:04:18.862
+an airplane. 
+So this machine from which data can 
+
+72
+00:04:18.862 --> 00:04:23.217
+escape from the Stanford network to the 
+outside world is called the gateway 
+
+73
+00:04:23.217 --> 00:04:25.968
+router. 
+The Stanford gateway router passes it on 
+
+74
+00:04:25.968 --> 00:04:28.718
+to a networks, whose job is to cross the 
+country. 
+
+75
+00:04:28.718 --> 00:04:33.016
+So last I checked, the commercial 
+internet service provider of Stanford was 
+
+76
+00:04:33.016 --> 00:04:37.715
+Cogent so they, of course, have their own 
+gateway router which can talk to the 
+
+77
+00:04:37.715 --> 00:04:41.846
+Stanford one and vice versa. 
+And of course, these two nodes and the 
+
+78
+00:04:41.846 --> 00:04:46.018
+edges between them are just this tiny, 
+tiny, tiny piece embedded in this massive 
+
+79
+00:04:46.018 --> 00:04:49.345
+graph, comprising all the end hosts and 
+routers of the internet. 
+
+80
+00:04:49.345 --> 00:04:53.412
+So that's the main version of a graph 
+that we're going to talk about in this 
+
+81
+00:04:53.412 --> 00:04:57.689
+video, but let me just pause to mention a 
+couple of other graphs that are related 
+
+82
+00:04:57.689 --> 00:05:00.700
+to the internet, and quite interesting in 
+their own right. 
+
+83
+00:05:00.700 --> 00:05:05.699
+So one graph that is generated an 
+enormous amount of an interest in study 
+
+84
+00:05:05.699 --> 00:05:10.158
+is the graph induces by the web. 
+So here, the vertices are going to 
+
+85
+00:05:10.158 --> 00:05:15.022
+represent web pages and the edges which 
+is certainly directed represent 
+
+86
+00:05:15.022 --> 00:05:18.960
+hyperlinks. 
+Not one web page points to another one. 
+
+87
+00:05:18.960 --> 00:05:25.900
+So for example, my homepage is one node 
+in this massive, massive graph. 
+
+88
+00:05:25.900 --> 00:05:31.411
+And as you might expect, there is a link 
+from my home page to the course page for 
+
+89
+00:05:31.411 --> 00:05:35.492
+this class. 
+It is of course essential to use directed 
+
+90
+00:05:35.492 --> 00:05:40.227
+edges to faithfully model the web. 
+There is for example, no directed edge 
+
+91
+00:05:40.227 --> 00:05:43.890
+from this courses homepage to my own 
+homepage at Stanford. 
+
+92
+00:05:43.890 --> 00:05:47.751
+So the web really exploded around, you 
+know, mid 90's, late 90's, So for the 
+
+93
+00:05:47.751 --> 00:05:51.667
+past 15 plus years, there's been lots of 
+research, about the web graph. 
+
+94
+00:05:51.667 --> 00:05:55.964
+I'm sure you won't be surprised to hear 
+that, you know, around the middle of the 
+
+95
+00:05:55.964 --> 00:06:00.152
+last decade, people got extremely excited 
+about properties of social networks. 
+
+96
+00:06:00.152 --> 00:06:03.415
+Those, of course, can also be fruitfully 
+thought of as graphs. 
+
+97
+00:06:03.415 --> 00:06:07.222
+Here, the vertices are going to be 
+people, and the lengths are going to 
+
+98
+00:06:07.222 --> 00:06:10.540
+denote relationships. 
+So, for example, friend relationships and 
+
+99
+00:06:10.540 --> 00:06:13.260
+Facebook or the following relationship on 
+Twitter. 
+
+100
+00:06:14.940 --> 00:06:19.601
+So notice the different social networks 
+may correspond to undirected or directed 
+
+101
+00:06:19.601 --> 00:06:22.364
+graphs. 
+Facebook for example corresponding to an 
+
+102
+00:06:22.364 --> 00:06:26.720
+undirected graph, Twitter corresponding 
+to a directed graph. 
+
+103
+00:06:26.720 --> 00:06:30.276
+So let's now return to the first 
+interpretation I wanted to focus on, 
+
+104
+00:06:30.276 --> 00:06:34.296
+that where the vertices are in-hosts and 
+routers and it does represent direct 
+
+105
+00:06:34.296 --> 00:06:37.955
+physical or wireless connections 
+indicating that two machines can talk 
+
+106
+00:06:37.955 --> 00:06:41.047
+directly to each other. 
+So going back to that graph, let's go 
+
+107
+00:06:41.047 --> 00:06:44.552
+back to the story where I'm sending an 
+email to somebody at Cornell. 
+
+108
+00:06:44.552 --> 00:06:48.830
+And this data has to travel from my local 
+machine to some local machine at Cornell. 
+
+109
+00:06:48.830 --> 00:06:53.086
+So, in particular, this piece of data has 
+to get from the Stanford gateway router, 
+
+110
+00:06:53.086 --> 00:06:57.237
+in effect to the airport for Stanford's 
+network to the Cornell gateway router. 
+
+111
+00:06:57.237 --> 00:07:00.110
+So there will be landing airport over on 
+Cornell's side. 
+
+112
+00:07:00.110 --> 00:07:04.207
+Now it's not easy to figure out exactly 
+out what the structure of the routes 
+
+113
+00:07:04.207 --> 00:07:08.410
+between Stanford and Cornell look like. 
+But one thing I can promise you is that 
+
+114
+00:07:08.410 --> 00:07:12.454
+there is not a direct physical link 
+between the Stanford gateway router and 
+
+115
+00:07:12.454 --> 00:07:15.913
+the Cornell gateway router. 
+Any route between the two is going to 
+
+116
+00:07:15.913 --> 00:07:18.840
+comprise multiple hops. 
+It will have intermediate stops. 
+
+117
+00:07:18.840 --> 00:07:21.704
+And there's not going to be a unique such 
+route. 
+
+118
+00:07:21.704 --> 00:07:26.656
+So if you have the choice between taking 
+one route which stops in Houston and then 
+
+119
+00:07:26.656 --> 00:07:31.131
+Atlanta and then in Washington D.C., 
+how would you compare that to one which 
+
+120
+00:07:31.131 --> 00:07:35.661
+stops in Salt Lake City and Chicago. 
+Well hopefully your first instinct and a 
+
+121
+00:07:35.661 --> 00:07:40.076
+perfectly good idea is all else being 
+equal, prefer the path that is in some 
+
+122
+00:07:40.076 --> 00:07:43.308
+sense the shortest. 
+Now in this context, shortest could mean 
+
+123
+00:07:43.308 --> 00:07:47.032
+many things, and it's interesting to 
+think about different definitions. 
+
+124
+00:07:47.032 --> 00:07:51.181
+But for simplicity let's just focus on 
+the fewest number of hops, equivalently 
+
+125
+00:07:51.181 --> 00:07:55.775
+the fewest number of intermediate stops. 
+Well, if we want to actually execute this 
+
+126
+00:07:55.775 --> 00:08:00.464
+idea, we clearly need an algorithm that 
+given a source and destination computes 
+
+127
+00:08:00.464 --> 00:08:04.853
+the shortest path between the two. 
+So hopefully you feel well equipped to 
+
+128
+00:08:04.853 --> 00:08:09.723
+discuss this problem, because one of the 
+highlights of part one of this class, was 
+
+129
+00:08:09.723 --> 00:08:14.233
+the discussion of Dijkstra's shortest 
+pathalum rhythm in a blazing fast of 
+
+130
+00:08:14.233 --> 00:08:18.280
+limitation using heaps that run's in 
+almost linear time. 
+
+131
+00:08:18.280 --> 00:08:21.917
+We did mention one caveat when we 
+discussed Dijkstra's algorithm mainly 
+
+132
+00:08:21.917 --> 00:08:25.815
+that it requires all edge lengths to be 
+non negative but in the context of 
+
+133
+00:08:25.815 --> 00:08:30.076
+internet routing almost any edge metric 
+you'd imagine using will satisfy this non 
+
+134
+00:08:30.076 --> 00:08:33.257
+negativity assumption. 
+There is, however, a serious issue with 
+
+135
+00:08:33.257 --> 00:08:37.493
+trying to apply Dijkstra's shortest path 
+algorithm off the shelf to solve this 
+
+136
+00:08:37.493 --> 00:08:41.890
+distributed internet routing problem, and 
+the issue was caused by the just massive, 
+
+137
+00:08:41.890 --> 00:08:46.234
+distributed scale of modern day internet. 
+Probably back in the 1960's, when you had 
+
+138
+00:08:46.234 --> 00:08:50.363
+the 12-note ARPANET, you could get away 
+with running Dijkstra's shortest path 
+
+139
+00:08:50.363 --> 00:08:52.829
+algorithm, but not in the twenty-first 
+century. 
+
+140
+00:08:52.829 --> 00:08:56.690
+It's not feasible for the Stanford 
+gateway router to maintain locally a 
+
+141
+00:08:56.690 --> 00:08:59.640
+reasonably accurate model of the entire 
+internet graph. 
+
+142
+00:08:59.640 --> 00:09:03.498
+So how can we elude this issue? 
+Is it fundamental that because the 
+
+143
+00:09:03.498 --> 00:09:07.823
+internet is so massive, it's impossible 
+to run any shortest path algorithm? 
+
+144
+00:09:07.823 --> 00:09:12.383
+Well, the ray of hope would be if we 
+could have a shortest path algorithm that 
+
+145
+00:09:12.383 --> 00:09:16.650
+admitted a distributed implementation. 
+Whereby, a node could just interact, 
+
+146
+00:09:16.650 --> 00:09:21.268
+perhaps iteratively, with its neighbors 
+with the machines to which its directly 
+
+147
+00:09:21.268 --> 00:09:23.898
+connected. 
+And yet, somehow converge to having 
+
+148
+00:09:23.898 --> 00:09:26.880
+accurate shortest paths to all of the 
+destinations. 
+
+149
+00:09:26.880 --> 00:09:30.963
+So perhaps, the first thing you'd try 
+would be to seek out an implementation of 
+
+150
+00:09:30.963 --> 00:09:34.374
+Dijkstra's algorithm, where each vertex 
+uses only local computation. 
+
+151
+00:09:34.374 --> 00:09:37.269
+That seems hard to do. 
+If you look at the pseudo-code of 
+
+152
+00:09:37.269 --> 00:09:40.267
+Dijkstra, it just doesn't seem like a 
+localizable algorithm. 
+
+153
+00:09:40.267 --> 00:09:44.040
+So instead, what we're going to do is 
+we're going to learn a different shortest 
+
+154
+00:09:44.040 --> 00:09:45.849
+path algorithm. 
+It's also a classic. 
+
+155
+00:09:45.849 --> 00:09:48.124
+Definitely on the greatest hits 
+compilation. 
+
+156
+00:09:48.124 --> 00:09:52.173
+It's called the Bellman-Ford Algorithm. 
+So the Bellman-Ford algorithm, as you'll 
+
+157
+00:09:52.173 --> 00:09:55.070
+see, can be thought of as a dynamic 
+programming algorithm. 
+
+158
+00:09:55.070 --> 00:09:58.323
+And indeed, it correctly computes 
+shortest path using only local 
+
+159
+00:09:58.323 --> 00:10:00.966
+computation. 
+Each vertex only communicates in rounds 
+
+160
+00:10:00.966 --> 00:10:03.864
+with the other vertices to which it's 
+directly connected. 
+
+161
+00:10:03.864 --> 00:10:07.473
+As a bonus, we'll see this algorithm also 
+handles negative edge lengths. 
+
+162
+00:10:07.473 --> 00:10:09.658
+Which of course, Dijkstra's algorithm was 
+not. 
+
+163
+00:10:09.658 --> 00:10:12.047
+But don't think Dijkstra's algorithm is 
+obsolete. 
+
+164
+00:10:12.047 --> 00:10:15.860
+It still has faster running time in 
+situations where you can get away with 
+
+165
+00:10:15.860 --> 00:10:19.171
+centralized computation. 
+Now, it was really kind of amazing here 
+
+166
+00:10:19.171 --> 00:10:22.618
+is that the Bellman-Ford algorithm, it 
+dates back to the 1950's. 
+
+167
+00:10:22.618 --> 00:10:25.387
+So, that's not just pre-internet, that 
+pre-ARPANET. 
+
+168
+00:10:25.387 --> 00:10:29.117
+So that's before the internet was even a 
+glimmer in anybody's eye. 
+
+169
+00:10:29.117 --> 00:10:33.356
+And yet, it really is the foundation for 
+modern internet routing protocol's. 
+
+170
+00:10:33.356 --> 00:10:37.877
+Needless to say, there's a lot of really 
+hard engineering work and further ideas 
+
+171
+00:10:37.877 --> 00:10:42.511
+required to translate the concept from 
+Bellman-Ford to actually doing routing in 
+
+172
+00:10:42.511 --> 00:10:46.523
+the very complex modern day internet. 
+But yet, those protocol's at their 
+
+173
+00:10:46.523 --> 00:10:50.480
+foundation, goes all the way back to the 
+Bellman-Ford algorithm. 

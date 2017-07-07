@@ -1,0 +1,845 @@
+WEBVTT
+
+1
+00:00:02.380 --> 00:00:06.317
+So what are greedy algorithms good for? 
+Well, it turns out they're well suited 
+
+2
+00:00:06.317 --> 00:00:10.102
+for a number of fundamental problems 
+across different domains of computer 
+
+3
+00:00:10.102 --> 00:00:12.454
+science. 
+And to wet your appetite, for the many 
+
+4
+00:00:12.454 --> 00:00:16.341
+examples that we're going to see, I want 
+to begin by discussing the problem of 
+
+5
+00:00:16.341 --> 00:00:19.983
+optimal caching. 
+The punchline of the lecture is going to 
+
+6
+00:00:19.983 --> 00:00:24.691
+be that a natural greedy algorithm in 
+fact minimizes the number of cache misses 
+
+7
+00:00:24.691 --> 00:00:27.850
+over all possible ways of managing a 
+small fast cache. 
+
+8
+00:00:27.850 --> 00:00:31.457
+So what is the caching problem? 
+Well on the one hand, there's going to be 
+
+9
+00:00:31.457 --> 00:00:35.315
+a big, but slow memory which you can 
+think of as holding everything you might 
+
+10
+00:00:35.315 --> 00:00:38.271
+be interested in. 
+And then there's also going to be what we 
+
+11
+00:00:38.271 --> 00:00:41.929
+call a cache and so this is a much 
+smaller memory to which access is much 
+
+12
+00:00:41.929 --> 00:00:44.459
+faster. 
+So this situation comes up all the time 
+
+13
+00:00:44.459 --> 00:00:48.654
+across different doings, computer 
+science, architecture, operating systems, 
+
+14
+00:00:48.654 --> 00:00:51.324
+networking. 
+just to mention a couple of really 
+
+15
+00:00:51.324 --> 00:00:54.593
+obvious examples. 
+You could imagine, the small fast memory 
+
+16
+00:00:54.593 --> 00:00:58.297
+being something like an L2 cache. 
+And the big slow memory being main 
+
+17
+00:00:58.297 --> 00:01:00.913
+memory. 
+Or perhaps actually main memory is the 
+
+18
+00:01:00.913 --> 00:01:03.637
+fast memory, and the big slow memory 
+would be disc. 
+
+19
+00:01:03.637 --> 00:01:07.723
+Now, your task, in the caching problem is 
+to process what we're going to call a 
+
+20
+00:01:07.723 --> 00:01:11.250
+sequence of page requests. 
+So a page request just means that the 
+
+21
+00:01:11.250 --> 00:01:15.638
+client wants to access something in 
+memory and it's guaranteed to be in the 
+
+22
+00:01:15.638 --> 00:01:18.803
+big slow memory. 
+But if its not already in the small fast 
+
+23
+00:01:18.803 --> 00:01:23.191
+memory then you got to bring it in, you 
+got to put it in there for the subsequent 
+
+24
+00:01:23.191 --> 00:01:25.544
+access. 
+The algorithmic aspect of the problem 
+
+25
+00:01:25.544 --> 00:01:29.524
+answers the picture when there is a cache 
+miss or also known as a page fault. 
+
+26
+00:01:29.524 --> 00:01:33.660
+That is when there is a request for some 
+data which is not already in the cache. 
+
+27
+00:01:33.660 --> 00:01:36.658
+When that is the case, you have to bring 
+it into the cache. 
+
+28
+00:01:36.658 --> 00:01:40.690
+The design question then is what do you 
+evict from the cache in order to make 
+
+29
+00:01:40.690 --> 00:01:43.740
+room for this new piece of data which you 
+have to bring in. 
+
+30
+00:01:46.940 --> 00:01:51.775
+So to illustrate the issues, let's look 
+at extremely simple example. 
+
+31
+00:01:51.775 --> 00:01:55.420
+A cache that just has four slots for 
+pieces of data. 
+
+32
+00:01:56.740 --> 00:02:02.023
+Let's assume that initially the cache is 
+seated with the four pieces of data I'll 
+
+33
+00:02:02.023 --> 00:02:05.787
+call a, b, c, and d. 
+Now remember the input is a sequence of 
+
+34
+00:02:05.787 --> 00:02:10.680
+page requests, so these are requests for 
+different pieces of data. 
+
+35
+00:02:10.680 --> 00:02:14.645
+Now when a new request comes in, you're 
+basically sitting there crossing your 
+
+36
+00:02:14.645 --> 00:02:17.764
+fingers that what's been requested is 
+already in the cache. 
+
+37
+00:02:17.764 --> 00:02:21.782
+So for example, if the first request 
+comes in for the piece of data marked c, 
+
+38
+00:02:21.782 --> 00:02:25.853
+you said good we're good to go it's 
+already in the cache go ahead and access 
+
+39
+00:02:25.853 --> 00:02:28.073
+it. 
+Similarly if the next request is for d, 
+
+40
+00:02:28.073 --> 00:02:31.989
+you don't have to do anything. 
+Good times roll, and d just gets accessed 
+
+41
+00:02:31.989 --> 00:02:34.602
+directly. 
+The problem arises when something is 
+
+42
+00:02:34.602 --> 00:02:38.863
+requested that's not in the cache. So 
+let's say the next request is for the 
+
+43
+00:02:38.863 --> 00:02:41.703
+data item e. 
+Now remember, you have to bring e into 
+
+44
+00:02:41.703 --> 00:02:46.419
+the cache and of course you have to evict 
+one of these four pieces of data to make 
+
+45
+00:02:46.419 --> 00:02:49.316
+room for it, and your algorithm has to 
+decide which. 
+
+46
+00:02:49.316 --> 00:02:56.004
+Can you get rid of a or b or c or d. 
+For this example, let's assume that we 
+
+47
+00:02:56.004 --> 00:03:03.084
+evict a to make room for e. 
+Assume further that the next request that 
+
+48
+00:03:03.084 --> 00:03:07.548
+comes in is for a new piece of data f. 
+Again it's not in the cache so we have to 
+
+49
+00:03:07.548 --> 00:03:11.846
+evict something to make room for it. 
+Let's assume we get rid of b in order to 
+
+50
+00:03:11.846 --> 00:03:14.344
+bring in f. 
+And now an unhappy situation but 
+
+51
+00:03:14.344 --> 00:03:18.968
+something that could certainly occur is 
+we get a request for something that used 
+
+52
+00:03:18.968 --> 00:03:21.823
+to be in the cache but which we have 
+since evicted. 
+
+53
+00:03:21.823 --> 00:03:25.306
+So for example if the next request is for 
+a, then we're stuck. 
+
+54
+00:03:25.306 --> 00:03:29.530
+It's going to be another page fault, we 
+have to evict something to bring in a. 
+
+55
+00:03:29.530 --> 00:03:34.041
+And similarly, if there's a b, again 
+we're paying the price for evicting b to 
+
+56
+00:03:34.041 --> 00:03:38.188
+make room for f in the past. 
+So in this example with these particular 
+
+57
+00:03:38.188 --> 00:03:41.044
+choices for page evictions, we incur four 
+page faults. 
+
+58
+00:03:41.044 --> 00:03:45.169
+Now the first two the e and the f there's 
+nothing we could have done about it. 
+
+59
+00:03:45.169 --> 00:03:49.506
+We were given a cache that initially did 
+not have e and f and then e and f showed 
+
+60
+00:03:49.506 --> 00:03:53.050
+up, well what are you going to do, you're 
+going to miss no matter what. 
+
+61
+00:03:53.050 --> 00:03:58.793
+However, two were caused by our 
+unfortunate eviction decisions early on, 
+
+62
+00:03:58.793 --> 00:04:03.890
+to evict a and b only to find them 
+requested after eviction. 
+
+63
+00:04:03.890 --> 00:04:09.481
+And with 20/20 hindsight, we can conclude 
+we really should have evicted c and d, 
+
+64
+00:04:09.481 --> 00:04:13.793
+not a and b, to make room for e and f. 
+So the point of this example is to 
+
+65
+00:04:13.793 --> 00:04:16.551
+illustrate first of all the caching 
+problem, how it works. 
+
+66
+00:04:16.551 --> 00:04:20.373
+You have this small fast memory, it can't 
+contain everything at once and so you 
+
+67
+00:04:20.373 --> 00:04:24.195
+have to sort of manage the cache and 
+evict things, to make room for stuff as 
+
+68
+00:04:24.195 --> 00:04:26.856
+it gets accessed. 
+That's the first point of the example. 
+
+69
+00:04:26.856 --> 00:04:30.872
+The second point is to illustrate there's 
+really two types of cache misses or page 
+
+70
+00:04:30.872 --> 00:04:33.098
+faults. 
+There's the ones which you know, really 
+
+71
+00:04:33.098 --> 00:04:36.388
+you can't do anything about. 
+No matter what algorithm you use, you're 
+
+72
+00:04:36.388 --> 00:04:39.484
+going to suffer those faults. 
+But then, depending on the eviction 
+
+73
+00:04:39.484 --> 00:04:43.403
+algorithm, you maybe able to avoid some 
+of the cache misses that you would incur 
+
+74
+00:04:43.403 --> 00:04:45.376
+with an inferior algorithm. 
+Algorithm. 
+
+75
+00:04:45.376 --> 00:04:48.710
+So, now the obvious question is, 
+how well can we do? 
+
+76
+00:04:48.710 --> 00:04:52.755
+What's the best algorithm? 
+How do we minimize the number of cache 
+
+77
+00:04:52.755 --> 00:04:55.980
+misses, suffering only the ones that are 
+inevitable? 
+
+78
+00:05:00.360 --> 00:05:04.865
+So this question was given a very elegant 
+answer by Belady back in the 1960's. 
+
+79
+00:05:04.865 --> 00:05:07.579
+And I'm going to state the answer as a 
+theorem. 
+
+80
+00:05:07.579 --> 00:05:12.026
+it's a theorem we're not going to prove, 
+for reasons I'll discuss in a second. 
+
+81
+00:05:12.026 --> 00:05:16.705
+but what the theorem says is that a 
+natural greedy algorithm is an optimal 
+
+82
+00:05:16.705 --> 00:05:21.036
+algorithm for the caching problem. 
+That is, it minimizes the number of cache 
+
+83
+00:05:21.036 --> 00:05:24.560
+misses over any way you might think about 
+managing the cache. 
+
+84
+00:05:27.200 --> 00:05:32.054
+And the natural greedy algorithm that is 
+optimal, is called the furthest in the 
+
+85
+00:05:32.054 --> 00:05:36.908
+future algorithm. 
+So what is the furthest in the future 
+
+86
+00:05:36.908 --> 00:05:39.193
+algorithm? 
+Well, it's exactly what you think it 
+
+87
+00:05:39.193 --> 00:05:41.529
+would be. 
+It's basically what seems like a good 
+
+88
+00:05:41.529 --> 00:05:44.908
+idea at the moment you have to perform a 
+eviction from the cache. 
+
+89
+00:05:44.908 --> 00:05:46.945
+Basically you want to put off judgment 
+day. 
+
+90
+00:05:46.945 --> 00:05:50.622
+You want to put off the regret of 
+evicting this particular piece of data as 
+
+91
+00:05:50.622 --> 00:05:53.454
+long as possible. 
+When are you going to regret evicting a 
+
+92
+00:05:53.454 --> 00:05:56.069
+piece of data? 
+Well, it's when it gets requested next. 
+
+93
+00:05:56.069 --> 00:06:00.546
+So if we have four things in the cache, 
+you know, one is one is requested next, 
+
+94
+00:06:00.546 --> 00:06:04.911
+one is requested in seven time steps and 
+one is requested in you know, 70 time 
+
+95
+00:06:04.911 --> 00:06:09.163
+steps, that's the one you want to evict 
+now because it will take the longest 
+
+96
+00:06:09.163 --> 00:06:13.686
+until you actually regret that eviction. 
+So for example, in the example on the 
+
+97
+00:06:13.686 --> 00:06:18.262
+previous slide, you can check that the 
+furthest in the future algorithm would in 
+
+98
+00:06:18.262 --> 00:06:21.065
+fact evict the ones you want to evict, a 
+and b, 
+
+99
+00:06:21.065 --> 00:06:24.320
+not the ones that we evicted in the 
+example, c and d. 
+
+100
+00:06:24.320 --> 00:06:28.812
+Now at this point, many of you are 
+probably justifiably scratching your 
+
+101
+00:06:28.812 --> 00:06:31.597
+heads. 
+You're wondering, you know, why is this 
+
+102
+00:06:31.597 --> 00:06:33.921
+useful. 
+It doesn't seem like this is what we 
+
+103
+00:06:33.921 --> 00:06:37.683
+wanted. The objection, to this result 
+being that the furthest in the future 
+
+104
+00:06:37.683 --> 00:06:41.344
+algorithm is clairvoyant. Its very 
+definition assumes that you know the 
+
+105
+00:06:41.344 --> 00:06:45.310
+future, it assumes that at the moment 
+that you have to make an eviction you're 
+
+106
+00:06:45.310 --> 00:06:49.139
+aware of when each of the pieces data in 
+the cache will be requested next. 
+
+107
+00:06:49.139 --> 00:06:53.596
+But if you think for a minute about the 
+motivating applications for sudding the 
+
+108
+00:06:53.596 --> 00:06:58.288
+ultimate caching problem, this assumption 
+simply doesn't hold, you simply do not 
+
+109
+00:06:58.288 --> 00:07:02.921
+know the future, you simply do not know 
+when each of the pieces of data in your 
+
+110
+00:07:02.921 --> 00:07:07.085
+cache will be requested next. So this 
+algorithm is not defined, it is 
+
+111
+00:07:07.085 --> 00:07:10.369
+unimplementable. 
+Despite that, this is still an extremely 
+
+112
+00:07:10.369 --> 00:07:13.720
+useful result to know. 
+Why. 
+
+113
+00:07:13.720 --> 00:07:17.259
+Well, two reasons. 
+First of all, this unimplementable 
+
+114
+00:07:17.259 --> 00:07:21.770
+algorithm can never the less, serve as a 
+guide line for practical. 
+
+115
+00:07:21.770 --> 00:07:25.295
+Implementable algorithms. 
+For example it naturally motivates the 
+
+116
+00:07:25.295 --> 00:07:27.773
+LRU or least recently used caching 
+algorithm. 
+
+117
+00:07:27.773 --> 00:07:32.070
+So what you do in the LRU algorithm is 
+that instead of looking forward in the 
+
+118
+00:07:32.070 --> 00:07:35.210
+future, which you can't do generally, you 
+look in the past. 
+
+119
+00:07:35.210 --> 00:07:39.441
+And you say, well, let me guess that 
+whatever's been requested recently, will 
+
+120
+00:07:39.441 --> 00:07:42.713
+be requested again soon. 
+Whatever hasn't been request been 
+
+121
+00:07:42.713 --> 00:07:47.000
+requested for a long time, will continue 
+to not be requested for a long time. 
+
+122
+00:07:47.000 --> 00:07:51.513
+So, that sets as a proxy for the piece of 
+data that's going to be referenced the 
+
+123
+00:07:51.513 --> 00:07:56.026
+furthest down the future, you look for 
+the one that was most recently referenced 
+
+124
+00:07:56.026 --> 00:07:59.528
+the furthest back in the past. 
+So that's the LRU algorithm. 
+
+125
+00:07:59.528 --> 00:08:03.526
+And as long as data exhibits what's 
+called locality of reference, 
+
+126
+00:08:03.526 --> 00:08:08.447
+meaning whatever's being requested a lot 
+in the recent past is also going to be 
+
+127
+00:08:08.447 --> 00:08:13.245
+what's requested in the near future. 
+Then LRU is going to approximate furthest 
+
+128
+00:08:13.245 --> 00:08:16.505
+in the future. 
+And indeed, LRU is in many applications, 
+
+129
+00:08:16.505 --> 00:08:20.750
+the gold standard amongst practical 
+implementable caching algorithms. 
+
+130
+00:08:20.750 --> 00:08:26.396
+The second reason this theorem is useful 
+in practice is because it served as an 
+
+131
+00:08:26.396 --> 00:08:30.631
+idealized benchmark. 
+A hypothetical perfect scenario against 
+
+132
+00:08:30.631 --> 00:08:35.220
+which you can compare your latest and 
+greatest cashing hereistic. 
+
+133
+00:08:35.220 --> 00:08:39.432
+So for example, maybe you have a caching 
+application and you start by implementing 
+
+134
+00:08:39.432 --> 00:08:43.388
+the LRU least recently used caching 
+algorithm and then as a sanity check you 
+
+135
+00:08:43.388 --> 00:08:47.498
+probably want to go back later once you 
+have hindsight you look at the last few 
+
+136
+00:08:47.498 --> 00:08:51.300
+days of traces of logs of page requests 
+and you say, how well did we do. 
+
+137
+00:08:51.300 --> 00:08:53.756
+Let's look at how well our caching 
+algorithm LRU did. 
+
+138
+00:08:53.756 --> 00:08:57.001
+And let's look at how well we would have 
+done had we known the future. 
+
+139
+00:08:57.001 --> 00:08:59.086
+And hopefully, you're just a few percent 
+away. 
+
+140
+00:08:59.086 --> 00:09:02.470
+And then you can conclude that, yes 
+indeed, the data seem to have locality 
+
+141
+00:09:02.470 --> 00:09:04.741
+reference. 
+Yes indeed, LRU is doing almost as well 
+
+142
+00:09:04.741 --> 00:09:06.780
+as if we know the future, 
+and we can proceed. 
+
+143
+00:09:06.780 --> 00:09:10.488
+On the other hand, if you go back through 
+the last few days of logs, and you find 
+
+144
+00:09:10.488 --> 00:09:14.243
+that your caching algorithm is doing much 
+worse than furthest in the future, then 
+
+145
+00:09:14.243 --> 00:09:17.487
+it's back to the drawing board with 
+respect to your caching algorithm. 
+
+146
+00:09:17.487 --> 00:09:21.056
+You should work harder, understand the 
+data better, and come up with a smarter 
+
+147
+00:09:21.056 --> 00:09:24.487
+heuristic. 
+So for almost all of the greedy 
+
+148
+00:09:24.487 --> 00:09:28.758
+algorithms that we cover in this course, 
+I'm going to explain to you why they are 
+
+149
+00:09:28.758 --> 00:09:30.761
+correct. 
+I'm going to prove it rigorously. 
+
+150
+00:09:30.761 --> 00:09:34.505
+this algorithm is an exception. 
+I'm actually not going to prove this 
+
+151
+00:09:34.505 --> 00:09:37.616
+theorem for you. 
+the way it works is by what's called an 
+
+152
+00:09:37.616 --> 00:09:40.252
+exchange argument. 
+So again, you may not have seen any 
+
+153
+00:09:40.252 --> 00:09:43.890
+examples, but you will soon. 
+but the exchange argument to prove the 
+
+154
+00:09:43.890 --> 00:09:47.634
+latter result, as far as I know it's 
+pretty tricky, believe it or not. 
+
+155
+00:09:47.634 --> 00:09:51.852
+Even though the algorithm is natural, you 
+might think this result feels a little 
+
+156
+00:09:51.852 --> 00:09:53.961
+self-evident. 
+Try to prove it rigorously. 
+
+157
+00:09:53.961 --> 00:09:55.280
+Not easy. 
+Not easy at all. 
+
+158
+00:09:55.280 --> 00:09:59.146
+Indeed if you look at a textbook and say 
+operating systems or a field like that, 
+
+159
+00:09:59.146 --> 00:10:01.707
+generally you'll see a description of 
+this algorithm. 
+
+160
+00:10:01.707 --> 00:10:04.993
+You'll see the claim that it's optimal 
+but you won't find the proof. 
+
+161
+00:10:04.993 --> 00:10:08.956
+some algorithms textbooks, for example 
+Algorithm Design by Kleinberg and Tardos, 
+
+162
+00:10:08.956 --> 00:10:12.435
+do include the proof of this theorem. 
+Those of you that are interested, I 
+
+163
+00:10:12.435 --> 00:10:16.108
+challenge you to prove it yourself 
+without looking it up on the web or in a 
+
+164
+00:10:16.108 --> 00:10:18.524
+textbook. 
+I think if you try to prove it you'll 
+
+165
+00:10:18.524 --> 00:10:22.487
+appreciate the subtleties that come up in 
+understanding whether greedy algorithms 
+
+166
+00:10:22.487 --> 00:10:25.290
+are correct or not. 
+In the best case scenario, I would love. 
+
+167
+00:10:25.290 --> 00:10:29.673
+Love to see, a simple proof of this 
+theorem, something that I could explain 
+
+168
+00:10:29.673 --> 00:10:32.576
+in a class like this, in say five minutes 
+or less, 
+
+169
+00:10:32.576 --> 00:10:33.880
+that would be amazing. 

@@ -1,0 +1,691 @@
+WEBVTT
+
+1
+00:00:00.220 --> 00:00:04.460
+Let's explore our second strategy for
+graph search, namely depth-first search.
+
+2
+00:00:04.460 --> 00:00:08.355
+And again, like with breadth-first search,
+I'll open by just reminding you what
+
+3
+00:00:08.355 --> 00:00:12.930
+depth-first search is good for and we'll
+trace through it in a particular example,
+
+4
+00:00:12.930 --> 00:00:14.716
+and then we'll tell you
+what the actual code is.
+
+5
+00:00:14.716 --> 00:00:19.840
+So if breadth-first search is the cautious
+and tentative exploration strategy,
+
+6
+00:00:19.840 --> 00:00:24.810
+then depth-first search or DFS for
+short is its more aggressive cousin.
+
+7
+00:00:24.810 --> 00:00:29.810
+So the plan is to explore aggressively and
+only back track when necessary.
+
+8
+00:00:29.810 --> 00:00:34.560
+And this is very much the strategy one
+often uses when trying to solve a maze.
+
+9
+00:00:34.560 --> 00:00:37.530
+To explain what I mean let
+me show you how this would
+
+10
+00:00:37.530 --> 00:00:41.850
+work in the same running example we used
+when we discussed breadth-first search.
+
+11
+00:00:41.850 --> 00:00:44.230
+So here if we invoke depth-first
+search from the node number S,
+
+12
+00:00:44.230 --> 00:00:46.680
+here's what's going to happen.
+
+13
+00:00:46.680 --> 00:00:50.500
+So obviously we start at S and obviously
+there's two places where we can go next.
+
+14
+00:00:50.500 --> 00:00:52.080
+We can go to A or to B.
+
+15
+00:00:52.080 --> 00:00:55.120
+And depth-first search is under determine
+like breadth-first search we can
+
+16
+00:00:55.120 --> 00:00:55.900
+pick either one.
+
+17
+00:00:55.900 --> 00:00:59.005
+Select with a breadth-first search
+example let's go to A first.
+
+18
+00:00:59.005 --> 00:01:02.520
+So A will be the second
+one that we explore.
+
+19
+00:01:03.735 --> 00:01:07.760
+But now, unlike breadth first search where
+we automatically went to node B next,
+
+20
+00:01:07.760 --> 00:01:10.340
+since that was the other layer one node.
+
+21
+00:01:10.340 --> 00:01:16.040
+Here, the only rule is that we have to go
+next to one of A's immediate neighbors.
+
+22
+00:01:16.040 --> 00:01:19.240
+We might go to B, but we're not going to B
+because it is one of the neighbor's of S,
+
+23
+00:01:19.240 --> 00:01:21.340
+we go because it is one
+of the neighbors of A.
+
+24
+00:01:21.340 --> 00:01:24.775
+And actually to make sure the difference
+is clear let's assume that we aggressively
+
+25
+00:01:24.775 --> 00:01:29.408
+pursue deeper when we go from A to C and
+now the depth first search strategy is
+
+26
+00:01:29.408 --> 00:01:33.070
+again to just pursue deeper, so you go
+to one of C's immediate neighbors, so
+
+27
+00:01:33.070 --> 00:01:37.420
+maybe we go to E next, so
+E is going to be the fourth one visited.
+
+28
+00:01:37.420 --> 00:01:41.510
+Now from E there's only one neighbor not
+counting the one that we came in on so
+
+29
+00:01:41.510 --> 00:01:43.050
+from E we go to D.
+
+30
+00:01:43.050 --> 00:01:44.910
+And D is the fifth one we see.
+
+31
+00:01:44.910 --> 00:01:48.130
+Now from D we have a choice,
+we can either go to B or we could go to C.
+
+32
+00:01:48.130 --> 00:01:51.130
+So let's suppose we go to C from D.
+
+33
+00:01:51.130 --> 00:01:54.190
+Well then we get to a node number
+three where we've been before.
+
+34
+00:01:54.190 --> 00:01:56.980
+And as usual we're going to keep
+track of where we've already been.
+
+35
+00:01:56.980 --> 00:02:00.030
+So at this point we have to
+back track from C back to D.
+
+36
+00:02:00.030 --> 00:02:01.490
+We retreat to D.
+
+37
+00:02:01.490 --> 00:02:04.633
+Now, there's still another outgoing
+edge from D to explore and
+
+38
+00:02:04.633 --> 00:02:06.115
+then they'll be the one to B.
+
+39
+00:02:06.115 --> 00:02:09.690
+And so what happens is we actually wind
+up wrapping all the way around this outer
+
+40
+00:02:09.690 --> 00:02:13.090
+cycle and we could B sixth.
+
+41
+00:02:13.090 --> 00:02:13.700
+And now, of course,
+
+42
+00:02:13.700 --> 00:02:15.900
+anywhere we try to explore we see
+somewhere we've already been.
+
+43
+00:02:15.900 --> 00:02:19.340
+So, from B we try to go to S, but
+we've been there so we retreat to B.
+
+44
+00:02:19.340 --> 00:02:22.520
+We can try to go to A but
+we've been there so we retreat to B.
+
+45
+00:02:22.520 --> 00:02:25.070
+Now we've explored all
+of the options out of B.
+
+46
+00:02:25.070 --> 00:02:27.710
+So we have to retreat from B,
+we have to go back to D.
+
+47
+00:02:27.710 --> 00:02:31.960
+Now from D we've explored both B and
+C so we have to retreat back to E.
+
+48
+00:02:31.960 --> 00:02:35.710
+We've explored the only outgoing arc D,
+so we have to retreat to C.
+
+49
+00:02:35.710 --> 00:02:37.010
+We retreat to A.
+
+50
+00:02:37.010 --> 00:02:41.430
+From A we actually haven't yet
+looked along this arc, but
+
+51
+00:02:41.430 --> 00:02:43.740
+that just sends us to B
+where we have been before.
+
+52
+00:02:43.740 --> 00:02:45.410
+So then we retreat back to A.
+
+53
+00:02:45.410 --> 00:02:47.990
+Finally we retreat back to S and S,
+
+54
+00:02:47.990 --> 00:02:51.060
+even at S there's still
+an extra edge to explore.
+
+55
+00:02:51.060 --> 00:02:54.200
+At S we say,
+we haven't tried this as B-edge yet.
+
+56
+00:02:54.200 --> 00:02:57.151
+But of course, when we look across we
+get the B where we've been before and
+
+57
+00:02:57.151 --> 00:02:58.112
+then we backtrack to S.
+
+58
+00:02:58.112 --> 00:03:01.177
+Then we've looked at every edge once,
+and so we stop.
+
+59
+00:03:01.177 --> 00:03:02.950
+So that's how depth-first search works.
+
+60
+00:03:02.950 --> 00:03:05.590
+You just pursue your path,
+you go to an immediate
+
+61
+00:03:05.590 --> 00:03:08.540
+neighbor as long as you can until you
+hit somewhere you've been before.
+
+62
+00:03:08.540 --> 00:03:10.050
+And then you retreat.
+
+63
+00:03:10.050 --> 00:03:13.737
+So you might be wondering why bother
+with another graph search strategy?
+
+64
+00:03:13.737 --> 00:03:16.442
+After all we have breadth-first search,
+which seemed pretty awesome, right.
+
+65
+00:03:16.442 --> 00:03:18.140
+It runs in linear time.
+
+66
+00:03:18.140 --> 00:03:22.600
+It's guaranteed to find everything you
+might want to find, it computes shortest
+
+67
+00:03:22.600 --> 00:03:26.286
+paths, it computes connected components
+if you embed it in a foreloop.
+
+68
+00:03:26.286 --> 00:03:28.533
+It kind of seems like,
+what else would you want?
+
+69
+00:03:28.533 --> 00:03:29.225
+Well, it turns out,
+
+70
+00:03:29.225 --> 00:03:32.520
+depth-first search is going to have its
+own impressive catalogue of applications,
+
+71
+00:03:32.520 --> 00:03:35.190
+which you can't necessarily
+replicate with breadth-first search.
+
+72
+00:03:35.190 --> 00:03:38.090
+And I'm going to focus on
+applications in directed graphs.
+
+73
+00:03:38.090 --> 00:03:41.720
+So there's going to be a simple one that
+we discuss in this video, and then there's
+
+74
+00:03:41.720 --> 00:03:45.140
+going to be a more complicated one that
+has a separate video devoted to it.
+
+75
+00:03:45.140 --> 00:03:46.895
+So in this video we're
+going to be discussing,
+
+76
+00:03:46.895 --> 00:03:50.330
+computing topological orderings
+of directed acyclic graphs.
+
+77
+00:03:50.330 --> 00:03:53.590
+That is, directed graphs
+that have no directed cycle.
+
+78
+00:03:53.590 --> 00:03:57.250
+The more complicated application is
+computing strongly connected components in
+
+79
+00:03:57.250 --> 00:03:58.550
+directed graphs.
+
+80
+00:03:58.550 --> 00:04:01.015
+The run time will be, essentially,
+the same as it was for
+
+81
+00:04:01.015 --> 00:04:05.200
+breadth-first search, and the best we
+could hope for, which is linear time.
+
+82
+00:04:05.200 --> 00:04:08.683
+And again, we're not assuming that
+there's necessarily that many edges.
+
+83
+00:04:08.683 --> 00:04:11.108
+There may be much fewer
+edges than vertices.
+
+84
+00:04:11.108 --> 00:04:16.020
+So linear time and these connectivity
+applications means O of M plus n.
+
+85
+00:04:17.500 --> 00:04:19.630
+So let's not talk about the actual
+code of depth for search.
+
+86
+00:04:19.630 --> 00:04:21.350
+There's a couple of ways to do it.
+
+87
+00:04:21.350 --> 00:04:25.075
+One way to do it is to just make some
+minor modifications to the code for
+
+88
+00:04:25.075 --> 00:04:26.430
+breadth for a search.
+
+89
+00:04:26.430 --> 00:04:29.690
+The primary difference being
+instead of using a queue in its
+
+90
+00:04:29.690 --> 00:04:34.640
+first in first out behavior, you swap in a
+stack with its last in first out behavior.
+
+91
+00:04:34.640 --> 00:04:37.150
+Again, if you don't know what a stack is
+you should read about that in the program
+
+92
+00:04:37.150 --> 00:04:38.880
+textbook or on the web.
+
+93
+00:04:38.880 --> 00:04:42.520
+It's something that supports constant
+time insertions to the front and
+
+94
+00:04:42.520 --> 00:04:45.260
+constant time deletions from the front,
+
+95
+00:04:45.260 --> 00:04:48.990
+unlike a queue which is meant to support
+constant time deletions to the back.
+
+96
+00:04:48.990 --> 00:04:52.750
+Okay so stack that operates just like
+those cafeteria trays that you know where
+
+97
+00:04:52.750 --> 00:04:55.780
+you put in a tray and
+the last one that got pushed in when
+
+98
+00:04:55.780 --> 00:04:58.120
+you take the first one out that's
+the last one that got put in.
+
+99
+00:04:58.120 --> 00:05:01.840
+So these are called push and pop,
+in a stack context both are constant time.
+
+100
+00:05:01.840 --> 00:05:04.287
+So if you swap out the queue
+you swap in the stack,
+
+101
+00:05:04.287 --> 00:05:06.447
+make a couple other minor modifications.
+
+102
+00:05:06.447 --> 00:05:10.152
+Breadth-first search turns
+into depth-first search.
+
+103
+00:05:10.152 --> 00:05:12.321
+For the sake of both variety and elegance,
+
+104
+00:05:12.321 --> 00:05:15.040
+I'm instead going to show
+you a recursive version.
+
+105
+00:05:15.040 --> 00:05:18.680
+So depth-first search is very naturally
+phrased as a recursive algorithm,
+
+106
+00:05:18.680 --> 00:05:20.140
+and that's what we'll discuss here.
+
+107
+00:05:20.140 --> 00:05:22.190
+So, depth-first search, of course,
+
+108
+00:05:22.190 --> 00:05:25.750
+takes as input a graph g and
+again it could be undirected or directed.
+
+109
+00:05:25.750 --> 00:05:29.060
+It doesn't matter, just with a directed
+graph be sure that you only follow arcs
+
+110
+00:05:29.060 --> 00:05:32.040
+in the appropriate direction,
+which should be automatically handled
+
+111
+00:05:32.040 --> 00:05:35.440
+in the adjacency lists of your
+graph data structure anyways.
+
+112
+00:05:35.440 --> 00:05:38.730
+So as always we keep a Boolean
+local to each vertex of the graph,
+
+113
+00:05:38.730 --> 00:05:42.680
+remembering whether we've
+been there before or not.
+
+114
+00:05:42.680 --> 00:05:45.650
+And of course, as soon as we start
+exploring from S we better make a note
+
+115
+00:05:45.650 --> 00:05:47.160
+that now we have been there.
+
+116
+00:05:47.160 --> 00:05:48.716
+We better plant a flag, as it were.
+
+117
+00:05:48.716 --> 00:05:53.180
+And remember, depth-first search is
+an aggressive search, so we immediately
+
+118
+00:05:53.180 --> 00:05:57.260
+try to recursively search from any of S's
+neighbors that we haven't already been to.
+
+119
+00:05:57.260 --> 00:06:02.160
+And now, if we find such a vertex,
+if we find somewhere we've never been,
+
+120
+00:06:02.160 --> 00:06:05.500
+we recursively call depth-first
+search from that node.
+
+121
+00:06:06.510 --> 00:06:10.072
+The basic guarantees of depth-first search
+are exactly the same as they were for
+
+122
+00:06:10.072 --> 00:06:10.890
+breath-first search.
+
+123
+00:06:10.890 --> 00:06:15.210
+We find everything we could possibly hope
+to find and we do it in linear time.
+
+124
+00:06:15.210 --> 00:06:18.410
+And once again, the reason is this is
+simply a special case of the generic
+
+125
+00:06:18.410 --> 00:06:21.930
+stretch procedure that we started
+this sequence of videos about.
+
+126
+00:06:21.930 --> 00:06:25.530
+So it just corresponds to a particular
+way of choosing amongst multiple crossing
+
+127
+00:06:25.530 --> 00:06:28.250
+edges between the region
+of explored nodes, and
+
+128
+00:06:28.250 --> 00:06:29.880
+between the region of unexplored nodes.
+
+129
+00:06:29.880 --> 00:06:33.920
+Essentially always being biased toward the
+most recently discovered explored nodes.
+
+130
+00:06:33.920 --> 00:06:37.345
+And just like, breadth for search, the
+running time is going to be proportional
+
+131
+00:06:37.345 --> 00:06:40.945
+to the size of the component
+that you're discovering.
+
+132
+00:06:40.945 --> 00:06:44.395
+And the basic reason is that each
+node is looked at only once, right?
+
+133
+00:06:44.395 --> 00:06:48.475
+This boolean makes sure that we don't
+ever explore a node more than once, and
+
+134
+00:06:48.475 --> 00:06:52.055
+then for each edge, we look at it at
+most twice, once from each endpoint.
+
+135
+00:06:53.700 --> 00:06:56.715
+And given that these exact same two
+claims hold for depth-first search as for
+
+136
+00:06:56.715 --> 00:07:00.040
+breadth-first search, that means if we
+wanted to compute connected components in
+
+137
+00:07:00.040 --> 00:07:03.180
+an undirected graph,
+we could equally well use an outer for
+
+138
+00:07:03.180 --> 00:07:06.420
+loop with depth-first search as
+our workhorse in the inner loop.
+
+139
+00:07:06.420 --> 00:07:07.290
+It wouldn't matter.
+
+140
+00:07:07.290 --> 00:07:10.570
+Either of those for undirected graphs,
+depth-first search, breadth-first search,
+
+141
+00:07:10.570 --> 00:07:14.290
+is going to find all the connected
+components in O of n plus m time,
+
+142
+00:07:14.290 --> 00:07:15.390
+in linear time.
+
+143
+00:07:15.390 --> 00:07:18.370
+So instead, I want to focus on an
+application in particular to depth-first
+
+144
+00:07:18.370 --> 00:07:19.220
+search, and
+
+145
+00:07:19.220 --> 00:07:23.250
+this is about finding a topological
+ordering of a directed acyclic graph.

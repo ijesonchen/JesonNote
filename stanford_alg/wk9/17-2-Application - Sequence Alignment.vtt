@@ -1,0 +1,665 @@
+WEBVTT
+
+1
+00:00:03.180 --> 00:00:07.691
+In this video we'll cover a second 
+problem to whet your appetite for things 
+
+2
+00:00:07.691 --> 00:00:11.040
+to come, namely the problem of sequence 
+alignment. 
+
+3
+00:00:11.040 --> 00:00:14.158
+So this is a fundamental problem in 
+computational genomics. 
+
+4
+00:00:14.158 --> 00:00:18.229
+If you take a class on the subject it's 
+very likely to occupy the very first 
+
+5
+00:00:18.229 --> 00:00:21.136
+couple of lectures. 
+So in this problem you're given two 
+
+6
+00:00:21.136 --> 00:00:25.365
+strings over an alphabet and no prizes 
+for guessing which is the alphabet we're 
+
+7
+00:00:25.365 --> 00:00:29.241
+most likely to care about. 
+Typically, these strings represent 
+
+8
+00:00:29.241 --> 00:00:34.685
+portions of one or more genomes. 
+And just as a toy running example you can 
+
+9
+00:00:34.685 --> 00:00:39.099
+just imagine that the two strings were 
+given are A, G, G, G, C, T and A, 
+
+10
+00:00:39.099 --> 00:00:42.410
+G, G, C, A. 
+Know that the two input strings do not 
+
+11
+00:00:42.410 --> 00:00:44.985
+necessarily need to be of the same 
+length. 
+
+12
+00:00:44.985 --> 00:00:49.874
+And informally speaking, the goal of this 
+sequence alignment problem is to figure 
+
+13
+00:00:49.874 --> 00:00:52.260
+out how similar the two input strings 
+are. 
+
+14
+00:00:52.260 --> 00:00:56.237
+Obviously, I haven't told you what I mean 
+by two strings being similar. 
+
+15
+00:00:56.237 --> 00:00:59.759
+That's something we'll develop over the 
+next couple of slides. 
+
+16
+00:00:59.759 --> 00:01:04.303
+Why might you want to solve this problem? 
+Well, there's actually a lot of reasons. 
+
+17
+00:01:04.303 --> 00:01:06.690
+Let me just give you two of many 
+examples. 
+
+18
+00:01:06.690 --> 00:01:10.809
+What will be the conjecture or the 
+function of regions of a genome that you 
+
+19
+00:01:10.809 --> 00:01:13.139
+don't understand, 
+lets say the human genome, 
+
+20
+00:01:13.139 --> 00:01:17.042
+from similar regions that exist in 
+genomes that you do understand or at 
+
+21
+00:01:17.042 --> 00:01:19.481
+least understand better, 
+say the mouse genome. 
+
+22
+00:01:19.481 --> 00:01:23.600
+If you see a string that has a known 
+function in the well understood genome 
+
+23
+00:01:23.600 --> 00:01:27.502
+and you see something similar in the 
+poorly understood genome, you might 
+
+24
+00:01:27.502 --> 00:01:30.050
+conjecture it has the same or similar 
+function. 
+
+25
+00:01:30.050 --> 00:01:34.439
+A totally different reason you might want 
+to compare the genomes of two different 
+
+26
+00:01:34.439 --> 00:01:38.720
+species, is to figure out whether one 
+evolved directly from the other and when. 
+
+27
+00:01:38.720 --> 00:01:43.305
+A second totally different reason you 
+might want to compare the genomes of two 
+
+28
+00:01:43.305 --> 00:01:47.296
+different species is to understand their 
+evolutionary relationship. 
+
+29
+00:01:47.296 --> 00:01:51.763
+So for example, maybe you have three 
+species A, B, and C, and you're wondering 
+
+30
+00:01:51.763 --> 00:01:55.932
+whether B evolved from A and then C 
+evolved from B, or whether B and C 
+
+31
+00:01:55.932 --> 00:02:00.160
+evolved independently from a common 
+ancestor, A. And you might then take 
+
+32
+00:02:00.160 --> 00:02:04.270
+genome similarity as a measure of 
+proximity in the evolutionary tree. 
+
+33
+00:02:04.270 --> 00:02:08.988
+So having motivated the informal version 
+of the problem, let's work toward making 
+
+34
+00:02:08.988 --> 00:02:12.191
+it more formal. 
+In particular, I owe you a discussion of 
+
+35
+00:02:12.191 --> 00:02:18.652
+what I mean by two strings being similar. 
+So to develop intuition for this, let's 
+
+36
+00:02:18.652 --> 00:02:22.806
+revisit the two strings that we 
+introduced on the previous slide A, G, G, 
+
+37
+00:02:22.806 --> 00:02:23.892
+G, C, T, and A, 
+G, G, C, A. 
+
+38
+00:02:23.892 --> 00:02:26.385
+Now, 
+if we just sort of eyeball these two 
+
+39
+00:02:26.385 --> 00:02:29.644
+strings, I mean clearly they're not the 
+same string. 
+
+40
+00:02:29.644 --> 00:02:34.117
+But, we somehow feel like they're more 
+similar than they are different. 
+
+41
+00:02:34.117 --> 00:02:39.416
+So, where does that intuition come from? 
+Well, one way to make it more precise is 
+
+42
+00:02:39.416 --> 00:02:44.889
+to notice that these two strings can be 
+nicely aligned in the following sense. 
+
+43
+00:02:44.889 --> 00:02:47.766
+Lets write down the longer string, A, 
+G, G, G, C, T. 
+
+44
+00:02:47.766 --> 00:02:53.028
+And, I'm going to write the shorter 
+string under it, and I'll insert a gap, a 
+
+45
+00:02:53.028 --> 00:02:56.607
+space to make the two strings have the 
+same length. 
+
+46
+00:02:56.607 --> 00:03:02.010
+I'm going to put the space where there 
+seems to be quote unquote a missing G. 
+
+47
+00:03:02.010 --> 00:03:06.032
+And then, what sense is this a nice 
+alignment, well, it's clearly not 
+
+48
+00:03:06.032 --> 00:03:08.941
+perfect. 
+We don't' get a character, by character 
+
+49
+00:03:08.941 --> 00:03:12.531
+match of the two strings, but there's 
+only two minor flaws. 
+
+50
+00:03:12.531 --> 00:03:17.234
+So on the one hand, we did have to insert 
+a gap and we do have to suffer one 
+
+51
+00:03:17.234 --> 00:03:21.443
+mismatch in the final column. 
+So this institution motivates defining 
+
+52
+00:03:21.443 --> 00:03:25.713
+similarity between two strings with 
+respect to their highest quality 
+
+53
+00:03:25.713 --> 00:03:30.181
+alignment, their nicest alignment. 
+So we're getting closer to a formal 
+
+54
+00:03:30.181 --> 00:03:33.375
+problem statement, but it's still 
+somewhat underdetermined. 
+
+55
+00:03:33.375 --> 00:03:37.889
+Specifically, we need to make precise why 
+we might compare, why we might prefer one 
+
+56
+00:03:37.889 --> 00:03:41.302
+alignment over another. 
+For example, is it better to have three 
+
+57
+00:03:41.302 --> 00:03:45.266
+gaps and no mismatches or is it better to 
+have one gap and one mismatch? 
+
+58
+00:03:45.266 --> 00:03:49.395
+So if in this video, we're effectively 
+going to punt on this question. We're 
+
+59
+00:03:49.395 --> 00:03:53.414
+going to assume this problem's already 
+been solved experimentally, that it's 
+
+60
+00:03:53.414 --> 00:03:57.818
+known and provided this part of the input 
+which is more costly, gaps and various 
+
+61
+00:03:57.818 --> 00:04:04.107
+types of mismatches. 
+So here, then, is the formal problem 
+
+62
+00:04:04.107 --> 00:04:07.366
+statement. 
+So, in addition to the two strings over 
+
+63
+00:04:07.366 --> 00:04:09.761
+A, 
+C, G, T, we are provided as part of the 
+
+64
+00:04:09.761 --> 00:04:14.882
+input, a non-negative number indicating 
+the cost we incurred in alignment for 
+
+65
+00:04:14.882 --> 00:04:19.139
+each gap that we insert. 
+Similarly, for each possible mismatch of 
+
+66
+00:04:19.139 --> 00:04:22.664
+two characters, 
+like, for example, mismatching an A and 
+
+67
+00:04:22.664 --> 00:04:25.124
+T. 
+We're given as part of the input a 
+
+68
+00:04:25.124 --> 00:04:29.315
+corresponding penalty. 
+Given this input, the responsibility of a 
+
+69
+00:04:29.315 --> 00:04:34.768
+sequence alignment algorithm is to output 
+the alignment that minimizes the sum of 
+
+70
+00:04:34.768 --> 00:04:38.614
+the penalties. 
+Another way to think of this output, the 
+
+71
+00:04:38.614 --> 00:04:42.815
+minimum penalty allignment is, we're 
+trying to find in affect the minimum cost 
+
+72
+00:04:42.815 --> 00:04:46.694
+explanation for how one of these strings 
+would've turned into the other. 
+
+73
+00:04:46.694 --> 00:04:50.680
+So we can think of a gap as sort of 
+undoing a deletion that occurred some 
+
+74
+00:04:50.680 --> 00:04:55.320
+time in the past and we can think of a 
+mismatch as representing a mutation. 
+
+75
+00:04:55.320 --> 00:05:00.104
+So this minimum possible total penalty, 
+that is these values of this optimal 
+
+76
+00:05:00.104 --> 00:05:05.015
+alignment is famous and fundamental 
+enough to have its own name namely the 
+
+77
+00:05:05.015 --> 00:05:08.659
+Needleman-Wunsch score. 
+So this quantity is named after the two 
+
+78
+00:05:08.659 --> 00:05:12.671
+authors that proposed efficient algorithm 
+for computing of the optimal alignment. 
+
+79
+00:05:12.671 --> 00:05:17.021
+that appeared way back in 1970, in the 
+Journal of Molecular Biology. 
+
+80
+00:05:17.021 --> 00:05:20.694
+And now, at last, we have a formal 
+definition of what it means for two 
+
+81
+00:05:20.694 --> 00:05:24.083
+strings to be similar. 
+It means they have a small NW score, a 
+
+82
+00:05:24.083 --> 00:05:26.569
+score close to 0. 
+So for example, if you have, if you have 
+
+83
+00:05:26.569 --> 00:05:29.394
+a database with a whole bunch of genome 
+fragments, 
+
+84
+00:05:29.394 --> 00:05:33.914
+according to this, you're going to define 
+the most similar fragments to be those 
+
+85
+00:05:33.914 --> 00:05:42.161
+with the smallest NW score. 
+So, to bring the discussion back squarely 
+
+86
+00:05:42.161 --> 00:05:46.965
+into the land of algorithms, let me point 
+out that this definition of genome sum, 
+
+87
+00:05:46.965 --> 00:05:51.829
+similarity is intrinsically algorithmic. 
+This definition would be totally useless, 
+
+88
+00:05:51.829 --> 00:05:56.333
+unless there existed in efficient 
+algorithm that given two strings and its 
+
+89
+00:05:56.333 --> 00:06:00.176
+penalties computes the best alignment 
+between those two strings. 
+
+90
+00:06:00.176 --> 00:06:04.079
+If you couldn't compute the score, you 
+would never use it as a measure of 
+
+91
+00:06:04.079 --> 00:06:06.790
+similarity. 
+So this observation puts us under a lot 
+
+92
+00:06:06.790 --> 00:06:10.686
+of pressure to devise an efficient 
+algorithm for finding the best alignment. 
+
+93
+00:06:10.686 --> 00:06:13.660
+So how are we going to do that? 
+Well, we can always fall back to 
+
+94
+00:06:13.660 --> 00:06:17.863
+brute-force search, where we iterate over 
+all of the conceivable alignments of the 
+
+95
+00:06:17.863 --> 00:06:21.913
+two strings, compute the total penalty of 
+each of those alignments, and remember 
+
+96
+00:06:21.913 --> 00:06:25.867
+the best one. 
+Clearly, correctness is not going to be 
+
+97
+00:06:25.867 --> 00:06:29.594
+an issue for brute-force search. 
+It's correct essentially by definition. 
+
+98
+00:06:29.594 --> 00:06:33.111
+The issue is how long does it take? So 
+let's ask a simpler question. 
+
+99
+00:06:33.111 --> 00:06:36.418
+Let's just think about, how many 
+different alignments there are? 
+
+100
+00:06:36.418 --> 00:06:40.303
+How many possibilities do we have to try? 
+So if [INAUDIBLE] let's imagine, I gave 
+
+101
+00:06:40.303 --> 00:06:43.925
+you two strings of length 500, which is a 
+knot of a reasonable length. 
+
+102
+00:06:43.925 --> 00:06:47.495
+Which of the following english phrases 
+best describes the number of 
+
+103
+00:06:47.495 --> 00:06:50.487
+possibilities, 
+the number of alignments given to strings 
+
+104
+00:06:50.487 --> 00:07:04.154
+with 500 characters each? 
+So I realize this is sort of a cheeky 
+
+105
+00:07:04.154 --> 00:07:07.313
+question, 
+but I hope you can gather that what I was 
+
+106
+00:07:07.313 --> 00:07:09.667
+looking for was part D. 
+So you know? 
+
+107
+00:07:09.667 --> 00:07:12.641
+So, how big are each of these quantities, 
+anyways? 
+
+108
+00:07:12.641 --> 00:07:17.349
+Well, in a, in a typical version of this 
+class, you might have about 50,000 
+
+109
+00:07:17.349 --> 00:07:21.066
+students enrolled or so. 
+So that's somewhere between 10^44 and 
+
+110
+00:07:21.066 --> 00:07:24.226
+10^5.5. 
+The number of people on earth is roughly 
+
+111
+00:07:24.226 --> 00:07:26.952
+7,000.000.000. 
+So that's somewhere between 10^9 and 
+
+112
+00:07:26.952 --> 00:07:29.824
+10^10/10. 
+The most common estimate I see for the 
+
+113
+00:07:29.824 --> 00:07:32.990
+number of atoms in the known universe is 
+10^80. 
+
+114
+00:07:32.990 --> 00:07:37.431
+And believe it or not, the number of 
+possible alignments of two strings of 
+
+115
+00:07:37.431 --> 00:07:41.813
+length 500 is even bigger than that. 
+So I'll leave it for you to convince 
+
+116
+00:07:41.813 --> 00:07:46.555
+yourself that the number of possibilities 
+is at least two raised to the 500. 
+
+117
+00:07:46.555 --> 00:07:51.417
+the real number is actually noticeably 
+bigger than that. and because 10 is at 
+
+118
+00:07:51.417 --> 00:07:57.780
+most 2^4, we can lower bound this number 
+by 10^125 quite a bit bigger than the 
+
+119
+00:07:57.780 --> 00:08:01.388
+number of atoms in the universe. 
+And the point of course, is just that 
+
+120
+00:08:01.388 --> 00:08:05.258
+it's utterly absurd to envision 
+implementing brute-force search even at a 
+
+121
+00:08:05.258 --> 00:08:08.866
+scale of a few hundred characters. 
+And you know, forgetting about these sort 
+
+122
+00:08:08.866 --> 00:08:12.997
+of astronomical, if you will, comparisons 
+even if you had string lengths much 
+
+123
+00:08:12.997 --> 00:08:16.971
+smaller, say in the you know, a dozen or 
+two, you'd never ever run brute-force or 
+
+124
+00:08:16.971 --> 00:08:21.206
+this is not going to work. And of course, 
+notice this is not the kind of problem 
+
+125
+00:08:21.206 --> 00:08:25.651
+that's [INAUDIBLE] This just doesn't go 
+away if you wait a little while for 
+
+126
+00:08:25.651 --> 00:08:28.788
+Moore's law to help you. 
+This is a fundamental limitation. It 
+
+127
+00:08:28.788 --> 00:08:31.231
+says, 
+you are never going to compute alignments 
+
+128
+00:08:31.231 --> 00:08:35.500
+of the strings that you care about, 
+unless you have a fast, 
+
+129
+00:08:35.500 --> 00:08:37.800
+clever algorithm. 
+. 
+
+130
+00:08:37.800 --> 00:08:42.299
+I'm happy to report that you will indeed 
+learn such a fast and clever algorithm 
+
+131
+00:08:42.299 --> 00:08:46.011
+later on in this course. 
+Even better, it's just going to be a 
+
+132
+00:08:46.011 --> 00:08:50.005
+straightforward instantiation of a much 
+more general algorithm design paradigm. 
+
+133
+00:08:50.005 --> 00:08:51.580
+That of dynamic programming. 

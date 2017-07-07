@@ -1,0 +1,1076 @@
+WEBVTT
+
+1
+00:00:02.660 --> 00:00:06.087
+Today, we're going to embark on the 
+discussion of a new algorithm design 
+
+2
+00:00:06.087 --> 00:00:08.471
+paradigm. 
+Namely, that of designing and analyzing 
+
+3
+00:00:08.471 --> 00:00:11.451
+greedy algorithms. 
+So to put this study of greedy algorithms 
+
+4
+00:00:11.451 --> 00:00:13.785
+in a little bit of context, let's just 
+zoom out. 
+
+5
+00:00:13.785 --> 00:00:17.957
+Let's both review some of the algorithm 
+design paradigms that we've already seen, 
+
+6
+00:00:17.957 --> 00:00:21.682
+as well as look forward to some that 
+we're going to learn later on, in this 
+
+7
+00:00:21.682 --> 00:00:24.193
+course. 
+So it's sort of a sad fact of life that 
+
+8
+00:00:24.193 --> 00:00:26.844
+in algorithm design, there's no one 
+silver bullet. 
+
+9
+00:00:26.844 --> 00:00:30.955
+There's no magic potion that's the cure 
+for all your computational problems. 
+
+10
+00:00:30.955 --> 00:00:35.012
+So instead, the best we can do, and the 
+focus of these courses, is to discuss 
+
+11
+00:00:35.012 --> 00:00:39.502
+general techniques that apply to lots of 
+different problems that arise and lots of 
+
+12
+00:00:39.502 --> 00:00:42.747
+different domains. 
+So that's what I mean by algorithm design 
+
+13
+00:00:42.747 --> 00:00:45.344
+paradigms. 
+High level problem solving strategies 
+
+14
+00:00:45.344 --> 00:00:51.080
+that cut across multiple applications. 
+So let's look at some examples. 
+
+15
+00:00:51.080 --> 00:00:54.752
+Back in part one, we started with the 
+divide and conquer algorithm design 
+
+16
+00:00:54.752 --> 00:00:56.966
+paradigm. 
+A canonical example of that paradigm 
+
+17
+00:00:56.966 --> 00:01:00.488
+being the merge sort algorithm. 
+So remember in divide and conquer what 
+
+18
+00:01:00.488 --> 00:01:04.564
+you do is you take your problem you break 
+it into smaller sub problems, you solve 
+
+19
+00:01:04.564 --> 00:01:08.690
+the sub problems recursively and then you 
+combine the results into a solution for 
+
+20
+00:01:08.690 --> 00:01:11.658
+the original problem. 
+Like how in merge sort you recursively 
+
+21
+00:01:11.658 --> 00:01:15.583
+sort two sub arrays and then merge the 
+results to get a sorted version of the 
+
+22
+00:01:15.583 --> 00:01:19.311
+original input array. 
+Another paradigm that we touched on in 
+
+23
+00:01:19.311 --> 00:01:21.909
+part one, 
+although we didn't discuss it anywhere 
+
+24
+00:01:21.909 --> 00:01:24.723
+near as thoroughly, is that of randomized 
+algorithms. 
+
+25
+00:01:24.723 --> 00:01:27.322
+So the idea that you could have code flip 
+coins, 
+
+26
+00:01:27.322 --> 00:01:30.245
+that is, make random choices, inside the 
+code itself. 
+
+27
+00:01:30.245 --> 00:01:34.034
+Often, this leads to simpler, more 
+practical, or more elegant algorithms. 
+
+28
+00:01:34.034 --> 00:01:38.418
+A canonical application here is the quick 
+sort algorithm using a random pivot 
+
+29
+00:01:38.418 --> 00:01:41.233
+element. 
+But we also saw applications for example, 
+
+30
+00:01:41.233 --> 00:01:45.184
+to the design of hash functions. 
+So the next measure paradigm we're going 
+
+31
+00:01:45.184 --> 00:01:49.569
+to discuss is that of greedy algorithms. 
+So these are algorithms that iteratively 
+
+32
+00:01:49.569 --> 00:01:54.339
+make myopic decisions. 
+In fact, we've already seen an example of 
+
+33
+00:01:54.339 --> 00:01:58.624
+a greedy algorithm in part one namely 
+Dijkstra's shortest path algorithm. 
+
+34
+00:01:58.624 --> 00:02:02.968
+And then, the final paradigm we're going 
+to discuss in this class is that of 
+
+35
+00:02:02.968 --> 00:02:06.598
+dynamic programming, 
+a very powerful paradigm which solves, in 
+
+36
+00:02:06.598 --> 00:02:11.180
+particular, two of the motivating 
+questions we saw earlier namely, sequence 
+
+37
+00:02:11.180 --> 00:02:14.300
+alignment, and distributed shortest 
+paths. 
+
+38
+00:02:14.300 --> 00:02:18.159
+So what is a greedy algorithm anyways? 
+Well, to be honest, I'm not going to 
+
+39
+00:02:18.159 --> 00:02:21.649
+offer you a formal definition. 
+In fact, much blood and ink has been 
+
+40
+00:02:21.649 --> 00:02:24.822
+spilled over which algorithm is precisely 
+greedy algorithms. 
+
+41
+00:02:24.822 --> 00:02:27.413
+But, I'll give you a sort of informal 
+description. 
+
+42
+00:02:27.413 --> 00:02:31.061
+A sort of rule of thumb for what greedy 
+algorithms usually look like. 
+
+43
+00:02:31.061 --> 00:02:34.762
+Generally speaking, what a greedy 
+algorithm does, is make a sequence of 
+
+44
+00:02:34.762 --> 00:02:37.459
+decisions with each decision being made 
+myopically. 
+
+45
+00:02:37.459 --> 00:02:41.689
+That is, it seems like a good idea at the 
+time and then you hope that everything 
+
+46
+00:02:41.689 --> 00:02:44.589
+works out at the end. 
+The best way to get a feel for greedy 
+
+47
+00:02:44.589 --> 00:02:48.310
+algorithms is to see examples and the 
+upcoming lectures will give you a number 
+
+48
+00:02:48.310 --> 00:02:50.523
+of them. 
+But I want to point out we've actually 
+
+49
+00:02:50.523 --> 00:02:53.961
+already seen an example of a greedy 
+algorithm in part one of this course, 
+
+50
+00:02:53.961 --> 00:02:56.480
+namely Dijkstra's shortest path 
+algorithm. 
+
+51
+00:02:56.480 --> 00:02:59.601
+So in what sense is Dijkstra's algorithm 
+a greedy algorithm? 
+
+52
+00:02:59.601 --> 00:03:03.450
+Well if you recall the psuedo code for 
+Dijkstra's algorithm, you'll recall 
+
+53
+00:03:03.450 --> 00:03:07.144
+there's one main wild loop and the 
+algorithm process's exactly one new 
+
+54
+00:03:07.144 --> 00:03:11.617
+destination vertex in each iteration of 
+this wild loop, so there's exactly N - 1 
+
+55
+00:03:11.617 --> 00:03:14.375
+iterations overall, where N is the number 
+of vertices. 
+
+56
+00:03:14.375 --> 00:03:18.276
+So the algorithm only gets one shot to 
+compute the shortest path to a given 
+
+57
+00:03:18.276 --> 00:03:22.178
+destination. It never goes back and 
+revisits the decision, in that sense the 
+
+58
+00:03:22.178 --> 00:03:26.079
+decisions are myoptic, irrevocable and 
+that's the sense in which Dijkstra's 
+
+59
+00:03:26.079 --> 00:03:29.309
+algorithm is greedy. 
+So let me pause for a moment to discuss 
+
+60
+00:03:29.309 --> 00:03:31.553
+the greedy algorithm design paradigm 
+generally. 
+
+61
+00:03:31.553 --> 00:03:34.990
+Probably this discussion will seem a 
+little abstract so I recommend you 
+
+62
+00:03:34.990 --> 00:03:38.570
+revisit this discussion on the slide 
+after we've seen a few examples so at 
+
+63
+00:03:38.570 --> 00:03:40.766
+that point I think it will really hit 
+home. 
+
+64
+00:03:40.766 --> 00:03:44.346
+So let me proceed by comparing it and 
+contrasting it to the paradigm we've 
+
+65
+00:03:44.346 --> 00:03:47.293
+already studied in depth. 
+That of divide and conquer algorithms. 
+
+66
+00:03:47.293 --> 00:03:50.752
+So you'll recall that in a divide and 
+conquer algorithm what you do is, you 
+
+67
+00:03:50.752 --> 00:03:54.305
+break the problem into sub-problems. 
+So, maybe you take an input array and you 
+
+68
+00:03:54.305 --> 00:03:57.488
+split it into two sub-arrays. 
+Then you solve the smaller sub-problems 
+
+69
+00:03:57.488 --> 00:04:00.809
+recursively, and then you combine the 
+results of the sub-problems into a 
+
+70
+00:04:00.809 --> 00:04:04.177
+solution to the original input. 
+So the greedy paradigm is quite different 
+
+71
+00:04:04.177 --> 00:04:07.140
+in several respects. 
+First, both a strength and a weakness of 
+
+72
+00:04:07.140 --> 00:04:10.608
+the greedy algorithm design paradigm is 
+just how easy it is to apply. 
+
+73
+00:04:10.608 --> 00:04:14.434
+So it's often quite easy to come up with 
+plausible greedy algorithms for a 
+
+74
+00:04:14.434 --> 00:04:17.545
+problem, even multiple difference 
+plausible greedy algorithms. 
+
+75
+00:04:17.545 --> 00:04:21.014
+I think that a point of contrast with 
+divide and conquer algorithms. 
+
+76
+00:04:21.014 --> 00:04:24.839
+Often it's tricky to come up with a 
+plausible divide and conquer algorithm, 
+
+77
+00:04:24.839 --> 00:04:28.716
+and usually you have this eureka moment 
+where you finally figure out how to 
+
+78
+00:04:28.716 --> 00:04:32.541
+decompose the problem in the right way. 
+And once you have the eureka moment, 
+
+79
+00:04:32.541 --> 00:04:35.782
+you're good to go. 
+So secondly, I'm happy to report that 
+
+80
+00:04:35.782 --> 00:04:39.267
+analyzing running time of greedy 
+algorithms will generally be much easier 
+
+81
+00:04:39.267 --> 00:04:41.480
+than it was with divide and conquer 
+algorithms. 
+
+82
+00:04:41.480 --> 00:04:45.341
+For divide and conquer algorithms it was 
+really unclear whether they were fast or 
+
+83
+00:04:45.341 --> 00:04:48.873
+slow, because we had to understand the 
+running time over multiple levels of 
+
+84
+00:04:48.873 --> 00:04:51.181
+recursion. 
+On the one hand problems were size was 
+
+85
+00:04:51.181 --> 00:04:54.477
+getting smaller, but on the other hand, 
+the number of some problems was 
+
+86
+00:04:54.477 --> 00:04:56.832
+proliferating. 
+So we had to work hard, we developed 
+
+87
+00:04:56.832 --> 00:05:00.317
+these powerful tools like the master 
+method, and some other techniques, for 
+
+88
+00:05:00.317 --> 00:05:04.131
+figuring out just how fast an algorithm 
+like Merge Sort runs, or just how fast an 
+
+89
+00:05:04.131 --> 00:05:07.333
+algorithm like Strassen's fast matrix 
+multiplication algorithm runs. 
+
+90
+00:05:07.333 --> 00:05:10.990
+In contrast with greedy algorithms, it 
+will often be a one liner. 
+
+91
+00:05:10.990 --> 00:05:14.810
+Often it will be clear that the work is 
+dominated by say, a sorting sub routine 
+
+92
+00:05:14.810 --> 00:05:18.582
+and of course we all know that sorting 
+takes n log and time if you use a 
+
+93
+00:05:18.582 --> 00:05:20.554
+sensible algorithm for it. 
+Now the catch, 
+
+94
+00:05:20.554 --> 00:05:22.699
+and this is the third point of 
+comparison, 
+
+95
+00:05:22.699 --> 00:05:26.580
+is we're generally going to have to work 
+much harder to understand correctness 
+
+96
+00:05:26.580 --> 00:05:29.898
+issues of greedy algorithms. 
+For divide-and-conquer algorithms we 
+
+97
+00:05:29.898 --> 00:05:33.830
+didn't talk much about correctness. 
+It was generally a pretty straightforward 
+
+98
+00:05:33.830 --> 00:05:36.741
+induction proof. 
+You can review the lectures on Quicksort 
+
+99
+00:05:36.741 --> 00:05:40.723
+if you want an example of one of those 
+canonical inductive correctness proofs. 
+
+100
+00:05:40.723 --> 00:05:43.379
+But the game totally changes with greedy 
+algorithms. 
+
+101
+00:05:43.379 --> 00:05:47.361
+In fact, given a greedy algorithm we 
+often won't even have very good intuition 
+
+102
+00:05:47.361 --> 00:05:51.343
+for whether or not they are correct. 
+Let alone how to prove they're correct. 
+
+103
+00:05:51.343 --> 00:05:55.300
+So even with a correct algorithm, it's 
+often hard to figure out, why it's 
+
+104
+00:05:55.300 --> 00:05:58.305
+correct. 
+And in fact, if you remember only one 
+
+105
+00:05:58.305 --> 00:06:02.383
+thing from all of this greedy algorithm 
+discussion many years from now, 
+
+106
+00:06:02.383 --> 00:06:06.002
+I hope one key thing you remember is 
+they're often not correct. 
+
+107
+00:06:06.002 --> 00:06:09.966
+Often, especially if it's one you 
+proposed yourself which you're very 
+
+108
+00:06:09.966 --> 00:06:13.355
+biased, in favor of. 
+You will think the algorithm, the greedy 
+
+109
+00:06:13.355 --> 00:06:16.227
+algorithm must be correct because it's so 
+natural. 
+
+110
+00:06:16.227 --> 00:06:18.870
+But many of them are not, so keep that in 
+mind. 
+
+111
+00:06:18.870 --> 00:06:22.999
+So to give you some immediate practice 
+with the ubiquitous incorrectness of 
+
+112
+00:06:22.999 --> 00:06:25.987
+natural algorithm. 
+Let's review a point that we already 
+
+113
+00:06:25.987 --> 00:06:29.084
+covered in part one of this class 
+concerning Dijkstra's algorithm. 
+
+114
+00:06:29.084 --> 00:06:32.832
+Now, in part one we made a big deal of 
+what a justly famous algorithm Dijkstra's 
+
+115
+00:06:32.832 --> 00:06:36.962
+shortest path algorithm is, it runs 
+brazenly fast and it computes all the 
+
+116
+00:06:36.962 --> 00:06:38.972
+shortest paths. 
+What else do you want? 
+
+117
+00:06:38.972 --> 00:06:42.721
+Well remember there was an assumption 
+when we proved that the Dijkstra's 
+
+118
+00:06:42.721 --> 00:06:46.035
+algorithm is correct. 
+We assumed that every edge of the given 
+
+119
+00:06:46.035 --> 00:06:50.327
+network has a non negative length. 
+We did not allow negative edge lengths. 
+
+120
+00:06:50.327 --> 00:06:52.654
+And as we discussed in part one, you 
+know, 
+
+121
+00:06:52.654 --> 00:06:56.512
+for many applications, you only care 
+about non negative edge lengths. 
+
+122
+00:06:56.512 --> 00:07:00.313
+But there are applications where you do 
+want negative edge lengths. 
+
+123
+00:07:00.313 --> 00:07:04.455
+So let's review on this quiz why 
+Dijkstra's is actually incorrect, despite 
+
+124
+00:07:04.455 --> 00:07:07.575
+being so natural. 
+it's incorrect when edges can have 
+
+125
+00:07:07.575 --> 00:07:11.093
+negative lengths. 
+So I've drawn in green, a very simple 
+
+126
+00:07:11.093 --> 00:07:15.820
+shortest path network with three edges 
+and I've annotated the edges with their 
+
+127
+00:07:15.820 --> 00:07:18.453
+links. 
+You'll notice one of those edges does 
+
+128
+00:07:18.453 --> 00:07:22.401
+have a negative length, the edge from V 
+to W with length minus two. 
+
+129
+00:07:22.401 --> 00:07:27.188
+So the question is consider the source 
+vertex S and the destination vertex W. 
+
+130
+00:07:27.188 --> 00:07:31.795
+And the question is, what is the shortest 
+path distance computed by Dijkstra's 
+
+131
+00:07:31.795 --> 00:07:36.641
+algorithm and you may have to go and 
+review just a pseudo code in part one or 
+
+132
+00:07:36.641 --> 00:07:39.724
+on the web. 
+to answer that part of the question and 
+
+133
+00:07:39.724 --> 00:07:44.517
+then what is in fact the actual shortest 
+path distance from S to W where as usual 
+
+134
+00:07:44.517 --> 00:07:48.860
+the length of a path is just the sum of 
+the lengths of the edges in the path. 
+
+135
+00:07:51.700 --> 00:07:58.075
+All right, so the correct answer is D. 
+So let's start with the second part of 
+
+136
+00:07:58.075 --> 00:08:02.297
+the question, what is the actual length 
+of a shortest path from S to W when 
+
+137
+00:08:02.297 --> 00:08:04.717
+there's only two paths at all in the 
+graph? 
+
+138
+00:08:04.717 --> 00:08:09.108
+The one straight from S to W that has 
+length 2, and the one that goes by the 
+
+139
+00:08:09.108 --> 00:08:12.767
+intermediate point V that has length 3 + 
+-21, = 1 which is shorter. 
+
+140
+00:08:12.767 --> 00:08:16.820
+So, SVW is the shortest path that has 
+length 1. Why is Dijkstra incorrect? Well 
+
+141
+00:08:16.820 --> 00:08:20.985
+if you go back to the pseudo code of 
+Dijkstra, you'll see that in the very 
+
+142
+00:08:20.985 --> 00:08:25.658
+first iteration it will greedily find the 
+closest vertex to S in that case this is 
+
+143
+00:08:25.658 --> 00:08:29.767
+W, W is closer then V. It will greedily 
+compute the shortest path distance to W 
+
+144
+00:08:29.767 --> 00:08:33.976
+knowing the information it has right now 
+and all it knows is there's this one hot 
+
+145
+00:08:33.976 --> 00:08:38.072
+path from S to W, so it will irrevocably 
+commute to the shortest path distance 
+
+146
+00:08:38.072 --> 00:08:40.968
+from S to W as 2. 
+Never reconsidering that decision later. 
+
+147
+00:08:40.968 --> 00:08:44.575
+So Dijkstra will terminate with the 
+incorrect output that the shortest path 
+
+148
+00:08:44.575 --> 00:08:47.280
+link from S to W is 2. 
+This doesn't contradict anything we 
+
+149
+00:08:47.280 --> 00:08:50.649
+proved in part one, because we 
+established correctness of Dijkstra only 
+
+150
+00:08:50.649 --> 00:08:54.494
+under the assumption that all edge links 
+are non-negative, an assumption which is 
+
+151
+00:08:54.494 --> 00:08:58.101
+violated in this particular example. 
+But again, the takeaway point here is 
+
+152
+00:08:58.101 --> 00:09:01.897
+that, you know, it's easy to write down a 
+greedy algorithm, especially if you came 
+
+153
+00:09:01.897 --> 00:09:04.745
+up with it yourself. 
+You probably believe deep in your heart 
+
+154
+00:09:04.745 --> 00:09:08.447
+that it's got to be correct all the time, 
+but more often than not, probably your 
+
+155
+00:09:08.447 --> 00:09:10.820
+greedy heuristic is nothing more than a 
+heuristic. 
+
+156
+00:09:10.820 --> 00:09:13.795
+And there will be instances in which it 
+does the wrong thing. 
+
+157
+00:09:13.795 --> 00:09:17.260
+So keep that in mind in greedy algorithm 
+design. 
+
+158
+00:09:17.260 --> 00:09:20.749
+So now that my conscience is clear, 
+having warned you about the perils of 
+
+159
+00:09:20.749 --> 00:09:23.617
+greedy algorithm design, let's turn to 
+proofs of correctness. 
+
+160
+00:09:23.617 --> 00:09:26.246
+That is if you have a greedy algorithm 
+that is correct. 
+
+161
+00:09:26.246 --> 00:09:29.162
+And we will see some notable examples in 
+the coming lectures. 
+
+162
+00:09:29.162 --> 00:09:31.313
+How would you actually establish that 
+effect? 
+
+163
+00:09:31.313 --> 00:09:34.851
+Or if you have a greedy algorithm, and 
+you don't know whether or not it is 
+
+164
+00:09:34.851 --> 00:09:36.810
+correct, 
+how would you approach trying to 
+
+165
+00:09:36.810 --> 00:09:39.440
+understand which one it is, whether it's 
+correct or not? 
+
+166
+00:09:39.440 --> 00:09:42.682
+So let me level with you. 
+Proving greedy algorithm is correct. 
+
+167
+00:09:42.682 --> 00:09:44.862
+Frankly, is sort of, more art than 
+science. 
+
+168
+00:09:44.862 --> 00:09:48.689
+So, unlike the divide and conquer 
+paradigm, where everything was somewhat 
+
+169
+00:09:48.689 --> 00:09:51.613
+formulaic. 
+We had these black box ways of evaluating 
+
+170
+00:09:51.613 --> 00:09:54.431
+recurrences. 
+We had this sort of, template for proving 
+
+171
+00:09:54.431 --> 00:09:57.408
+algorithms correct. 
+Really, proving correctness of greedy 
+
+172
+00:09:57.408 --> 00:10:01.323
+algorithms takes a lot of creativity. 
+And it has a bit of an ad hoc flavor. 
+
+173
+00:10:01.323 --> 00:10:04.559
+That said, as usual, to the extent that 
+they are recurring themes. 
+
+174
+00:10:04.559 --> 00:10:07.391
+That is what I will spend our time 
+together emphasizing. 
+
+175
+00:10:07.391 --> 00:10:10.020
+So let me tell you just again about very 
+high level. 
+
+176
+00:10:10.020 --> 00:10:13.306
+How you might go about this. 
+You, again, might want to revisit this 
+
+177
+00:10:13.306 --> 00:10:17.351
+context aft-, content after you've seen 
+some examples where I think it'll make a 
+
+178
+00:10:17.351 --> 00:10:20.160
+lot more sense. 
+So method one is our old friend or 
+
+179
+00:10:20.160 --> 00:10:24.436
+perhaps nemesis depending on your 
+disposition, namely proofs by induction. 
+
+180
+00:10:24.436 --> 00:10:29.181
+Now for a greedy algorithms remember what 
+they do, they sequentially make a bunch 
+
+181
+00:10:29.181 --> 00:10:33.575
+of irrevocable decisions, so here the 
+induction is going to be on decisions 
+
+182
+00:10:33.575 --> 00:10:36.914
+made by the algorithm. 
+And if you go back to our proof of 
+
+183
+00:10:36.914 --> 00:10:41.307
+correctness of Dijkstra's algorithm, that 
+in fact is exactly how we proved 
+
+184
+00:10:41.307 --> 00:10:45.232
+Dijkstra's algorithm correct. 
+It was by induction of the number of 
+
+185
+00:10:45.232 --> 00:10:48.220
+iterations, in each iteration of the main 
+wild loop. 
+
+186
+00:10:48.220 --> 00:10:50.769
+Computed the shortest path to one new 
+destination. 
+
+187
+00:10:50.769 --> 00:10:54.848
+And we always proof that assuming all of 
+our previous computations were correct, 
+
+188
+00:10:54.848 --> 00:10:58.621
+that's the inductive hypothesis. 
+Then so is the computation in the current 
+
+189
+00:10:58.621 --> 00:11:01.171
+iteration. 
+And so then by induction, everything the 
+
+190
+00:11:01.171 --> 00:11:04.026
+algorithm ever does is correct. 
+So that's a greedy 
+
+191
+00:11:04.026 --> 00:11:06.983
+proof by induction that a greedy 
+algorithm can be correct. 
+
+192
+00:11:06.983 --> 00:11:11.164
+And we might see some more examples of 
+those in, for other algorithms in the 
+
+193
+00:11:11.164 --> 00:11:14.224
+lectures to come. 
+Some of the text books call this method 
+
+194
+00:11:14.224 --> 00:11:17.691
+of proof greedy stays ahead, 
+meaning you always proof greedy's doing 
+
+195
+00:11:17.691 --> 00:11:21.621
+the right thing iteration by iteration. 
+So a second approach to approving the 
+
+196
+00:11:21.621 --> 00:11:25.707
+correctness of greedy algorithms which 
+works in a lot of cases is what's called 
+
+197
+00:11:25.707 --> 00:11:29.065
+an exchange argument. 
+So you haven't yet seen any examples of 
+
+198
+00:11:29.065 --> 00:11:32.703
+exchange arguments in this class so I 
+can't really tell you what they are but 
+
+199
+00:11:32.703 --> 00:11:36.154
+that's what we're going to proceed next. 
+I'm going to argue by an exchange 
+
+200
+00:11:36.154 --> 00:11:39.745
+argument that a couple of difference 
+famous greedy algorithms are in fact 
+
+201
+00:11:39.745 --> 00:11:42.124
+corrected. 
+It has a couple of different flavors one 
+
+202
+00:11:42.124 --> 00:11:44.083
+flavor is to approach it by 
+contradiction. 
+
+203
+00:11:44.083 --> 00:11:47.581
+You assume for contradiction that a 
+greedy algorithm is incorrect and then 
+
+204
+00:11:47.581 --> 00:11:51.265
+you show that you can take an optimal 
+solution and exchange two elements of 
+
+205
+00:11:51.265 --> 00:11:54.996
+that optimal solution and get something 
+even better which of course contradicts 
+
+206
+00:11:54.996 --> 00:11:57.655
+the assumption that you started with an 
+optimal solution. 
+
+207
+00:11:57.655 --> 00:12:01.907
+a different flavor would be to gradually 
+exchange an optimal solution into the one 
+
+208
+00:12:01.907 --> 00:12:05.554
+output by a greedy algorithm without 
+making the solution any worse. 
+
+209
+00:12:05.554 --> 00:12:09.637
+That would show that the output of the 
+greedy algorithm is in fact optimal. 
+
+210
+00:12:09.637 --> 00:12:13.992
+And formally that's done by an induction 
+on the number of exchanges required to 
+
+211
+00:12:13.992 --> 00:12:18.151
+transfer an optimum solution into yours. 
+And finally, I've already said it once, 
+
+212
+00:12:18.151 --> 00:12:22.165
+but let me say it again, there's not a 
+whole lot of formula behind proving 
+
+213
+00:12:22.165 --> 00:12:26.336
+greedy algorithms correct, you often have 
+to be quite creative, you might have to 
+
+214
+00:12:26.336 --> 00:12:30.194
+stitch together aspects of method one and 
+method two, you might have to do 
+
+215
+00:12:30.194 --> 00:12:34.000
+something completely different. 
+Really, any rigorous proof is fair game. 

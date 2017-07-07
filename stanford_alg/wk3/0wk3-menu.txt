@@ -1,0 +1,27 @@
+V. QUICKSORT - ALGORITHM
+
+Week 3 Overview10 分
+Quicksort: Overview12 分
+继续
+Partitioning Around a Pivot24 分
+Correctness of Quicksort [Review - Optional]10 分
+Choosing a Good Pivot22 分
+VI. QUICKSORT - ANALYSIS
+
+Analysis I: A Decomposition Principle21 分
+Analysis II: The Key Insight11 分
+Analysis III: Final Calculations8 分
+VII. PROBABILITY REVIEW
+
+Probability Review I25 分
+Probability Review II17 分
+Problem Set #3
+
+购买课程以解锁此项目。
+测验: Problem Set #35 个试题
+截止时间 六月 11, 11:59 晚上 PDT
+Programming Assignment #3
+
+购买课程以解锁此项目。
+测验: Programming Assignment #33 个试题
+截止时间 六月 11, 11:59 晚上 PDT

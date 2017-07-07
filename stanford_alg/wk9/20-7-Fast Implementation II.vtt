@@ -1,0 +1,760 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.044
+So the third and final issue to think 
+through is we need to make sure that we 
+
+2
+00:00:04.044 --> 00:00:06.895
+pay the piper, that we keep these N 
+variance maintained. 
+
+3
+00:00:06.895 --> 00:00:11.147
+We know that if they're satisfied than we 
+have this great way of finding the best 
+
+4
+00:00:11.147 --> 00:00:15.242
+edge in each iteration, we just do an 
+extractment But how do we make sure that 
+
+5
+00:00:15.242 --> 00:00:18.250
+these N variance stay maintained 
+throughout the algorithm? 
+
+6
+00:00:18.250 --> 00:00:22.521
+So, to get a feel for the issues that 
+arise in maintaining of the invariants, 
+
+7
+00:00:22.521 --> 00:00:26.848
+in specific, invariant number two, and 
+also to make sure we're all on the same 
+
+8
+00:00:26.848 --> 00:00:31.175
+page with respect to the definition of 
+key value of the vertices in the heap. 
+
+9
+00:00:31.175 --> 00:00:34.828
+Let's go through an example. 
+So in this example, I've drawn in the 
+
+10
+00:00:34.828 --> 00:00:39.043
+picture a graph that has six vertices. 
+in effect we've already run three 
+
+11
+00:00:39.043 --> 00:00:43.202
+iterations of Prim's Algorithm, so four 
+of the six vertices are already in 
+
+12
+00:00:43.202 --> 00:00:47.332
+capital X, the remaining two vertices V 
+and W are not yet an X, they're in V 
+
+13
+00:00:47.332 --> 00:00:49.552
+minus X. 
+So, for five of the edges, I've given 
+
+14
+00:00:49.552 --> 00:00:52.250
+them a cost labeled in blue. 
+For the other edges, 
+
+15
+00:00:52.250 --> 00:00:55.906
+it's not relevant for this question what 
+their edge costs are. 
+
+16
+00:00:55.906 --> 00:00:59.975
+So you don't have to worry about it. 
+So, the question is the following. 
+
+17
+00:00:59.975 --> 00:01:04.810
+So given our semantics of how we define 
+keys for vertices that are not in X, so 
+
+18
+00:01:04.810 --> 00:01:08.997
+in this case the vertices V and W. 
+What are their current key values 
+
+19
+00:01:08.997 --> 00:01:12.358
+supposed to be? 
+So those are the first two numbers I want 
+
+20
+00:01:12.358 --> 00:01:15.602
+you to tell me. 
+What's the current key value of V and W? 
+
+21
+00:01:15.602 --> 00:01:19.730
+And then secondly, after we run one more 
+iteration of Prim's algorithm. 
+
+22
+00:01:19.730 --> 00:01:26.160
+Then what is the new key value of the 
+vertex W supposed to be? 
+
+23
+00:01:28.480 --> 00:01:32.122
+So the correct answer is the fourth one. 
+Let's see why, 
+
+24
+00:01:32.122 --> 00:01:34.825
+so first let's remember the semantics of 
+keys. 
+
+25
+00:01:34.825 --> 00:01:38.703
+What's the key supposed to be? 
+It's supposed to be amongst, all the 
+
+26
+00:01:38.703 --> 00:01:41.288
+edges. 
+That on the one hand, are incidents to 
+
+27
+00:01:41.288 --> 00:01:44.226
+the vertex. 
+And on the other hand, are crossing the 
+
+28
+00:01:44.226 --> 00:01:46.678
+cuts. 
+It's the cheapest cost of any of those 
+
+29
+00:01:46.678 --> 00:01:49.223
+edges. 
+So, for the node V, there's four incident 
+
+30
+00:01:49.223 --> 00:01:51.382
+edges with costs one, two, four, and 
+five. 
+
+31
+00:01:51.382 --> 00:01:55.532
+The one is not crossing the cut, the two, 
+four, and five are crossing the cut. 
+
+32
+00:01:55.532 --> 00:01:59.295
+The cheapest of those is two. 
+So, that's why V's current key value is 
+
+33
+00:01:59.295 --> 00:02:01.564
+two. 
+For the node V, the node W, it has two 
+
+34
+00:02:01.564 --> 00:02:03.723
+incident edges, a one and a ten. 
+. 
+
+35
+00:02:03.723 --> 00:02:06.102
+The one is not crossing the cut. 
+The ten is. 
+
+36
+00:02:06.102 --> 00:02:09.700
+It's the only candidate crossing the cut, 
+so its key value is ten. 
+
+37
+00:02:09.700 --> 00:02:13.854
+So the third part of the question says, 
+what about when we execute one more 
+
+38
+00:02:13.854 --> 00:02:17.732
+iteration of Prim's algorithm? 
+So, what is Prim's algorithm going to do? 
+
+39
+00:02:17.732 --> 00:02:22.163
+Well, it's going to move the edge with 
+the smallest key from the right hand side 
+
+40
+00:02:22.163 --> 00:02:25.431
+to the left hand side. 
+V has a key value of two, w has a key 
+
+41
+00:02:25.431 --> 00:02:29.696
+value of ten, so, V is going to be the 
+one that gets moved from the right hand 
+
+42
+00:02:29.696 --> 00:02:33.075
+side to the left hand side. 
+So, once that happens, we now have a new 
+
+43
+00:02:33.075 --> 00:02:37.341
+set capital X with a fifth vertex, V is 
+now a member, so the new value of X is 
+
+44
+00:02:37.341 --> 00:02:41.786
+everything except for the vertex W Now, 
+the key point is that, as we've changed 
+
+45
+00:02:41.786 --> 00:02:44.293
+the set capital X, the frontier has 
+changed. 
+
+46
+00:02:44.293 --> 00:02:48.082
+The current cut has changed. 
+So of course, it's a different set of 
+
+47
+00:02:48.082 --> 00:02:52.630
+edges that are crossing this new cut. 
+Some have disappeared, and some are newly 
+
+48
+00:02:52.630 --> 00:02:55.603
+crossing it. 
+The ones that have disappeared are the 
+
+49
+00:02:55.603 --> 00:02:59.509
+two and the four and the five. 
+Anything between the vertex that got 
+
+50
+00:02:59.509 --> 00:03:04.348
+moved that was already spanning, going to 
+the left hand side has now been sucked 
+
+51
+00:03:04.348 --> 00:03:07.845
+inside of capital X. 
+On the other hand, the edge VW which was 
+
+52
+00:03:07.845 --> 00:03:12.197
+previously buried internal to V minus X, 
+with one of it's endpoints being pulled 
+
+53
+00:03:12.197 --> 00:03:15.168
+to the left hand side. 
+It is now crossing the cut. 
+
+54
+00:03:15.168 --> 00:03:20.608
+So why do we care well the point is W's T 
+value has now changed it use to have only 
+
+55
+00:03:20.608 --> 00:03:25.659
+one incident edge crossing the cut the 
+other across ten now with a new cut it 
+
+56
+00:03:25.659 --> 00:03:30.127
+has two incident edges both the one and 
+the ten are crossing the cut. 
+
+57
+00:03:30.127 --> 00:03:35.307
+The cheapest of those two edges is of 
+course the edges of cost one and that now 
+
+58
+00:03:35.307 --> 00:03:38.740
+determines its key value its dropped from 
+ten to one. 
+
+59
+00:03:40.360 --> 00:03:45.052
+So the take away from this quiz is that 
+well, on the one hand, having our heap 
+
+60
+00:03:45.052 --> 00:03:49.805
+set up to maintain these two invariants 
+is great, because a simple extract min 
+
+61
+00:03:49.805 --> 00:03:54.376
+allows us to implement the previous brute 
+force search in Prim's algorithm. 
+
+62
+00:03:54.376 --> 00:03:57.483
+On the other hand, the extractions screws 
+things up. 
+
+63
+00:03:57.483 --> 00:04:00.409
+So it messes up the semantics of our key 
+values. 
+
+64
+00:04:00.409 --> 00:04:03.516
+We may, may need to recompute keys for 
+the vertices. 
+
+65
+00:04:03.516 --> 00:04:08.331
+So in this next slide I'm going to show 
+you the piece of pseudocode you'd use to 
+
+66
+00:04:08.331 --> 00:04:11.500
+recompute keys in the light of an 
+evolving frontier. 
+
+67
+00:04:13.680 --> 00:04:18.900
+Fortunately, restoring in varient number 
+two after an extract min is not so 
+
+68
+00:04:18.900 --> 00:04:24.760
+painful the reason being is that the 
+damages done by an extract min are local. 
+
+69
+00:04:24.760 --> 00:04:29.344
+More specifically, let's think about what 
+are the edges that might be crossing the 
+
+70
+00:04:29.344 --> 00:04:32.139
+cut now that were not previously crossing 
+the cut? 
+
+71
+00:04:32.139 --> 00:04:36.723
+Well the only vertex whose membership in 
+these sets has changed is V so they have 
+
+72
+00:04:36.723 --> 00:04:40.916
+to be edges that are incident to V. 
+If the other end point was already in X 
+
+73
+00:04:40.916 --> 00:04:45.052
+then we don't care this edge has just 
+been sucked into X, we never have to 
+
+74
+00:04:45.052 --> 00:04:48.071
+worry about it. 
+But if the other end points, so if this 
+
+75
+00:04:48.071 --> 00:04:51.370
+edge is incident to v if the other end 
+point w is not an x. 
+
+76
+00:04:51.370 --> 00:04:54.787
+Then with V being pulled over the, the 
+left hand side. 
+
+77
+00:04:54.787 --> 00:04:58.656
+Now this edge spans the frontier when 
+previously it did not. 
+
+78
+00:04:58.656 --> 00:05:04.520
+So the edges we care about are incident 
+to V with the other N point outside of X. 
+
+79
+00:05:04.520 --> 00:05:09.078
+And so our plan is just the obvious one, 
+which is for each dangerous vertex. 
+
+80
+00:05:09.078 --> 00:05:13.028
+Each vertex incident to V where the other 
+endpoint W is not an X. 
+
+81
+00:05:13.028 --> 00:05:17.648
+We just follow to the other endpoint W, 
+and we just recompute its key, and we 
+
+82
+00:05:17.648 --> 00:05:23.744
+just do that for all of the relevant W's. 
+So that recomputation necessary is not 
+
+83
+00:05:23.744 --> 00:05:28.453
+difficult, there's basically two cases. 
+So this other end point W now it has one 
+
+84
+00:05:28.453 --> 00:05:33.340
+extra candidate edge crossing the cut. 
+Namely the one that's also incident on V. 
+
+85
+00:05:33.340 --> 00:05:37.453
+The vertex that just moved. 
+So I did this new edge VW is the cheapest 
+
+86
+00:05:37.453 --> 00:05:41.983
+local candidate for W, or it's not. 
+And we just take the smaller of those two 
+
+87
+00:05:41.983 --> 00:05:45.327
+options. 
+So that completes the high level 
+
+88
+00:05:45.327 --> 00:05:48.914
+description of how you maintain 
+invariants one and two throughout this 
+
+89
+00:05:48.914 --> 00:05:51.288
+heap-based implementation of Prim's 
+algorithms. 
+
+90
+00:05:51.288 --> 00:05:54.976
+So each iteration, you do an extract min, 
+from the extract min you run the 
+
+91
+00:05:54.976 --> 00:05:58.967
+pseudocode to restore invariant number 
+two, and you're good to go for the next 
+
+92
+00:05:58.967 --> 00:06:01.594
+iteration. 
+So for those of you who want not just the 
+
+93
+00:06:01.594 --> 00:06:05.181
+conceptual understanding of this 
+implementation, but really want to get 
+
+94
+00:06:05.181 --> 00:06:09.071
+down to the any degree. You want to dot 
+all the I's and cross all the T's. A 
+
+95
+00:06:09.071 --> 00:06:12.961
+subtle point you might want to think 
+through is how it is you implement this 
+
+96
+00:06:12.961 --> 00:06:16.043
+deletion from a heap. 
+The issue is, is deletion from a heap is 
+
+97
+00:06:16.043 --> 00:06:19.575
+generally from a given position. 
+And so here I'm only talking about 
+
+98
+00:06:19.575 --> 00:06:22.912
+deleting a vertex from a heap, that 
+doesn't quite tight check. 
+
+99
+00:06:22.912 --> 00:06:27.089
+Really what you want to see is delete the 
+vertex at position I from a heap. 
+
+100
+00:06:27.089 --> 00:06:30.666
+So really pulling this off, 
+the natural way to do it is have some 
+
+101
+00:06:30.666 --> 00:06:34.794
+additional bookkeeping to remember which 
+vertex is at which position in the heap. 
+
+102
+00:06:34.794 --> 00:06:38.973
+So again, for the detail-oriented amongst 
+you that's something to think through, 
+
+103
+00:06:38.973 --> 00:06:42.438
+but this is the complete conceptual 
+description of the algorithm. 
+
+104
+00:06:42.438 --> 00:06:45.140
+Let's now move on to the final running 
+time analysis. 
+
+105
+00:06:48.740 --> 00:06:53.205
+So the first claim is that, the 
+non-trivial work of this algorithm all 
+
+106
+00:06:53.205 --> 00:06:57.671
+takes place via heap operations. 
+That is, it suffices to just count the 
+
+107
+00:06:57.671 --> 00:07:03.480
+number of heap operations, each of which 
+we know is done in logarithmic time. 
+
+108
+00:07:03.480 --> 00:07:05.757
+Okay, 
+so let's count up all of the heap 
+
+109
+00:07:05.757 --> 00:07:08.384
+operations. 
+One thing we already talked about, 
+
+110
+00:07:08.384 --> 00:07:12.822
+but I'll mention it here again for 
+completeness is we do a bunch of inserts 
+
+111
+00:07:12.822 --> 00:07:15.917
+just to initialize the heap in a 
+pre-processing step. 
+
+112
+00:07:15.917 --> 00:07:19.245
+So after we initialize, we move on to the 
+main while loop. 
+
+113
+00:07:19.245 --> 00:07:22.690
+Remember, there's exactly N minus one 
+iterations of that while loop. 
+
+114
+00:07:22.690 --> 00:07:25.640
+And in each one, we extract min exactly 
+once. 
+
+115
+00:07:25.640 --> 00:07:29.440
+So these were the easy steps. 
+What you should be concerned about. 
+
+116
+00:07:29.440 --> 00:07:34.486
+Are, the, heap operations, the deletions 
+and re-insertions that are triggered by 
+
+117
+00:07:34.486 --> 00:07:38.110
+needing to decrease the key avertices 
+that are not in X. 
+
+118
+00:07:38.110 --> 00:07:43.157
+Indeed, in a single iteration of Prim's 
+algorithm, in a single move of a vertex 
+
+119
+00:07:43.157 --> 00:07:47.686
+inside of capital X, can necessitate a 
+large number of heap operations. 
+
+120
+00:07:47.686 --> 00:07:52.668
+So, it's important to think, to count 
+these operations in the right way, namely 
+
+121
+00:07:52.668 --> 00:07:57.974
+in a edge-centric manner and the claim is 
+that a single edge of the graph is only 
+
+122
+00:07:57.974 --> 00:08:01.210
+going to trigger a single decrease key 
+pair of. 
+
+123
+00:08:01.210 --> 00:08:05.210
+Operations a single insertion deletion 
+combo. 
+
+124
+00:08:05.210 --> 00:08:09.441
+We can even pinpoint the moment in time 
+at which we're going to have this inser, 
+
+125
+00:08:09.441 --> 00:08:13.091
+this deletion and reinsertion. 
+It's going to be when the first of the 
+
+126
+00:08:13.091 --> 00:08:17.005
+endpoints, so either V or W, the first 
+iteration at which one of those gets 
+
+127
+00:08:17.005 --> 00:08:20.654
+sucked into the left-hand side capital X, 
+that's going to trigger the 
+
+128
+00:08:20.654 --> 00:08:23.405
+insert-delete, potentially for the other 
+endpoint. 
+
+129
+00:08:23.405 --> 00:08:27.424
+When the second endpoint gets sucked into 
+the left-hand side, you don't care, 
+
+130
+00:08:27.424 --> 00:08:30.915
+because the other endpoint has already 
+been taken out of the heap, 
+
+131
+00:08:30.915 --> 00:08:34.945
+there's no need to maintain its key. 
+So that means that the number of heap 
+
+132
+00:08:34.945 --> 00:08:39.698
+operations is almost twice the number of 
+vertices plus almost twice the number of 
+
+133
+00:08:39.698 --> 00:08:42.103
+edges. 
+We're again going to use this fact that 
+
+134
+00:08:42.103 --> 00:08:45.793
+the input graph is connected and 
+therefore the number of edges is 
+
+135
+00:08:45.793 --> 00:08:48.422
+asymptotically at least the number of 
+vertices. 
+
+136
+00:08:48.422 --> 00:08:52.784
+So we can say that the number of heap 
+operations is at most a constant factor 
+
+137
+00:08:52.784 --> 00:08:57.013
+times the number of edges, M. 
+As we've discussed every heap operation 
+
+138
+00:08:57.013 --> 00:09:02.606
+runs in time logarithmic in the number of 
+objects in the heap so that's going to be 
+
+139
+00:09:02.606 --> 00:09:07.600
+Log N in this case so we get an overall 
+running time of O of M times Log N. 
+
+140
+00:09:07.600 --> 00:09:11.617
+So this is now a quite impressive running 
+time for the really quite non-trivial 
+
+141
+00:09:11.617 --> 00:09:15.283
+minimum cost spanning tree problem. 
+Of course we'd love to do even better. 
+
+142
+00:09:15.283 --> 00:09:19.351
+If we could shave off the Log N factor 
+and be linear in the input, that would be 
+
+143
+00:09:19.351 --> 00:09:22.314
+even more awesome. 
+But we gotta feel pretty good about this 
+
+144
+00:09:22.314 --> 00:09:23.269
+running time. 
+Right? 
+
+145
+00:09:23.269 --> 00:09:26.935
+This is only a Log N factor slower than 
+what it takes to read the input. 
+
+146
+00:09:26.935 --> 00:09:30.149
+This is the same kind of running time 
+we're getting for sorting. 
+
+147
+00:09:30.149 --> 00:09:33.865
+So this actually puts the minimum 
+spanning tree problem into the class of 
+
+148
+00:09:33.865 --> 00:09:36.879
+four free primitives. 
+If you have a graph and it fits in the 
+
+149
+00:09:36.879 --> 00:09:39.641
+main memory of your computer, this 
+algorithm is so fast. 
+
+150
+00:09:39.641 --> 00:09:43.872
+Maybe you don't even know why you care 
+about the minimum spinning shaver graph. 
+
+151
+00:09:43.872 --> 00:09:45.842
+Why not do it? 
+It's basically cost-less. 
+
+152
+00:09:45.842 --> 00:09:47.560
+That's how fast this algorithm is. 

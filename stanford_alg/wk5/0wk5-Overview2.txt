@@ -1,0 +1,31 @@
+Course overview
+
+Algorithms are the heart of computer science, and the subject has countless practical applications as well as intellectual depth. This specialization is an introduction to algorithms for learners with at least a little programming experience. The specialization is rigorous but emphasizes the big picture and conceptual understanding over low-level implementation and mathematical details. After completing this specialization, you will have a greater mastery of algorithms than almost anyone without a graduate degree in the subject. Specific topics in Part 2 of the specialization include: data structures (heaps, balanced search trees, hash tables, bloom filters), graph primitives (applications of breadth-first and depth-first search, connectivity, shortest paths), and their applications (ranging from deduplication to social network analysis).
+
+Resources
+
+Mathematics for Computer Science (by Eric Lehman and Tom Leighton): https://www.cs.princeton.edu/courses/archive/fall06/cos341/handouts/mathcs.pdf
+Course Policies
+
+Video Lectures
+
+Lectures will be made available weekly, for a total of four weeks. In a given week, there will be roughly three hours of material. Some weeks include extra optional material (some review, some advanced topics).
+Below each lecture video there is a PDF of typed versions of the slides.
+You can download the videos of the lectures for offline viewing.
+The video player supports speeding up and slowing down the pace.
+Weekly Programming Assignments and Problem Sets
+
+Every week there will be a new problem set and a new programming assignment.
+For each problem set you are allowed a maximum of two attempts in a 12-hour period (we'll use the best score).
+For each programming assignment you're allowed a maximum of 10 attempts in a 12-hour period (we'll use the best score).
+For the final exam, you're allowed one attempt per 24 hours.
+Grading
+
+To pass a problem set, you must get at least 4 of the 5 questions correct (80%).
+To pass a programming assignment, you must get all of the answers correct (100%).
+To pass the final exam, you must get at least 70% of the total points (7 out of 10).
+To pass the course, you must pass all of the problem sets, all of the programming assignments, and the final exam.
+Theory Problems
+
+These are totally optional theory questions (no deadlines or credit given).
+We encourage you to attempt these questions and discuss them in the forums to develop a deeper understanding of the design and analysis of algorithms.

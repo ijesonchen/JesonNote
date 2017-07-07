@@ -1,0 +1,576 @@
+WEBVTT
+
+1
+00:00:02.660 --> 00:00:06.721
+So now let's turn our attention to 
+proving the correctness of this Greedy 
+
+2
+00:00:06.721 --> 00:00:10.562
+Algorithm that we devised that 
+proportatedly minimizes the some of the 
+
+3
+00:00:10.562 --> 00:00:14.381
+waited completion times. 
+Let me remind you of the formal 
+
+4
+00:00:14.381 --> 00:00:17.300
+correctness claim. 
+The claim is that our second greedy 
+
+5
+00:00:17.300 --> 00:00:19.935
+algorithm. 
+The one which looks at the ratio of each 
+
+6
+00:00:19.935 --> 00:00:22.312
+job. 
+The ratio of the weight to the length and 
+
+7
+00:00:22.312 --> 00:00:24.844
+sorts them in decreasing order, is always 
+correct. 
+
+8
+00:00:24.844 --> 00:00:29.184
+For every possible input, it ouputs the, 
+the sequence of jobs, which minimizes the 
+
+9
+00:00:29.184 --> 00:00:33.008
+weighted sum of completion times. 
+And as promised, it wasn't hard to devise 
+
+10
+00:00:33.008 --> 00:00:36.108
+the greedy algorithm. 
+It's certainly not hard to analyze its 
+
+11
+00:00:36.108 --> 00:00:38.950
+running time, which is N Log N. 
+The same time as sorting, 
+
+12
+00:00:38.950 --> 00:00:41.172
+but it is quite tricky to prove it 
+correct. 
+
+13
+00:00:41.172 --> 00:00:45.047
+The way we're going to do that, is going 
+to be our first example of what's called 
+
+14
+00:00:45.047 --> 00:00:48.819
+an exchange argument, which is one of the 
+few recurring principles in the 
+
+15
+00:00:48.819 --> 00:00:52.396
+correctness proofs of greedy algorithms. 
+So I'm actually going to give you proofs 
+
+16
+00:00:52.396 --> 00:00:55.711
+of two different versions of this claim. 
+Both will make use of an exchange 
+
+17
+00:00:55.711 --> 00:00:58.936
+argument in slightly different ways. 
+For starters that's going to be in the 
+
+18
+00:00:58.936 --> 00:01:01.624
+next video and the next one. 
+I'm going to make a simplifying 
+
+19
+00:01:01.624 --> 00:01:05.163
+assumption that there are no ties amongst 
+the ratios, that each job has its own 
+
+20
+00:01:05.163 --> 00:01:07.268
+distinct ratio of its weight versus its 
+length. 
+
+21
+00:01:07.268 --> 00:01:10.359
+In this case, we will be able to get away 
+with proof by contradiction. 
+
+22
+00:01:10.359 --> 00:01:13.808
+So, on this slide lemme give you the high 
+level proof plan and of how this is going 
+
+23
+00:01:13.808 --> 00:01:16.765
+to go, we will start delving into the 
+details on the next slide. 
+
+24
+00:01:16.765 --> 00:01:19.945
+So on the high level we're going to begin 
+by fixing an arbitrary instance. 
+
+25
+00:01:19.945 --> 00:01:22.320
+By which I mean, 
+you know just the description of the 
+
+26
+00:01:22.320 --> 00:01:25.357
+weights and lengths that. 
+So remember, we have to prove that our 
+
+27
+00:01:25.357 --> 00:01:28.840
+algorithm is always correct. 
+So we just fix an arbitrary instance, and 
+
+28
+00:01:28.840 --> 00:01:31.111
+prove correctness on this arbitrary 
+instance. 
+
+29
+00:01:31.111 --> 00:01:34.998
+So, as I said, for the case with no ties, 
+we're going to proceed by contradictions. 
+
+30
+00:01:34.998 --> 00:01:38.329
+Remember, this means we assume what we're 
+trying to prove is false. 
+
+31
+00:01:38.329 --> 00:01:42.121
+And from that, we derive something which 
+is obviously false inconsistent. 
+
+32
+00:01:42.121 --> 00:01:45.009
+So, what would it mean to assume that 
+this claim is false? 
+
+33
+00:01:45.009 --> 00:01:48.860
+It means there exists an instances for 
+which this greedy algorithm does not 
+
+34
+00:01:48.860 --> 00:01:52.407
+produce an optimal solution. 
+For which there's some other solution not 
+
+35
+00:01:52.407 --> 00:01:56.512
+output by the greedy algorithm, which is 
+better than that of the greedy algorithm. 
+
+36
+00:01:56.512 --> 00:01:59.350
+So let me just give you some notation to 
+set this up. 
+
+37
+00:01:59.350 --> 00:02:03.220
+We're going to let sigma denote the 
+greedy schedule. 
+
+38
+00:02:03.220 --> 00:02:07.578
+And if our claim is false, that means 
+this is not an optimal schedule there's 
+
+39
+00:02:07.578 --> 00:02:11.540
+some other one which is better so call 
+this better optimal sigma star. 
+
+40
+00:02:11.540 --> 00:02:15.262
+So, to complete a proof by contradiction, 
+we need to derive something which is 
+
+41
+00:02:15.262 --> 00:02:18.790
+obviously false and the way we're going 
+to do that here might strike you as 
+
+42
+00:02:18.790 --> 00:02:22.706
+initially as a little weird but it turns 
+out to work really well in this context. 
+
+43
+00:02:22.706 --> 00:02:26.428
+From this assumptionm that the greedy 
+algorithm is not optimal, and there is a 
+
+44
+00:02:26.428 --> 00:02:29.908
+better scheduled sigma star, we're 
+actually going to exhibit yet another 
+
+45
+00:02:29.908 --> 00:02:32.132
+schedule which is even better than sigma 
+star. 
+
+46
+00:02:32.132 --> 00:02:34.935
+Strictly smaller picto.function value 
+than sigma star has. 
+
+47
+00:02:34.935 --> 00:02:37.884
+Why is that a contradiction? 
+Well, by assumption, sigma star is 
+
+48
+00:02:37.884 --> 00:02:41.509
+optimal so if you show that there is 
+something even better than sigma star, 
+
+49
+00:02:41.509 --> 00:02:44.990
+sigma star is not optimal and that 
+completes the proof by contradiction. 
+
+50
+00:02:44.990 --> 00:02:48.740
+So now lets start filling the details of 
+this proof plan and making it rigorous. 
+
+51
+00:02:48.740 --> 00:02:52.302
+So as I said in this video and the next 
+we're going to be assuming that all of 
+
+52
+00:02:52.302 --> 00:02:55.208
+the ratios are distinct. 
+In general, of course that need not be 
+
+53
+00:02:55.208 --> 00:02:58.490
+true and I'll give you a separate 
+argument to handle the case of ties. 
+
+54
+00:02:58.490 --> 00:03:02.535
+I'm going to make a second assumption. 
+But, unlike the first assumption, the 
+
+55
+00:03:02.535 --> 00:03:06.638
+second assumption has no content. 
+It's just an assumption about notation. 
+
+56
+00:03:06.638 --> 00:03:10.854
+I'm going to assume by renaming jobs, 
+that job one, number one, is the one with 
+
+57
+00:03:10.854 --> 00:03:14.273
+the highest ratio. 
+Job number two is the one with the second 
+
+58
+00:03:14.273 --> 00:03:17.920
+highest ration and so on. 
+Job ending the one with smallest ratio. 
+
+59
+00:03:17.920 --> 00:03:21.983
+As a consequence of this switch in 
+notation the greeter schedule is very 
+
+60
+00:03:21.983 --> 00:03:25.190
+simple to describe. 
+It just schedules job one first, then job 
+
+61
+00:03:25.190 --> 00:03:28.719
+two second, then job three third, and so 
+on, all the way up to job N. 
+
+62
+00:03:28.719 --> 00:03:33.050
+Okay, so we have one assumption which is 
+not without loss of generality, and we'll 
+
+63
+00:03:33.050 --> 00:03:35.348
+have a separate argument for handling 
+ties. 
+
+64
+00:03:35.348 --> 00:03:38.770
+We have a second assumption which is 
+without loss of generality. 
+
+65
+00:03:38.770 --> 00:03:42.619
+It's just an agreement amongst friends 
+who want to minimize notation. 
+
+66
+00:03:42.619 --> 00:03:45.400
+And now, lets actually derive something 
+with content. 
+
+67
+00:03:45.400 --> 00:03:49.897
+So given that the greedy schedule is just 
+the jobs in order, one, two, three, all 
+
+68
+00:03:49.897 --> 00:03:53.184
+the way up to N. 
+And given our assumption that the greedy 
+
+69
+00:03:53.184 --> 00:03:57.336
+solution is not optimal, and instead 
+there's some other distinct optimal 
+
+70
+00:03:57.336 --> 00:04:01.076
+schedule sigma star. 
+I claim that sigma star must contain 
+
+71
+00:04:01.076 --> 00:04:06.739
+consecutive jobs, that it is somewhere in 
+the schedule, sigma star, I can isolate a 
+
+72
+00:04:06.739 --> 00:04:12.123
+pair of jobs, one executed after the 
+other, such that the earlier of those two 
+
+73
+00:04:12.123 --> 00:04:17.301
+consecutive jobs has a larger index. 
+I'm going to call these jobs I and J with 
+
+74
+00:04:17.301 --> 00:04:20.026
+I being earlier. 
+So again by virtue· of the optimal 
+
+75
+00:04:20.026 --> 00:04:24.716
+solution sigma star being something other 
+than the schedule one, two, three up to N 
+
+76
+00:04:24.716 --> 00:04:29.850
+there must be two jobs somewhere in the 
+schedule executed in a row one after the 
+
+77
+00:04:29.850 --> 00:04:34.730
+other so that the earlier job I has a 
+higher index then the subsequent job J. 
+
+78
+00:04:34.730 --> 00:04:38.739
+Why is this true? 
+Well the reasoning is that, the only 
+
+79
+00:04:38.739 --> 00:04:41.528
+schedule. 
+It has the property that indices only go 
+
+80
+00:04:41.528 --> 00:04:44.253
+up as you go from the earliest job to the 
+latest job. 
+
+81
+00:04:44.253 --> 00:04:48.367
+The only way that indices will always go 
+up is if you schedule the jobs one, two, 
+
+82
+00:04:48.367 --> 00:04:51.452
+three, all the way up to N. 
+There is no other schedule with a 
+
+83
+00:04:51.452 --> 00:04:55.462
+property that indices always go up other 
+than one, two, three, all the way up to 
+
+84
+00:04:55.462 --> 00:04:57.571
+N. 
+So this is an observation that's going to 
+
+85
+00:04:57.571 --> 00:05:01.787
+be important in the rest of the proof, so 
+make sure you pause, give yourself enough 
+
+86
+00:05:01.787 --> 00:05:04.975
+time to stare at it and commit yourself 
+it is in fact true. 
+
+87
+00:05:04.975 --> 00:05:08.677
+Any, any schedule other than one, two, 
+three, all the way through N, have to 
+
+88
+00:05:08.677 --> 00:05:12.740
+have consecutive jobs, the earlier one 
+having a higher index than the later one. 
+
+89
+00:05:12.740 --> 00:05:17.319
+So I'm now in a position to explain the 
+exchange in the exchange argument. 
+
+90
+00:05:17.319 --> 00:05:21.590
+So let me just distill the two key points 
+from the discussion so far. 
+
+91
+00:05:21.590 --> 00:05:25.927
+So first of all we have changed notations 
+so that ratios are decreasing with index 
+
+92
+00:05:25.927 --> 00:05:30.055
+and this is exactly the same as the 
+schedule that the greedy algorithm will 
+
+93
+00:05:30.055 --> 00:05:32.249
+output. 
+And then assuming that the optimal 
+
+94
+00:05:32.249 --> 00:05:36.273
+schedule sigma star is something else we 
+know it has consecutive jobs with a 
+
+95
+00:05:36.273 --> 00:05:40.257
+earlier one having a higher index. 
+Keep in mind, our high level proof plan 
+
+96
+00:05:40.257 --> 00:05:43.881
+from the first slide of this video. 
+Where, we're doing a proof by 
+
+97
+00:05:43.881 --> 00:05:46.825
+contradiction. 
+We need to derive a contradiction and 
+
+98
+00:05:46.825 --> 00:05:51.184
+what we're going to do is we're going to 
+exhibit a schedule even better than sigma 
+
+99
+00:05:51.184 --> 00:05:54.354
+star thereby contradicting it's purported 
+ophthalmology. 
+
+100
+00:05:54.354 --> 00:05:57.128
+So how do we do that? 
+We do that with an exchange. 
+
+101
+00:05:57.128 --> 00:06:00.752
+So this exchange is going to take the 
+place of methodic experiment. 
+
+102
+00:06:00.752 --> 00:06:04.941
+We're going to take this purportedly 
+optimal schedule sigma star and we're 
+
+103
+00:06:04.941 --> 00:06:09.470
+going to switch the order just of the two 
+jobs I and J leaving all of the other 
+
+104
+00:06:09.470 --> 00:06:13.285
+jobs unchanged. 
+So sigma star consists of various jobs. 
+
+105
+00:06:13.285 --> 00:06:19.216
+It's called stuff collectively. 
+then next is job I and after that 
+
+106
+00:06:19.216 --> 00:06:23.931
+immediately is job J. 
+And then there's possibly some more jobs 
+
+107
+00:06:23.931 --> 00:06:28.873
+that get executed after J. 
+And remember, we observe that, we can 
+
+108
+00:06:28.873 --> 00:06:34.500
+chose I and J so that I has a higher 
+index than J despite being scheduled 
+
+109
+00:06:34.500 --> 00:06:37.390
+earlier. 
+Then we execute this exchange. 
+
+110
+00:06:37.390 --> 00:06:39.756
+The stuff before INJ is the same as 
+before. 
+
+111
+00:06:39.756 --> 00:06:42.343
+The more stuff after JNI, is the same as 
+before. 
+
+112
+00:06:42.343 --> 00:06:45.260
+But we're going to have them occur in 
+opposite order. 
+
+113
+00:06:45.260 --> 00:06:50.442
+And the key thing we have to understand 
+next is, what are the ramifications of 
+
+114
+00:06:50.442 --> 00:06:52.663
+this exchange? 
+What are the costs? 
+
+115
+00:06:52.663 --> 00:06:57.240
+What are the benefits? 
+That's how we'll begin, the next video . 
