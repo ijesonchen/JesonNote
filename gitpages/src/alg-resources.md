@@ -17,6 +17,10 @@ some quize, answers and discuss on computer sccience, including algorithms, data
 
 # ACM and code challenge
 
+## google APAC & code jam kickstart
+[Google APAC](https://code.google.com/codejam/apactest)
+[code jam kickstart](https://codejam.withgoogle.com/codejam/kickstart/)
+
 ## LeetCode
 [LeetCode](https://leetcode.com/problemset)
 [a solution for LeetCode](http://www.jianshu.com/p/c86b62120f37)
