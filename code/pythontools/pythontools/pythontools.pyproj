@@ -6,7 +6,7 @@
     <ProjectGuid>425191ba-4766-4b83-9943-70ba8e2e73a0</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>combText2Doc.py</StartupFile>
+    <StartupFile>extractAudio.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -25,6 +25,7 @@
   <ItemGroup>
     <Compile Include="combText2Doc.py" />
     <Compile Include="docxdemo.py" />
+    <Compile Include="extractAudio.py" />
     <Compile Include="remove_crlf.py" />
   </ItemGroup>
   <PropertyGroup>
