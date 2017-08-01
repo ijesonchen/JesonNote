@@ -1,7 +1,7 @@
 ---
 title: python note
 date: 2017-05-24 22:14:00
-tags: [python]
+tags: [python, note]
 ---
 
 python笔记
