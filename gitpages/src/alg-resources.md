@@ -15,6 +15,12 @@ resources for algorithm
 a computer sccience portal for geeks
 some quize, answers and discuss on computer sccience, including algorithms, data structures, programming lanaguages etc.
 
+# Wolfram Math World
+for math theory
+[WolframMathWord](http://mathworld.wolfram.com/)
+the web's most extensive mathematics resource
+[Dsicrete Mathematics](http://mathworld.wolfram.com/topics/DiscreteMathematics.html)
+
 # ACM and code challenge
 
 ## google APAC & code jam kickstart
