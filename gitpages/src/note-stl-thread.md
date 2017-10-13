@@ -24,11 +24,11 @@ Note for thread, mutex & RAII wrapper,  condition variables and features in STL,
 
 ### notes
 
-{0}. return value of thread function is ignored.
-{0}. throw exception in thread function will call std::terminate.
-{0}. use standard thread promise & future to return value and exception for caller
-{0}. yield will release cpu so other thread can use it. 
-{0}. if thread function is T&, std::ref should used
+ - return value of thread function is ignored.
+ - throw exception in thread function will call std::terminate.
+ - use standard thread promise & future to return value and exception for caller
+ - yield will release cpu so other thread can use it. 
+ - if thread function is T&, std::ref should used
 ```C++
 void ThreadFunc(vector<int>& v)
 {
