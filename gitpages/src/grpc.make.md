@@ -230,7 +230,11 @@ Status RouteChat(ServerContext* context,
 
 ### Starting the server
 
-Once we’ve implemented all our methods, we also need to start up a gRPC server so that clients can actually use our service. The following snippet shows how we do this for our `RouteGuide` service:
+- ServerBuilder::AddListeningPort(addr_uri, credential)
+- ServerBuilder::RegisterService( pService)
+- ServerBuilder::BuildAndStart() -> Server
+- Server::Wait()     // block
+- Server::Shutdown()
 
 ```
 void RunServer(const std::string& db_path) {
@@ -246,18 +250,29 @@ void RunServer(const std::string& db_path) {
 }
 ```
 
-As you can see, we build and start our server using a `ServerBuilder`. To do this, we:
+with thread:
 
-1. Create an instance of our service implementation class `RouteGuideImpl`.
-2. Create an instance of the factory `ServerBuilder` class.
-3. Specify the address and port we want to use to listen for client requests using the builder’s `AddListeningPort()` method.
-4. Register our service implementation with the builder.
-5. Call `BuildAndStart()` on the builder to create and start an RPC server for our service.
-6. Call `Wait()` on the server to do a blocking wait until process is killed or `Shutdown()` is called.
+```
+void ServerThread(/* server param*/, std::unique_ptr<Server>* pServer) 
+{
+	// start server and wait
+}
+
+void ServerMain(void)
+{
+	std::unique_ptr<Server>& server;
+	std::thread th(ServerThread, /*param*/, &server);
+	// wait signal for shutdown
+	if (server) { server->Shutdown(); }
+	th.join();
+}
+```
+
+
 
 ## Creating the client
 
-In this section, we’ll look at creating a C++ client for our `RouteGuide` service. You can see our complete example client code in [examples/cpp/route_guide/route_guide_client.cc](https://github.com/grpc/grpc/blob/v1.6.x/examples/cpp/route_guide/route_guide_client.cc).
+[examples/cpp/route_guide/route_guide_client.cc](https://github.com/grpc/grpc/blob/v1.6.x/examples/cpp/route_guide/route_guide_client.cc).
 
 ### Creating a stub
 
@@ -372,7 +387,6 @@ Finally, let’s look at our bidirectional streaming RPC `RouteChat()`. In this 
 ```
 std::shared_ptr<ClientReaderWriter<RouteNote, RouteNote> > stream(
     stub_->RouteChat(&context));
-
 ```
 
 The syntax for reading and writing here is exactly the same as for our client-streaming and server-streaming methods. Although each side will always get the other’s messages in the order they were written, both the client and server can read and write in any order — the streams operate completely independently.
@@ -397,3 +411,83 @@ Run the client (in a different terminal):
 ```
 $ ./route_guide_client
 ```
+## QA
+
+### Q: fatal error C1189
+
+```
+1>c:\svn\grpctest\public\grpc\impl\codegen\port_platform.h(44): fatal error C1189: #error:      "Please compile grpc with _WIN32_WINNT of at least 0x600 (aka Windows Vista)"
+```
+
+**A: define: /D_WIN32_WINNT=0x600**
+
+项目属性，C/C++， 命令行，添加 /D_WIN32_WINNT=0x600
+
+### Q: error LNK2019
+
+```
+1>gRpcTest.obj : error LNK2019: 无法解析的外部符号 "public: virtual __cdecl grpc::Server::~Server(void)" (??1Server@grpc@@UEAA@XZ)，该符号在函数 "public: virtual void * __cdecl grpc::Server::`scalar deleting destructor'(unsigned int)" (??_GServer@grpc@@UEAAPEAXI@Z) 中被引用
+```
+
+**A: link libs**
+
+for debug:
+```
+Ws2_32.lib
+crypto.lib 
+gpr.lib
+grpc++.lib
+grpc.lib
+libprotobufd.lib
+ssl.lib
+zlibd.dll
+zlibd.lib
+```
+
+**How To find related lib:**
+
+- search symbol test from all grpc lib
+- dumpbin all grpc lib
+
+
+example of `dumpbin grpc++.lib /symbols`
+
+
+```
+157E 00000A20 SECT6  notype ()    External     | ??1Server@grpc@@UEAA@XZ (public: virtual __cdecl grpc::Server::~Server(void))
+
+12A2 00000000 UNDEF  notype ()    External     | ??1Server@grpc@@UEAA@XZ (public: virtual __cdecl grpc::Server::~Server(void))
+```
+
+
+[ref: DUMPBIN /symbols](https://msdn.microsoft.com/en-us/library/b842y285.aspx)
+```
+If the third column contains SECT*x*, the symbol is defined in that section of the object file. But if UNDEF appears, it is not defined in that object and must be resolved elsewhere.  
+  
+The fifth column (Static, External) tells whether the symbol is visible only within that object, or whether it is public (visible externally). A Static symbol, _sym, wouldn't be linked to a Public symbol _sym; these would be two different instances of functions named _sym. 
+
+The last column in a numbered line is the symbol name, both decorated and undecorated.  
+```
+```
+SECTxx 表示定义的代码段
+UNDEF  表示链接外部代码
+External 表示暴露的接口
+Static	表示仅内部使用
+```
+
+[ref: DbgHelp Reference](https://msdn.microsoft.com/en-us/library/windows/desktop/ms679292(v=vs.85).aspx)
+
+Windows desktop applications -> Develop -> Desktop technologies -> Diagnostics -> Debugging and Error Handling -> DbgHelp Reference -> Image Help Library -> 
+
+[ref: DumpBin.exe的实现原理](http://blog.csdn.net/lostspeed/article/details/54647761)
+
+```
+_spawnvp调用了CreateProcessA.
+
+dumpbin 调用link.exe来实现dump的功能
+link.exe /dump /all Z:\chapter1\1.1\asm1.exe
+dumpbin /all Z:\chapter1\1.1\asm1.exe
+```
+
+
+

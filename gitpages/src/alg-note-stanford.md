@@ -6,7 +6,41 @@ tags: [alg, note, shortest path]
 
 #  Stanford Algorithm Note
 
-single sorce shortest paths:
+Stanford algorithm note.
+
+<!--more-->
+
+
+
+# Graph Primitives (w5)
+
+## BFS: Breadth First Search
+
+ - explorer in layer
+ - app: shortest path
+ - app: connected component for undirected graph
+
+
+
+## Undirected Connectivity 
+
+
+
+## DFS: Depth First Search 
+
+ - explorer aggressively
+ - app: topological ordering of DAG
+ - app: strong connected component
+
+
+
+## Topological Sort
+
+
+
+## Strongly Connected Components: Kosaraju's Alogrithm
+
+
 
 # Single Source Shortest Paths
 
