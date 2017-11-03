@@ -7,16 +7,16 @@ tags: [grpc, build]
 
 How to build gRpc on win10 with vs2015, and some example.
 
-[Quick Starts](https://grpc.io/docs/quickstart):  code for a simple gRpc deom to show how it works.
+[Quick Starts](https://grpc.io/docs/quickstart):  code for a simple gRpc demo to show how it works.
 
 <!--more-->
 
 # Build gRpc on win10 with vs2015
 
-how to build gprc on win10 with vs2015
+how to build gRpc on win10 with vs2015
 
 
-## build grpc proto
+## build gRpc proto
 
 `protoc.exe status.proto --plugin=protoc-gen-grpc=grpc_cpp_plugin.exe --grpc_out=.`
 
@@ -60,7 +60,7 @@ build
 
 # Quick Start
 
-[Quick Start Guide](https://grpc.io/docs/quickstart/cpp.html) : This guide gets you started with gRPC in C++ with a simple working example.
+[Quick Start Guide](https://grpc.io/docs/quickstart/cpp.html) : A simple C++ gRpc demo.
 
 
 ## What’s next
@@ -75,25 +75,25 @@ build
 
 ### [What is gRPC?](https://grpc.io/docs/guides/index.html)
 
-A service with methods can be called remotely with parameters & return types. gRPC can use protocol buffers as both its IDL and as its underlying message nterchange format. Proto3 recommended.
+A service with methods can be called remotely with parameters & return types. gRpc can use protocol buffers as both its IDL and as its underlying message interchange format. Proto3 recommended.
 
 ### [gRPC Concepts](https://grpc.io/docs/guides/concepts.html)
 
-With optional stream qualifier, can define four kinds of service method: unary , server / client streaming, bidirectional stream RPC.
+With optional stream qualifier, can define four kinds of service method: unary, server/client streaming, bidirectional stream RPC.
 
 Generate client- and server-side code (framework) with protocol buffer compiler plugins. Support both synchronous and asynchronous flavors in most languages.
 
-Other features: deadline or timeouts, termination, cancelling, metadata, channels.
+Other features: deadline or timeouts, termination, canceling, metadata, channels.
 
 ### [Authentication](https://grpc.io/docs/guides/auth.html)
 
 Mechanisms: SSL/TSL, token-based authentication with Google. 
 
-Credential can attached to a Channel or Call (ClientContext).
+The credential can attach to a Channel or Call (ClientContext).
 
 ### [Wire format](https://grpc.io/docs/guides/wire.html)
 
-A detailed description for an implementation of gRPC carried over [HTTP2 framing](https://tools.ietf.org/html/rfc7540)
+A detailed description of an implementation of gRpc carried over [HTTP2 framing](https://tools.ietf.org/html/rfc7540)
 
 ### [Error handling and debugging](https://grpc.io/docs/guides/error.html)
 
@@ -125,7 +125,7 @@ References：
 ## Why use gRPC?
 
 - Define service once in a .proto file 
-- Implement in many language
+- Implement in many languages
 - Get advantage of protocol buffers.
 
 ## Example code and setup
@@ -183,11 +183,11 @@ $ protoc -I ../../protos --cpp_out=. ../../protos/route_guide.proto
 class RouteGuideImpl final : public RouteGuide::Service 
 {
 public:
-	RouteGuideImpl( /*init param*/ ) { /*init Code*/ };
+ RouteGuideImpl( /*init param*/ ) { /*init Code*/ };
 }
 ```
 
-Implements all the service methods, make sure they are thread safe, synchronized access may be required. 
+Implements all the service methods, make sure they are thread-safe, synchronized access may be required. 
 
 ```
 Status GetFeature(ServerContext* context, const Point* point,
@@ -221,10 +221,10 @@ For bidirectional streaming, use ServerReaderWriter::Read/Write to process data.
 ```
 Status RouteChat(ServerContext* context,
                  ServerReaderWriter<RouteNote, RouteNote>* stream) override {
-	// stream->Read ... stream->Write ... 
-	// in one stream, messaged read in write order
-	// server / client stream are independent, so both side can op in any order
-	return Status::OK;
+ // stream->Read ... stream->Write ... 
+ // in one stream, messaged read in write order
+ // server / client stream are independent, so both side can op in any order
+ return Status::OK;
 }
 ```
 
@@ -255,16 +255,16 @@ with thread:
 ```
 void ServerThread(/* server param*/, std::unique_ptr<Server>* pServer) 
 {
-	// start server and wait
+ // start server and wait
 }
 
 void ServerMain(void)
 {
-	std::unique_ptr<Server>& server;
-	std::thread th(ServerThread, /*param*/, &server);
-	// wait signal for shutdown
-	if (server) { server->Shutdown(); }
-	th.join();
+ std::unique_ptr<Server>& server;
+ std::thread th(ServerThread, /*param*/, &server);
+ // wait signal for shutdown
+ if (server) { server->Shutdown(); }
+ th.join();
 }
 ```
 
@@ -276,142 +276,65 @@ void ServerMain(void)
 
 ### Creating a stub
 
-To call service methods, we first need to create a *stub*.
-
-First we need to create a gRPC *channel* for our stub, specifying the server address and port we want to connect to and any special channel arguments - in our case we’ll use the default `ChannelArguments` and no SSL:
+Crete Client::stub with channel
 
 ```
-grpc::CreateChannel("localhost:50051", grpc::InsecureCredentials(), ChannelArguments());
-
-```
-
-Now we can use the channel to create our stub using the `NewStub` method provided in the `RouteGuide` class we generated from our .proto.
-
-```
+auto channel = CreateChannel(addr, InsecureChannelCredentials());
+class RouteGuideClient
+{
+privite:
+ std::unique_ptr<RouteGuide::Stub> stub;
 public:
- RouteGuideClient(std::shared_ptr<ChannelInterface> channel,
-                  const std::string& db)
-     : stub_(RouteGuide::NewStub(channel)) {
-   ...
- }
-
+  RouteGuideClient(std::shared_ptr<ChannelInterface> _channel, /*param*/)
+  : stub(RouteGuide::NewStub(_channel)),
+  { ... }
+}
 ```
 
 ### Calling service methods
 
-Now let’s look at how we call our service methods. Note that in this tutorial we’re calling the *blocking/synchronous* versions of each method: this means that the RPC call waits for the server to respond, and will either return a response or raise an exception.
+Demo use *blocking/sychronous* version of methods， just like server code.
 
 #### Simple RPC
 
-Calling the simple RPC `GetFeature` is nearly as straightforward as calling a local method.
+Calling directly.
 
 ```
-Point point;
-Feature feature;
-point = MakePoint(409146138, -746188906);
-GetOneFeature(point, &feature);
-
-...
-
-bool GetOneFeature(const Point& point, Feature* feature) {
-  ClientContext context;
-  Status status = stub_->GetFeature(&context, point, feature);
-  ...
+bool GetFeature(const Point& pt, Feature& feature)
+{
+ ClientContext context;
+ Status status = stub->GetFeature(&context, pt, &feature);
+ if (!status.ok())
+ {
+  cout << "GetFeature failed: " << status.error_message() << endl;
+ }
+ return status.ok();
 }
-
-```
-
-As you can see, we create and populate a request protocol buffer object (in our case `Point`), and create a response protocol buffer object for the server to fill in. We also create a `ClientContext`object for our call - you can optionally set RPC configuration values on this object, such as deadlines, though for now we’ll use the default settings. Note that you cannot reuse this object between calls. Finally, we call the method on the stub, passing it the context, request, and response. If the method returns `OK`, then we can read the response information from the server from our response object.
-
-```
-std::cout << "Found feature called " << feature->name()  << " at "
-          << feature->location().latitude()/kCoordFactor_ << ", "
-          << feature->location().longitude()/kCoordFactor_ << std::endl;
-
 ```
 
 #### Streaming RPCs
 
-Now let’s look at our streaming methods. If you’ve already read [Creating the server](https://grpc.io/docs/tutorials/basic/c.html#server) some of this may look very familiar - streaming RPCs are implemented in a similar way on both sides. Here’s where we call the server-side streaming method `ListFeatures`, which returns a stream of geographical`Feature`s:
+- Process stream data with ClientReader,  ClientWriter and ClientReaderWriter
+- When writing all stream, call WritesDone.
+- Call Finish to get Status.
+- Read and Write stream operate completely independently.
 
 ```
-std::unique_ptr<ClientReader<Feature> > reader(
-    stub_->ListFeatures(&context, rect));
-while (reader->Read(&feature)) {
-  std::cout << "Found feature called "
-            << feature.name() << " at "
-            << feature.location().latitude()/kCoordFactor_ << ", "
-            << feature.location().longitude()/kCoordFactor_ << std::endl;
-}
-Status status = reader->Finish();
-
+ bool RouteChatInterweave(const vector<RouteNote>& in, vector<RouteNote>& out)
+ {
+  unique_ptr<ClientReaderWriter<RouteNote, RouteNote>> rw = stub->RouteChat(&cc);
+  ...
+  if (!rw->Write(noteWrite)) 
+  ...
+  rw->WritesDone();
+  while (rw->Read(&noteRead))
+  ...
+  Status status = rw->Finish();
+  ...
+ }
 ```
 
-Instead of passing the method a context, request, and response, we pass it a context and request and get a `ClientReader` object back. The client can use the `ClientReader` to read the server’s responses. We use the `ClientReader`s `Read()` method to repeatedly read in the server’s responses to a response protocol buffer object (in this case a `Feature`) until there are no more messages: the client needs to check the return value of `Read()` after each call. If `true`, the stream is still good and it can continue reading; if `false` the message stream has ended. Finally, we call `Finish()` on the stream to complete the call and get our RPC status.
-
-The client-side streaming method `RecordRoute` is similar, except there we pass the method a context and response object and get back a `ClientWriter`.
-
-```
-std::unique_ptr<ClientWriter<Point> > writer(
-    stub_->RecordRoute(&context, &stats));
-for (int i = 0; i < kPoints; i++) {
-  const Feature& f = feature_list_[feature_distribution(generator)];
-  std::cout << "Visiting point "
-            << f.location().latitude()/kCoordFactor_ << ", "
-            << f.location().longitude()/kCoordFactor_ << std::endl;
-  if (!writer->Write(f.location())) {
-    // Broken stream.
-    break;
-  }
-  std::this_thread::sleep_for(std::chrono::milliseconds(
-      delay_distribution(generator)));
-}
-writer->WritesDone();
-Status status = writer->Finish();
-if (status.IsOk()) {
-  std::cout << "Finished trip with " << stats.point_count() << " points\n"
-            << "Passed " << stats.feature_count() << " features\n"
-            << "Travelled " << stats.distance() << " meters\n"
-            << "It took " << stats.elapsed_time() << " seconds"
-            << std::endl;
-} else {
-  std::cout << "RecordRoute rpc failed." << std::endl;
-}
-
-```
-
-Once we’ve finished writing our client’s requests to the stream using `Write()`, we need to call `WritesDone()` on the stream to let gRPC know that we’ve finished writing, then `Finish()` to complete the call and get our RPC status. If the status is `OK`, our response object that we initially passed to `RecordRoute()` will be populated with the server’s response.
-
-Finally, let’s look at our bidirectional streaming RPC `RouteChat()`. In this case, we just pass a context to the method and get back a `ClientReaderWriter`, which we can use to both write and read messages.
-
-```
-std::shared_ptr<ClientReaderWriter<RouteNote, RouteNote> > stream(
-    stub_->RouteChat(&context));
-```
-
-The syntax for reading and writing here is exactly the same as for our client-streaming and server-streaming methods. Although each side will always get the other’s messages in the order they were written, both the client and server can read and write in any order — the streams operate completely independently.
-
-## Try it out!
-
-Build client and server:
-
-```
-$ make
-
-```
-
-Run the server, which will listen on port 50051:
-
-```
-$ ./route_guide_server
-```
-
-Run the client (in a different terminal):
-
-```
-$ ./route_guide_client
-```
-## QA
+## Q&A
 
 ### Q: fatal error C1189
 
@@ -440,17 +363,25 @@ grpc++.lib
 grpc.lib
 libprotobufd.lib
 ssl.lib
-zlibd.dll
 zlibd.lib
 ```
 
-**How To find related lib:**
+Dll: zlibd.dll / zlib.dll
+
+How To find related lib:**
 
 - search symbol test from all grpc lib
-- dumpbin all grpc lib
+- dumpbin.exe (vs tool) all grpc lib
 
 
-example of `dumpbin grpc++.lib /symbols`
+````
+Copy all lib in one directory 
+for %i in (*) do dumpbin %i /symbols > {$targetDir}\%i.symbol.txt
+find "??1Server@grpc@@UEAA@XZ" *
+grep ??1Server@grpc@@UEAA@XZ *  // linux or bash on windows
+````
+
+Example of `dumpbin grpc++.lib /symbols`
 
 
 ```
@@ -472,7 +403,7 @@ The last column in a numbered line is the symbol name, both decorated and undeco
 SECTxx 表示定义的代码段
 UNDEF  表示链接外部代码
 External 表示暴露的接口
-Static	表示仅内部使用
+Static 表示仅内部使用
 ```
 
 [ref: DbgHelp Reference](https://msdn.microsoft.com/en-us/library/windows/desktop/ms679292(v=vs.85).aspx)
@@ -490,4 +421,12 @@ dumpbin /all Z:\chapter1\1.1\asm1.exe
 ```
 
 
+
+### Q: too many warnings
+
+**A: disable in cpp/cc files**
+
+```
+#pragma warning(disable: 4251 4291 4800)
+```
 

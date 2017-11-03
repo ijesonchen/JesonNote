@@ -198,3 +198,13 @@ For s = 0 to n-1	// s=j-i, O(n)
 
   $$A[i,i+s] = min_{r=i,\ldots,i+s}\{\sum_{k=i}^{i+s}p_k + A[i,r-1] + A[r+1,i+s]\}$$
 
+# NP-Completeness (w14)
+
+## Vertex Cover (w14)
+
+naive: try all possibilities, $$T = C_n^k ~ \theta(n^k)$$ 
+
+DP: sel one edge (u,v), remove u or v, sub graph has vertex cover k-1. $$T=O(2^kE)$$
+
+## Traveling Salesman Problem (TSP) 
+

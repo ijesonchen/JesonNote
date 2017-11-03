@@ -26,11 +26,11 @@ bool Test(int (&arr)[10]);
 环境：svn， vs2015
 思路：
 1. 代码版本：使用svn命令生成当前代码版本号并输出到文件，对文件进行处理生成相关字符串定义代码。
-	svn info 获取版本状态，修改时间
+  svn info 获取版本状态，修改时间
     svn stat 获取文件修改/增删状态
 2. 编译时间：使用编译器预处理宏定义 __DATE__ 和 __TIME__
-示例：
-SvnInfo2CppSrcStr 解析SVN info信息并生成相应版本定义常量代码文件。
+  示例：
+  SvnInfo2CppSrcStr 解析SVN info信息并生成相应版本定义常量代码文件。
 
 PROPERTY SET:
 	Project Property, Build Event, Pre-Build Event, Command Line, Edit
@@ -80,6 +80,21 @@ x = x & (x - 1)的意就是把x 化为二进制数后， 把最右边的1变成0
 最右边为0时，x 的二进制数是A1B，则x-1为A0C（B为n位0，C为n位1），则x&(x-1)为A0B。证毕。
 时间复杂度（循环次数）为1的位数。
 
+# C/C++库
+
+## locale相关
+
+- setlocale设置全局locale，影响cout，mbstowcs，isdigt等函数
+- mbstowcs/wcstombs使用全局locale
+- isdigit in `<cctype>`使用全局locale
+- std::isdigit in `<locale>`带带有locale参数，每次使用指定的locale
+- locale字符/代码页是平台相关的
+- ANSI转换windows平台建议使用`WideCharToMultiByte/MultiByteToWideChar`， linux平台可以考虑`iconv`
+- utf8转换除了上述函数外，可以考虑手写UTF编码解析函数
+- C++11可以使用`wstring_convert` in `<codecvt>`
+
+
+
 
 # STL
 
@@ -92,4 +107,39 @@ int a;
 char b;
 std::tie(a,b) = GetIntChar();
 ```
+
+# Visual Studio
+
+## versions
+
+- visual studio release name
+- msbuild version
+- Visual C++ compiler version (MSVC++), cl.exe
+- linker version, link.exe
+- visual sutdio platform toolset version
+
+| release  | msbuild | CL    | link  | toolset |
+| -------- | ------- | ----- | :---- | ------- |
+| vc6      |         | 12.00 |       | 8.0     |
+| .net 02  |         | 13.00 |       | 9.0     |
+| .net 03  |         | 13.10 |       | 10.0    |
+| vs05     |         | 14.00 |       | 8.0     |
+| vs08 sp1 | ?       | 15.00 |       | 9.0     |
+| vs10 sp1 |         | 16.00 |       | 10.0    |
+| vs12     |         | 17.00 | 11.00 | 11.0    |
+| vs13 u5  | 12.0    | 18.00 | 12.00 | 12.0    |
+| vs15 u3  | 14.0    | 19.00 | 14.00 | 14.0    |
+| vs17 u3  | 15.3    | 19.11 | 14.11 | 14.1    |
+
+## vcpkg
+
+安装：git clone然后按照说明运行即可。安装过程中需要下载cmake并复制到指定目录，注意不要点错取消。
+
+搜索包：`vcpkg search sqlite`
+
+包支持的平台triplet:`vcpkg help triplet`
+
+安装: `vcpkg install tbb:x64-windows` （默认x86平台)
+
+集成：`vcpkg integrate install`
 

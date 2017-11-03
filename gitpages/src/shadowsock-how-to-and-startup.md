@@ -14,6 +14,7 @@ tags: [shadow socks, auto strtup, ubuntu]
 
   ```
   apt install python-pip
+  pip install --upgrade pip (可选)
   pip install shadowsocks
   ```
 
@@ -25,6 +26,8 @@ tags: [shadow socks, auto strtup, ubuntu]
 - ### 相关命令
 
 ssserver -p $port$ -k $password$ -m aes-256-cfb -d start
+
+`ssserver -s ::` 使用IPV6地址 
 
 ssserver -d stop
 
