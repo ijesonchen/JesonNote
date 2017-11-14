@@ -4,7 +4,14 @@ date: 2017-05-24 22:14:00
 tags: [git]
 ---
 
+
+
+[TOC]
+
+
+
 # 使用git本地版本库实现多地同步
+
 ## 应用场景
 一些笔记及音视频资料，在家和公司都可能增删文件，但是比较大，希望通过U盘作为中介同步。
 <!--more-->
@@ -55,3 +62,30 @@ Also, consider repacking your repository, which will generate a packfile that wi
 *.pdf -delta
 ```
 
+# git只迁出某一子目录
+
+git本身建议这样操作。建议使用submodule，但是有类似的实现方式："sparse clone" and "sparse fetch" 
+
+[git只clone仓库中指定子目录和指定文件的实现](http://blog.csdn.net/xuyaqun/article/details/49275477)
+
+# github
+
+## 常规操作
+
+clone: 需要本地编译、修改等。不要下载zip文件，因为不会迁出子项目
+
+star：点赞，可以在your stars看到曾经点赞过的项目，类似收藏。
+
+watch：项目有提交等变化时收到邮件提醒。 
+
+fork：自己需要进行一些修改。不会和原项目自动同步。一般是修改后提出pull request到原作者，经同意后合并到原仓库。
+
+建议：喜欢的项目star（收藏），需要跟进watch（修改邮件通知），想要贡献fork（测过后提pull request）
+
+## github fork项目后的同步
+
+目前不支持自动同步。需要手动操作，create pull request或者命令行实现
+
+## github跟踪项目
+
+不建议fork，建议star相关项目，之后可以在your star里面看到。

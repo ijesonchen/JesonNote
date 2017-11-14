@@ -36,7 +36,22 @@ def P():
 input('press any key to continue')
 ```
 
+## 二进制raw数据处理
+
+- 二进制字面值 `x = b'\x01\x02'`
+
+- utf-8解码
+```
+import codes
+codecs.decode(bindata, 'utf-8')
+```
+
+- 解码读写文件 `codecs.open(filename, mode='r', encoding=None, errors='strict', buffering=1) `
+
+
+
 # 库
+
 ## math和cmath
 math包含取整、三角函数、幂、指数、对数、阶乘、伽马、最大公约数等，并包含一些常量定义（e,pi)
 cmath和math类似，但是支持复数，包括三角、幂指一级坐标变换等（极坐标）

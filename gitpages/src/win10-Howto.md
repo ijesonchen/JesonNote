@@ -68,7 +68,7 @@ cat id_rsa.pub >> /root/.ssh/authorized_keys  # 登录到root的key
 
 **NOTE**
 
-​	服务器端正常配置，客户端连接时提示无效的用户名。
+​	服务器端正常配置，客户端连接时提示权限问题。
 
 一、启用WinRM服务（服务器、客户端同时启用）
 Windows Remote Management (WS-Management)
@@ -87,5 +87,5 @@ Set-Item wsman:\localhost\Client\TrustedHosts -Value 192.168.1.2     (换成你�
 
 [Y] 是(Y) [N] 否(N) [S] 暂停(S) [?] 帮助 (默认值为“Y”): Y
 
-四、进入Hyper-V管理器添加远程服务器，敲入服务器的IP即可正常管理。
+四、进入Hyper-V管理器添加远程服务器，敲入服务器的IP即可正常管理。注意账户名是 ip\user 的形式，否则会提示用户名无效。
 
