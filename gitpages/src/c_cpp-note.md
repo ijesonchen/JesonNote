@@ -19,6 +19,28 @@ C/C++笔记
 bool Test(int (&arr)[10]);
 将会检查入参数组长度是否一致，否则编译错误
 
+## 显式类型转换
+
+C++11 以后开始使用{}语法实现显示类型转换。
+
+[C++/C++ language/Explicit type conversion](http://en.cppreference.com/w/cpp/language/expressions)
+
+Converts between types using a combination of explicit and implicit conversions.
+
+### Syntax
+
+| Syntax                                 | tag  | note          |
+| -------------------------------------- | ---- | ------------- |
+| ( new_type ) expression                | (1)  |               |
+| new_type ( expression )                | (2)  |               |
+| new_type ( expressions )               | (3)  |               |
+| new_type ( )                           | (4)  |               |
+| new_type { expression-list(optional) } | (5)  | (since C++11) |
+| template ( expressions(optional) )     | (6)  | (since C++17) |
+| template { expressions(optional) }     | (7)  | (since C++17) |
+
+Returns a value of type `new_type`.
+
 
 # 技巧
 
