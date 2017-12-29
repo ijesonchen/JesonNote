@@ -27,8 +27,6 @@ C++11 以后开始使用{}语法实现显示类型转换。
 
 Converts between types using a combination of explicit and implicit conversions.
 
-### Syntax
-
 | Syntax                                 | tag  | note          |
 | -------------------------------------- | ---- | ------------- |
 | ( new_type ) expression                | (1)  |               |
