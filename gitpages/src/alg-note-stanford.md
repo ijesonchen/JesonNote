@@ -219,11 +219,11 @@ O(mn lgn)
 
 O(mn) -> O(m lgn)
 
-
+从源点开始选取周围最小边对应的点逐步生长。借助最小堆
 
 ## Kruskal's MST algorithm
 
-
+贪心的选取不造成环路的最小边，分片生长最后连成一个。使用UnionFind并查集。
 
 # Dynamic Programming (w12)
 
