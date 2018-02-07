@@ -190,6 +190,12 @@ char b;
 std::tie(a,b) = GetIntChar();
 ```
 
+##  hash
+
+vs2015/2017 使用FNV哈希算法
+
+据称，[C++ 下一代标准库 tr1中默认的哈希 FNV hash](http://www.cnblogs.com/napoleon_liu/archive/2010/12/26/1917396.html)
+
 # Visual Studio
 
 ## versions
@@ -200,18 +206,18 @@ std::tie(a,b) = GetIntChar();
 - linker version, link.exe
 - visual sutdio platform toolset version
 
-| release  | msbuild | CL    | link  | toolset |
-| -------- | ------- | ----- | :---- | ------- |
-| vc6      |         | 12.00 |       | 8.0     |
-| .net 02  |         | 13.00 |       | 9.0     |
-| .net 03  |         | 13.10 |       | 10.0    |
-| vs05     |         | 14.00 |       | 8.0     |
-| vs08 sp1 | ?       | 15.00 |       | 9.0     |
-| vs10 sp1 |         | 16.00 |       | 10.0    |
-| vs12     |         | 17.00 | 11.00 | 11.0    |
-| vs13 u5  | 12.0    | 18.00 | 12.00 | 12.0    |
-| vs15 u3  | 14.0    | 19.00 | 14.00 | 14.0    |
-| vs17 u3  | 15.3    | 19.11 | 14.11 | 14.1    |
+| release  | CL    | msbuild | link  | toolset |
+| -------- | ----- | ------- | :---- | ------- |
+| vc6      | 12.00 |         |       | 8.0     |
+| .net 02  | 13.00 |         |       | 9.0     |
+| .net 03  | 13.10 |         |       | 10.0    |
+| vs05     | 14.00 |         |       | 8.0     |
+| vs08 sp1 | 15.00 | ?       |       | 9.0     |
+| vs10 sp1 | 16.00 |         |       | 10.0    |
+| vs12     | 17.00 |         | 11.00 | 11.0    |
+| vs13 u5  | 18.00 | 12.0    | 12.00 | 12.0    |
+| vs15 u3  | 19.00 | 14.0    | 14.00 | 14.0    |
+| vs17 u3  | 19.11 | 15.3    | 14.11 | 14.1    |
 
 ## vcpkg
 
