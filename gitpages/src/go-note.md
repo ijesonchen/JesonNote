@@ -16,6 +16,8 @@ Note for go language.
 
 os: win10 pro build 1709
 
+左侧菜单栏：文件，搜索，SCM（内部集成git），调试，扩展
+
 1. **git**: https://git-scm.com Git-2.17.0-64-bit.exe 
 
 2. **tortoise git**: 可选 https://tortoisegit.org/download TortoiseGit-2.6.0.0-64bit.msi 
@@ -55,29 +57,21 @@ os: win10 pro build 1709
 }   
 ```
 
-7. 安装常用go插件
+7. **安装常用go插件**
 
    新建并打开文件夹(go项目文件夹)，新建xx.go文件。随便写一些代码，保存，系统会提示是安装某些插件。点install all即可自动安装。插件包括：
 
 ```
-gocode
-gopkgs
-go-outline
-go-symbols
-guru
-gorename
-godef
-goreturns
-golint	
-dlv
-
-gomodifytags
-goplay
-impl
-fillstruct
-godoc
-gotests
+gocode gopkgs go-outline go-symbols guru gorename godef goreturns golint dlv
+gomodifytags goplay impl fillstruct godoc gotests
 ```
+8. **配置调试参数**
+  调试，打开配置 / 添加配置
+```
+"program" 调试的程序，可以是"${fileDirname}"  "${workspaceFolder}"，并可使用相对路径
+```
+
+
 ## 2. 插件介绍
 
 ### 2.1 源码格式化与检查
@@ -108,6 +102,17 @@ https://github.com/goinaction/code
 - 使用接口作为代码复用基础模块
 
 ## 3.2 快速开始
+
+代码：
+
+```
+fmt.Errorf：strings should not be capitalized or end with punctuation or a newline
+	不应使用大写，末尾不能加 . 或 \n。因为返回的字串经常在是其他格式化的一部分。但是大写不会导致报错，末尾有.或\n会报错。	
+```
+
+
+
+
 
 # 4. 读书笔记：The GO Programming Language
 
@@ -191,7 +196,140 @@ https://go-zh.org
 
 https://tour.go-zh.org
 
+# 7. 翻译参考
 
+## 7.1 go help gopath
+
+```
+The Go path is used to resolve import statements.It is implemented by and documented in the go/build package.
+Go path用来解析导入语句。实现及文档参考go/build包
+
+The GOPATH environment variable lists places to look for Go code. On Unix, the value is a colon-separated string. On Windows, the value is a semicolon-separated string. On Plan 9, the value is a list.
+环境变量GOPATH列出了go代码的搜索位置。UNIX下是逗号分隔的字串，Windows下是分号分隔的字串，Plan 9下是一个列表。
+
+If the environment variable is unset, GOPATH defaults to a subdirectory named "go" in the user's home directory ($HOME/go on Unix, %USERPROFILE%\go on Windows), unless that directory holds a Go distribution. Run "go env GOPATH" to see the current GOPATH.
+如果环境变量未设置，除非目录中包含go发布版，默认为用户home目录下go子目录（Unix: $HOME/go, WIndows: %USERPROFILE%\go)。查看命令"go env GOPATH"
+
+See https://golang.org/wiki/SettingGOPATH to set a custom GOPATH.
+自定义GOPATH参考https://golang.org/wiki/SettingGOPATH
+
+Each directory listed in GOPATH must have a prescribed structure:
+GOPATH中的每一个目录应该有如下预定义结构：
+
+The src directory holds source code. The path below src determines the import path or executable name.
+src目录保存源码。src下的路径决定导入路径或可执行文件名
+
+The pkg directory holds installed package objects. As in the Go tree, each target operating system and architecture pair has its own subdirectory of pkg
+(pkg/GOOS_GOARCH).
+pkg目录保存安装的包对象。在Go树中，每一个OS和体系结构对具有对应包的子目录（pkg/GOOS_GOARCH)
+
+If DIR is a directory listed in the GOPATH, a package with source in DIR/src/foo/bar can be imported as "foo/bar" and has its compiled form installed to "DIR/pkg/GOOS_GOARCH/foo/bar.a".
+如果DIR是GOPATH中的一个目录，源码DIR/src/foo/bar中的包可以使用导入名"foo/bar"，编译后安装位置为"DIR/pkg/GOOS_GOARCH/foo/bar.a"
+
+The bin directory holds compiled commands. Each command is named for its source directory, but only the final element, not the entire path. That is, the command with source in DIR/src/foo/quux is installed into DIR/bin/quux, not DIR/bin/foo/quux. The "foo/" prefix is stripped so that you can add DIR/bin to your PATH to get at the installed commands. If the GOBIN environment variable is set, commands are installed to the directory it names instead of DIR/bin. GOBIN must be an absolute path.
+bin目录保存编译后的命令。方便起见，命令名由源码路径最后一部分决定，而非整个路径。即DIR/src/foo/quux生成DIR/bin/quux，而非DIR/bin/foo/quux。...如果设置了环境变量GOBIN，命令将会安装在设置的路径。GOBIN必须为绝对路径。
+
+Here's an example directory layout:
+
+    GOPATH=/home/user/go
+
+    /home/user/go/
+        src/
+            foo/
+                bar/               (go code in package bar)
+                    x.go
+                quux/              (go code in package main)
+                    y.go
+        bin/
+            quux                   (installed command)
+        pkg/
+            linux_amd64/
+                foo/
+                    bar.a          (installed package object)
+
+Go searches each directory listed in GOPATH to find source code, but new packages are always downloaded into the first directory in the list.
+Go会搜索GOPATH中的每一个文件夹以查找源码，但是新包都会下载到列表中的第一个目录。
+
+See https://golang.org/doc/code.html for an example.
+
+Internal Directories
+Internal目录
+
+Code in or below a directory named "internal" is importable only by code in the directory tree rooted at the parent of "internal". 
+internal目录中的代码只能被internal所在目录中的包导入
+Here's an extended version of the directory layout above:
+
+    /home/user/go/
+        src/
+            crash/
+                bang/              (go code in package bang)
+                    b.go
+            foo/                   (go code in package foo)
+                f.go
+                bar/               (go code in package bar)
+                    x.go
+                internal/
+                    baz/           (go code in package baz)
+                        z.go
+                quux/              (go code in package main)
+                    y.go
+
+
+The code in z.go is imported as "foo/internal/baz", but that
+import statement can only appear in source files in the subtree
+rooted at foo. The source files foo/f.go, foo/bar/x.go, and
+foo/quux/y.go can all import "foo/internal/baz", but the source file
+crash/bang/b.go cannot.
+
+See https://golang.org/s/go14internal for details.
+
+Vendor Directories
+Vendor目录
+
+Go 1.6 includes support for using local copies of external dependencies to satisfy imports of those dependencies, often referred to as vendoring.
+GO 1.6支持使用外部依赖的本地拷贝解决依赖版本问题。
+
+Code below a directory named "vendor" is importable only by code in the directory tree rooted at the parent of "vendor", and only using an import path that omits the prefix up to and including the vendor element.
+vender目录中的包只能被vender所在目录中的包导入，导入路径会忽略vender元素前的部分。
+
+Here's the example from the previous section, ut with the "internal" directory renamed to "vendor" and a new foo/vendor/crash/bang directory added:
+
+    /home/user/go/
+        src/
+            crash/
+                bang/              (go code in package bang)
+                    b.go
+            foo/                   (go code in package foo)
+                f.go
+                bar/               (go code in package bar)
+                    x.go
+                vendor/
+                    crash/
+                        bang/      (go code in package bang)
+                            b.go
+                    baz/           (go code in package baz)
+                        z.go
+                quux/              (go code in package main)
+                    y.go
+
+The same visibility rules apply as for internal, but the code in z.go is imported as "baz", not as "foo/vendor/baz".
+包可见性类似internal，但是z.go导入名是"baz"，而非"foo/vendor/baz"。
+
+Code in vendor directories deeper in the source tree shadows code in higher directories. Within the subtree rooted at foo, an import of "crash/bang" resolves to "foo/vendor/crash/bang", not the top-level "crash/bang".
+vender目录中的导入包会增加vender部分的前缀。如"crash/bang"会解析为"foo/vendor/crash/bang"，而非顶级目录中的"crash/bang"。
+
+Code in vendor directories is not subject to import path checking (see 'go help importpath').
+vender目录中的代码不会做导入路径检查。参考'go help importpath'。
+
+When 'go get' checks out or updates a git repository, it now also updates submodules.
+go get签出或更新git仓库是，也会更新子模块。
+
+Vendor directories do not affect the placement of new repositories being checked out for the first time by 'go get': those are always placed in the main GOPATH, never in a vendor subtree.
+vender目录不会影响'go get'第一次迁出的新仓库的存放，这些仓库总是存放在主GOPATH中，而非vender子目录中。
+
+See https://golang.org/s/go15vendor for details.
+
+```
 
 
 
