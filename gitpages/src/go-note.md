@@ -179,33 +179,181 @@ chunked可以被http或httputil引用，不能被url引用
 
 - 包的查询：`go list` 通配符 `go list ...xml...`
 
-# 5. 遇到的问题
+# 5. Go tour
 
-## 5.1 运行代码
+`go get github.com/Go-zh/tour/gotour`并执行GOPATH中的`gotour`
+
+- [ ] Go tour英文版
+- [ ] Go tour练习
+
+## 5.1 包、变量和函数
+
+[Go 语法声明：为何类型在名称之后](http://blog.go-zh.org/gos-declaration-syntax)
+
+```
+约定：包名与导入路径的最后一个元素一致
+导出：大写字母开头。“未导出”的名字在该包外均无法访问
+连续命名：x,y int
+函数接收者：receiver，即函数接受的参数（入参）
+return：多返回值按顺序赋值。直接返回：返回已命名的返回值（影响代码可读性）。
+声明：var。可以赋初值。短声明:=。
+基本类型：bool string int(8,16,32,64) uint(8,16,32,64,uintptr) byte=uint8 rune=int32(unicode) float32/64 complex64/128 
+类型转换及推导：必须显式转换。根据形式及精度推导（complex g = 0.1 + 5i)
+常量：const，不能用:=
+数值型常量：高精度值。如const Bit = 1 << 100
+```
+
+## 5.2 流程控制
+
+[defer panic  and recover](http://blog.go-zh.org/defer-panic-and-recover)
+
+```
+for [初始化][;][条件][;][后置]
+	for i := 0; i < 10; i++ { ... // i仅for段可见。
+	for ; i < 10; { ...
+	for i < 10 { ...
+	for { ... // 无限循环
+if [初始化;] 条件
+	if v := math.Pow(x, n); v < lim { ... // v仅if-else段可见。初始化可省略
+	} else { ... // 注意else前后大括号格式
+switch [初始化;] 判定值 
+	case不要求常量、整数，可以为函数等
+    只执行选定case（自动break），除非显式fallthrough
+    依次执行case，直到匹配为止（可能跳过后续case调用）
+    无判定值，则为true，可用于简化if-else
+defer 延迟函数执行到外层函数返回之后。立即求值。多个defer使用栈，LIFO调用。
+```
+
+## 5.3 更多类型：struct、slice和map
+
+ [Go 切片：用法和本质](https://blog.go-zh.org/go-slices-usage-and-internals)
+
+```
+指针：*T nil & * 无指针运算
+结构体：点号访问。指针访问(*p).x或p.x。顺序赋值，或Name:制定字段名。&S{...}返回结构体指针。
+数组：[n]T  n不可更改，可推算时可忽略（如赋初值，返回切片）
+切片：array[low:high] 选定半开区间[low,high) low或high可省略，默认为0和数组长度 
+	返回数组部分元素的引用（原数组可被返回的数组修改）
+	可求len，cap，零值为nil
+	可扩展（在原数组上扩展）
+	make（[]int, len [, cap]): 创建数组并返回切片
+	append追加元素到切片（非数组）末尾，需要时可自动扩展原数组。
+range：遍历数切片或映射，返回下标及对应元素的副本。_ 忽略对应返回值
+map：nil。必须有键名。顶级类型名赋值中可省略。
+	插入、修改或获取直接下标。下标不存在时返回元素零值
+	删除用delete函数
+	双赋值检测key是否存在： elem, ok := m[key]
+函数值：类似函数指针
+	func compute(fn func(float64, float64) float64) float64 {
+		return fn(3, 4)
+	}
+**函数的闭包：闭包是一个函数值，它引用了其函数体之外的变量。该函数可以访问并赋予其引用的变量的值。	
+```
+
+## 5.4 方法和接口
+
+本地类型：local type。包内定义的类型。方法及入参指针只能使用本地类型。type MyFloat float64在包内定义了类型MyFloat	
+
+```
+方法：以结构体为参数的函数。 func (v Vertex) Abs() float64 { ... // v.Abs()
+				   函数: func Abs (v Vertex) float64 { ...   // Abs(v)
+	可以为本地类型非结构体类型声明方法。
+指针：避免传值调用时的副本拷贝，直接修改源值。只能是本地类型。
+	方法涉及到的指针（指针接收者或者对象指针）可以默认转换，函数不可以，必须显式指定
+	pv.Abs()可以解释为(*pv).Abs()
+	Abs(v)可以，但是Abs(pv)会报错
+	
+	func (v *Vertex) PAbs()
+	func PAbs(v *Vertex, f float64)
+    方法可以直接调用 v.PAbs() -> (&v).PAbs() 
+    函数必须显式使用指针 PAbs(&v)
+接口：接口类型是由一组方法签名定义的集合。类型通过实现一个接口的所有方法来实现该接口。空接口（0个方法）
+	type Abser interface{
+        Abs() float64
+	}	
+	var a Abserj
+	// a = ...
+	a.Abs()
+类型断言：访问接口底层具体值。  t := i.(T) (类型不匹配会panic)   t, ok := i.(T)
+类型选择：按顺序从几个类型断言中选择分支
+	swtch v := i.(type) {
+        case T1:
+        	// ...
+        case T2:
+        	// ...
+        default:
+        	// ...
+	}
+Stringer: fmt包中的接口，使用字符串描述自身，用于fmt打印
+	type Stringer interface {
+        String() string
+    }
+error: 错误状态
+    type error interface {
+        Error() string
+    }
+io.go: 一组io接口
+	Read(b []byte) (n int, err error)
+	Write(p []byte) (n int, err error)
+	...
+image.go: 图像接口
+    type Image interface {
+        ColorModel() color.Model
+        Bounds() Rectangle
+        At(x, y int) color.Color
+    }
+```
+
+## 5.5 并发
+
+```
+goroutine:
+	go f(x,y,z) 启动一个新的goroutine比你高执行 f(x,y,z)
+	sync做共享保护
+channel:
+	ch := make(chan int [,buflen])	// 创建信道，可选缓冲长度
+	ch <- v		// v发送到信道ch
+	v := <- ch	// 从ch接收并赋予v
+	缓冲区满会阻塞。缓冲区不够可能死锁。
+	range ch：不断从信道ch接收
+	close(ch): 关闭信道。一般信道不需要关闭，除非有必要（如结束range ch）
+	select：可实现阻塞等待ch，当多个ch可用时随机选择。可搭配default处理全阻塞时的情况。
+sync.Mutex: 有Lock和Unlock方法。
+```
+
+
+
+# 6. 遇到的问题
+
+## 6.1 运行代码
 
 类似VS，调试F5, 非调试运行Ctrl+F5. 也可以终端输入命令：go build然后运行命令。注意  `go build | bin.exe`并不能执行最新编译后的程序，而是运行的上次编译的程序。推测和windows系统预取优化有关。
 
-## 5.2 用户的package
+## 6.2 用户的package
 
 
 
 
-# 6. 参考资源
+# 7. 参考资源
 
 https://go-zh.org
 
 https://tour.go-zh.org
 
-# 7. 翻译参考
+# 8. 翻译参考
 
-## 7.1 go help gopath
+## 8.1 go help gopath
+
+gopath需要用绝对路径，可以多个
+
+检索import包时，按照gopath中顺序检索。一般是在src上一目录作为gopath路径。
 
 ```
 The Go path is used to resolve import statements.It is implemented by and documented in the go/build package.
 Go path用来解析导入语句。实现及文档参考go/build包
 
 The GOPATH environment variable lists places to look for Go code. On Unix, the value is a colon-separated string. On Windows, the value is a semicolon-separated string. On Plan 9, the value is a list.
-环境变量GOPATH列出了go代码的搜索位置。UNIX下是逗号分隔的字串，Windows下是分号分隔的字串，Plan 9下是一个列表。
+环境变量GOPATH列出了go代码的搜索位置。UNIX下是逗号分隔的字串，Windows下是分号分隔的字串，Plan 9下是一个列表。MAC下是冒号分割的字串。
 
 If the environment variable is unset, GOPATH defaults to a subdirectory named "go" in the user's home directory ($HOME/go on Unix, %USERPROFILE%\go on Windows), unless that directory holds a Go distribution. Run "go env GOPATH" to see the current GOPATH.
 如果环境变量未设置，除非目录中包含go发布版，默认为用户home目录下go子目录（Unix: $HOME/go, WIndows: %USERPROFILE%\go)。查看命令"go env GOPATH"
