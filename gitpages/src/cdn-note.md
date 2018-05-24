@@ -1,10 +1,10 @@
 ---
-title: template for gitpages
+title: Note for CDN
 date: 2017-05-24 22:14:00
 tags: [note, cdn]
 ---
 
-**NOTE For CDN**
+**Note for CDN**
 
 Note for CDN learning
 
