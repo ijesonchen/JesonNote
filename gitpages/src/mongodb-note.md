@@ -175,6 +175,12 @@ April 21, 2017 11:15 PM
 
 
 
+# 锁与并发
+
+[mongodb的锁及原子性](https://blog.csdn.net/niclascage/article/details/47110221)
+[Atomicity and Transactions](https://docs.mongodb.com/manual/core/write-operations-atomicity/)
+
+
 # Manual
 
 [The MongoDB Manual](https://docs.mongodb.com/manual/)

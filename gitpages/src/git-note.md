@@ -10,7 +10,7 @@ tags: [git]
 
 
 
-# 使用git本地版本库实现多地同步
+# 1. 使用git本地版本库实现多地同步
 
 ## 应用场景
 一些笔记及音视频资料，在家和公司都可能增删文件，但是比较大，希望通过U盘作为中介同步。
@@ -62,13 +62,13 @@ Also, consider repacking your repository, which will generate a packfile that wi
 *.pdf -delta
 ```
 
-# git只迁出某一子目录
+# 2. git只迁出某一子目录
 
 git本身建议这样操作。建议使用submodule，但是有类似的实现方式："sparse clone" and "sparse fetch" 
 
 [git只clone仓库中指定子目录和指定文件的实现](http://blog.csdn.net/xuyaqun/article/details/49275477)
 
-# github
+# 3. github
 
 ## 常规操作
 
@@ -89,3 +89,128 @@ fork：自己需要进行一些修改。不会和原项目自动同步。一般�
 ## github跟踪项目
 
 不建议fork，建议star相关项目，之后可以在your star里面看到。
+
+# 4. Git常用工作流程
+
+## 4.1 工作流：github
+
+## 4.2 工作流：gitlab
+
+## 4.3 常用命令
+
+help
+
+```
+git help
+git cmd --help // 如git branch --help
+```
+
+git checkout
+
+```
+git checkout <branch name> // checkout分支
+git checkout -b <branch name> [remote branch]// 创建并co分支。注意不是-B
+	git checkout -b localBranchName remoteRepo/remoteBranchName
+```
+
+Git branch
+
+```
+git branch // 查看本地分支
+git branch -a // 查看所有分支（含remote）
+git branch -d <branch name> // 删除分支。如果含中文，特殊符号等，可以加引号
+```
+
+git log / reflow
+
+```
+git log // 显示修改日志
+git reflog // 显示所有修改日志，包括reset操作。但是git branch -d之后无法显示
+```
+
+git show
+
+```
+git show hashid	// 显示提交的更改
+git show hashid --name-only // 仅显示提交修改的文件名
+```
+
+git reset
+
+```
+git reset hashid // 撤销修改到hashid，之后的commit会撤销，但是修改回保留，变成未提交状态
+```
+
+清除所有未提交的文件及文件夹
+
+```
+git checkout . #本地所有修改的。没有的提交的，都返回到原来的状态
+git stash #把所有没有提交的修改暂存到stash里面。可用git stash pop恢复。
+git reset --hard HASH #返回到某个节点，不保留修改。
+git reset --soft HASH #返回到某个节点。保留修改
+
+git clean -df #返回到个节点
+git clean 参数
+    -n 显示 将要 删除的 文件 和  目录
+    -f 删除 文件
+    -df 删除 文件 和 目录
+    -x 删除所有文件（包括 .gitignore中的文件）
+git checkout . && git clean -xdf  
+```
+
+新建分支处理issue
+
+```
+1. repo: user, upstream。github上user fork upstream的repo
+2. git clone user/repo
+3. 本地git添加remote： git remote add upstream [upstream/repo]
+4. github上，upstream创建issue分支 issue001
+5. 本地签出upstream的分支
+	git fetch upstream
+	git checkout -b issue001 upstream/issue001
+6. 本地修改。测试。完成后做rebase
+7. 提交到user的repo
+	git push origin issue001
+8. github上面提交pr: user/issue001 -> upstream/issue001。review后，merge分支。测试发布
+9. 测试通过后，提交pr: upstream/issue001 -> upsteram/master。由管理员review，merge
+```
+
+
+
+同步fork和upstream的代码
+
+```
+本地git clone fork后的项目
+1. 添加远程原始库
+	git remote add upstream git@github.com:originuser/originrepo.git
+	git remote -v 可以看到是否添加成功
+2. master拉取upstream，合并，push
+	git checkoiut master
+	git fetch upstream
+	git merge upstream/master
+	git push origin master
+3. 分支rebase
+	git checkout mybranch
+	git rebase master
+```
+
+
+
+## 4.4 QA
+
+1）commit your changes or stash them before you can merge.
+
+```
+情景：在master分支上修改完未提交，发现需要在分支b1上提交，master改变
+git stash // 备份当前分区修改
+git checkout b1 // 签出b1分支
+git stash pop // 恢复修改。后续可以继续在b1分支上工作
+```
+
+2)  fatal: Couldn't look up commit object for HEAD
+
+```
+情景：误操作 git check -b <branch name> 导致branch name为中文含：。git branch显示不正常，分支列表全部为白色，无星号（正常显示是branch列表，且当前分支为绿色标*）。git branch -d删除其他分支正常，删除中文名的分支报错。
+解决：git checkout 切换到master分支后，恢复正常。git branch -d "中文分支名"成功
+```
+

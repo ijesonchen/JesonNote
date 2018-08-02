@@ -69,6 +69,7 @@ gomodifytags goplay impl fillstruct godoc gotests
   调试，打开配置 / 添加配置
 ```
 "program" 调试的程序，可以是"${fileDirname}"  "${workspaceFolder}"，并可使用相对路径
+？？？"cwd": "${workspaceRoot}" 运行目录绝对路径
 ```
 
 
@@ -88,6 +89,43 @@ https://en.wikipedia.org/wiki/Lint_%28software%29
 **golint**: 代码检查工具，侧重代码风格，检查不规范用法。A linter or lint refers to tools that analyze source code to flag programming errors, bugs, stylistic errors, and suspicious constructs.
 
 **govet**(gotoolvet): 代码错误检查，bug或可疑的构造
+
+## 2.2 查找引用
+
+goru, go-find-references
+
+goru比go-find-references慢，但更准确：https://github.com/Microsoft/vscode-go/issues/340
+
+vscode go项目比较大时，find all refernces可能耗时十几秒https://github.com/Microsoft/vscode-go/issues/1491
+
+为了提升速度，可以考虑使用[Go Language Server](https://github.com/Microsoft/vscode-go/blob/master/README.md#go-language-server-experimental)，但目前无windows支持。
+
+但是，都不好用！！！如果项目没有加入到GOPATH，就会无结果。现在不知道是不是guru本来就有这个问题，还是安装Language Server引起的，卸载后问题仍然存在。
+
+老老实实用GoLand吧
+
+## 2.3 快捷键
+
+设置(macOS):
+
+```
+code，首选项，键盘快捷方式
+可以输入快捷键搜索，如"ctrl alt cmd shift"，或者目标如"go.test"
+```
+
+默认快捷键：
+
+```
+后退 ^-
+前进 ^ Shift -
+命令面板 cmd shift p 或 F1
+	? 查询
+	> 命令
+	@ 查找符号
+	直接输入： 打开文件名
+```
+
+
 
 # 3. 读书笔记: Go in Action（Go语言实战）
 
@@ -222,6 +260,10 @@ switch [初始化;] 判定值
     依次执行case，直到匹配为止（可能跳过后续case调用）
     无判定值，则为true，可用于简化if-else
 defer 延迟函数执行到外层函数返回之后。立即求值。多个defer使用栈，LIFO调用。
+label: 用于goto, break, continue
+	1. 用于goto无限制
+	2. 在for前面，用于break或者continue
+	3. 在switch前面，用于break
 ```
 
 ## 5.3 更多类型：struct、slice和map
@@ -238,6 +280,7 @@ defer 延迟函数执行到外层函数返回之后。立即求值。多个defer
 	var p *T = new(T)
 	点号访问。指针访问(*p).x或p.x。顺序赋值，或Name:指定字段名。&S{...}返回结构体指针。
 	匿名/内嵌字段：只有类型没有名字，类型名就是字段名。行为类似继承，外层结构体可以直接访问内层的变量和方法。
+	reflect.TypeOf严格匹配类型，不会做类似基类-子类的转化
 	命名冲突：外层覆盖内层（类似重载）。同层报错。
 数组：[n]T  n不可更改，可推算时可忽略（如赋初值，返回切片）
 切片：array[low:high] 选定半开区间[low,high) low或high可省略，默认为0和数组长度 
@@ -248,6 +291,9 @@ defer 延迟函数执行到外层函数返回之后。立即求值。多个defer
 	append追加元素到切片（非数组）末尾，需要时可自动扩展原数组。
 range：遍历数切片或映射，返回下标及对应元素的副本。_ 忽略对应返回值
 map：nil。必须有键名。顶级类型名赋值中可省略。
+	遍历: for k,v range mapVar {}
+	遍历key: for k range mapVar {}
+	遍历value: for _, v range mapVar {}
 	插入、修改或获取直接下标。下标不存在时返回元素零值
 	删除用delete函数
 	双赋值检测key是否存在： elem, ok := m[key]
@@ -329,28 +375,103 @@ channel:
 sync.Mutex: 有Lock和Unlock方法。
 ```
 
+## 5.6 其他
+
+反射
+
+```
+type reflectInterface struct{}
+
+func (t *reflectInterface) ShowMsg() {
+	fmt.Println("reflectInterface.showMsg called.")
+}
+
+func reflectSample() {
+	// MethodByName: export method only
+	v := reflect.ValueOf(&reflectInterface{}).MethodByName("ShowMsg")
+	if v.Kind() != reflect.Func {
+		fmt.Println("no such method")
+	} else {
+		v.Call([]reflect.Value{})  // parameters can packed into []reflect.Value{}
+	}
+}
+```
+
 
 
 # 6. 遇到的问题
 
 ## 6.1 运行代码
 
-类似VS，调试F5, 非调试运行Ctrl+F5. 也可以终端输入命令：go build然后运行命令。注意  `go build | bin.exe`并不能执行最新编译后的程序，而是运行的上次编译的程序。推测和windows系统预取优化有关。
+类似VS，调试F5, 非调试运行Ctrl+F5. 也可以终端输入命令：go build然后运行命令，或者`go run main.go`。注意  `go build | bin.exe`并不能执行最新编译后的程序，而是运行的上次编译的程序。推测和windows系统预取优化有关。
 
 ## 6.2 用户的package
 
+参考9.1 `go help path`
 
+```
+一个目录中只能有一个package
+一般代码放在src路径下。如果引用其他src路径，需要将src上级目录添加到gopath中。vscode的gopath分用户和项目两级，和系统的gopath互不影响。更改vacode的gopath可能导致插件重新安装
+```
 
+# 7. 代码笔记
 
-# 7. 参考资源
+## 7.1 常用库 
+
+### string int int64互转
+
+```
+#string到int  
+int,err:=strconv.Atoi(string)  
+#string到int64  
+int64, err := strconv.ParseInt(string, 10, 64)  
+#int到string  
+string:=strconv.Itoa(int)  
+#int64到string  
+string:=strconv.FormatInt(int64,10)  
+```
+
+### string, []byte, 结构体互转
+
+```
+type strudef struct{
+    Item string `json:"field_name"`
+}
+
+	stru := &strudef{"fieldvalue"}
+	b, e := json.Marshal(stru)
+	s := string(b)
+
+	var fmtJSON bytes.Buffer
+	e2 := json.Indent(&fmtJSON, b, "", "  ")
+	s2 := string(fmtJSON.Bytes())
+```
+
+### error
+
+```
+https://gobyexample.com/errors
+var err error = errors.New("xxx")
+err = fmt.Errorf("%s %d", xxx, nnn)
+实现一个具有Error() string{}方法的结构体，直接赋值给err
+```
+
+## 7.2 语言特性
+
+### 接口
+
+- [ ] [Golang面向接口编程](https://blog.csdn.net/huwh_/article/details/79054450)
+- [ ] [理解 Go interface 的 5 个关键点](http://sanyuesha.com/2017/07/22/how-to-understand-go-interface/)
+
+# 8. 参考资源
 
 https://go-zh.org
 
 https://tour.go-zh.org
 
-# 8. 翻译参考
+# 9. 翻译参考
 
-## 8.1 go help gopath
+## 9.1 go help gopath
 
 gopath需要用绝对路径，可以多个
 
