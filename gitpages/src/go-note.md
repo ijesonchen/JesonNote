@@ -18,17 +18,18 @@ os: win10 pro build 1709
 
 左侧菜单栏：文件，搜索，SCM（内部集成git），调试，扩展
 
-1. **git**: https://git-scm.com Git-2.17.0-64-bit.exe 
+1.1. **git**: https://git-scm.com Git-2.17.0-64-bit.exe 
 
-2. **tortoise git**: 可选 https://tortoisegit.org/download TortoiseGit-2.6.0.0-64bit.msi 
+1.2. **tortoise git**: 可选 https://tortoisegit.org/download TortoiseGit-2.6.0.0-64bit.msi 
 
-3. **go lang**: https://golang.org/dl go1.10.2.windows-amd64.msi 
+1.3. **go lang**: https://golang.org/dl go1.10.2.windows-amd64.msi 
 
-4. **vscode**: https://code.visualstudio.com 1.23.1/20180510
+1.4. **vscode**: https://code.visualstudio.com 1.23.1/20180510
 
-5. **vscode插件**: Go for Visual Studio Code 插件
+1.5. **vscode插件**: Go for Visual Studio Code 插件
 
-6. **配置vscode参数**：vscode使用json配置文件。按照如下顺序确定配置项内容。
+### 1.6. **配置参数**
+vscode使用json配置文件。按照如下顺序确定配置项内容
 
 ```
    工作区设置（工作目录下.vscode\settings.json)
@@ -46,7 +47,7 @@ os: win10 pro build 1709
     "http.proxy": "http://127.0.0.1:1080",
     // go安装目录根目录。
     "go.goroot": "C:/bin/Go",
-    // go工作目录。一些工具/插件安装位置。不配置的话默认是 c:\users\[用户名]\go
+    // go工作目录。一些工具/插件安装位置。不配置的话默认是 c:\users\[用户名]\go。多个目录windows用;分割，mac/linux用:分割。go get时使用第一个目录，查找包时顺序查找，使用第一个匹配到的包。vscode单独配置，和系统环境变量独立。
     "go.gopath": "C:/data/gopath",
     // 保存时自动引入未引用的包
     "go.autocompleteUnimportedPackages" : true,
@@ -57,7 +58,7 @@ os: win10 pro build 1709
 }   
 ```
 
-7. **安装常用go插件**
+### 1.7. **常用go插件**
 
    新建并打开文件夹(go项目文件夹)，新建xx.go文件。随便写一些代码，保存，系统会提示是安装某些插件。点install all即可自动安装。插件包括：
 
@@ -65,13 +66,27 @@ os: win10 pro build 1709
 gocode gopkgs go-outline go-symbols guru gorename godef goreturns golint dlv
 gomodifytags goplay impl fillstruct godoc gotests
 ```
-8. **配置调试参数**
-  调试，打开配置 / 添加配置
+​	安装插件/包报错
+
 ```
-"program" 调试的程序，可以是"${fileDirname}"  "${workspaceFolder}"，并可使用相对路径
-？？？"cwd": "${workspaceRoot}" 运行目录绝对路径
+Error: Command failed: <path>\go.exe get -u -v <package>
+大概率是相关依赖的源被墙导致的。可以使用命令行直接安装看看详细信息，或者科学上网之后尝试。
+如果使用ss的话，可能要配置代理。注意，配置代理需要配置go的代理，还有git代理
+go代理：设置变量http_proxy。windows下：
+	set http_proxy=<http_proxy_addr:port>
+git代理：
+	git config --global http.proxy "<http_proxy_addr:port>"
 ```
 
+### 1.8. **配置调试参数**
+
+    调试，打开配置 / 添加配置
+```
+"program" 调试的程序，可以是"${fileDirname}"  "${workspaceFolder}"，并可使用相对路径
+"program" : "${workspaceFolder}/projname/appname" // 可以是go的main package
+"cwd": "${workspaceFolder}" 运行目为工作区路径
+“args" : ["-config", "conf/config.json],
+```
 
 ## 2. 插件介绍
 
@@ -92,9 +107,9 @@ https://en.wikipedia.org/wiki/Lint_%28software%29
 
 ## 2.2 查找引用
 
-goru, go-find-references
+guru, go-find-references
 
-goru比go-find-references慢，但更准确：https://github.com/Microsoft/vscode-go/issues/340
+guru比go-find-references慢，但更准确：https://github.com/Microsoft/vscode-go/issues/340
 
 vscode go项目比较大时，find all refernces可能耗时十几秒https://github.com/Microsoft/vscode-go/issues/1491
 
@@ -125,21 +140,47 @@ code，首选项，键盘快捷方式
 	直接输入： 打开文件名
 ```
 
+## 2.4 go tools操作系统间迁移
+
+```
+** 背景
+windows下已经配置好vscode，之后自动或手动go get安装了一些go tools（如guru等）。Ubuntu下也安装vscode，但是由于go tools安装时需要梯子否则大概率失败，故考虑直接使用windows下的gotools
+** 方法
+利用go tools的源码安装生成。例如guru会有如下文件
+<gopath>\bin\guru.exe
+<gopath>\src\github.com\golang\tools\cmd\guru
+
+把源码复制到linux系统下对应目录里(注意要保持目录一致)，并且配置好gopath，在linux下运行
+go install <gopath>\src\github.com\golang\tools\cmd\guru
+即可。会在对应的bin目录里生成 guru
+```
+
+### 2.5 遇到的问题
+
+#### 2.5.1 保留自动打开的文件
+
+```
+这个是预览窗口的特性。自动打开预览窗口，不需要时自动关闭。如果不希望自动关系，关掉预览功能。
+https://blog.csdn.net/weixin_39179096/article/details/81407716?utm_source=blogxgwz1
+"workbench.editor.enablePreview": false
+"workbench.editor.enablePreviewFromQuickOpen": false
+```
 
 
-# 3. 读书笔记: Go in Action（Go语言实战）
+
+## 3. 读书笔记: Go in Action（Go语言实战）
 
 https://github.com/goinaction/code
 
 可参考[飞雪无情的博客](http://www.flysnow.org/categories/Golang/) [Go语言实战笔记（一）| Go包管理](http://www.flysnow.org/2017/03/04/go-in-action-go-package.html) 等
 
-## 3.1 介绍 
+### 3.1 介绍 
 
 - 现代、快速，带有强大标准库
 - 内置并发支持goroutine
 - 使用接口作为代码复用基础模块
 
-## 3.2 快速开始
+### 3.2 快速开始
 
 代码：
 
@@ -152,11 +193,11 @@ fmt.Errorf：strings should not be capitalized or end with punctuation or a newl
 
 
 
-# 4. 读书笔记：The GO Programming Language
+## 4. 读书笔记：The GO Programming Language
 
 
 
-## 4.10 包和go工具
+### 4.10 包和go工具
 
 - 包管理机制: 加速编译。导入显示列出；无循环依赖；目标文件包含所有依赖的导出。
 - 导入路径: 建议使用网络域名开始
@@ -217,14 +258,14 @@ chunked可以被http或httputil引用，不能被url引用
 
 - 包的查询：`go list` 通配符 `go list ...xml...`
 
-# 5. Go tour
+## 5. Go tour
 
 `go get github.com/Go-zh/tour/gotour`并执行GOPATH中的`gotour`
 
 - [ ] Go tour英文版
 - [ ] Go tour练习
 
-## 5.1 包、变量和函数
+### 5.1 包、变量和函数
 
 [Go 语法声明：为何类型在名称之后](http://blog.go-zh.org/gos-declaration-syntax)
 
@@ -241,7 +282,7 @@ return：多返回值按顺序赋值。直接返回：返回已命名的返回�
 数值型常量：高精度值。如const Bit = 1 << 100
 ```
 
-## 5.2 流程控制
+### 5.2 流程控制
 
 [defer panic  and recover](http://blog.go-zh.org/defer-panic-and-recover)
 
@@ -266,7 +307,7 @@ label: 用于goto, break, continue
 	3. 在switch前面，用于break
 ```
 
-## 5.3 更多类型：struct、slice和map
+### 5.3 更多类型：struct、slice和map
 
  [Go 切片：用法和本质](https://blog.go-zh.org/go-slices-usage-and-internals)
 
@@ -290,13 +331,17 @@ label: 用于goto, break, continue
 	make（[]int, len [, cap]): 创建数组并返回切片
 	append追加元素到切片（非数组）末尾，需要时可自动扩展原数组。
 range：遍历数切片或映射，返回下标及对应元素的副本。_ 忽略对应返回值
+	for i,v := range <slice> 中v的是元素拷贝，修改v不会影响s[i].解决：
+		1. 使用s[i]修改元素
+		2. slice定义为指针数组，但是这时候只能修改元素的成员。
 map：nil。必须有键名。顶级类型名赋值中可省略。
 	遍历: for k,v range mapVar {}
 	遍历key: for k range mapVar {}
 	遍历value: for _, v range mapVar {}
-	插入、修改或获取直接下标。下标不存在时返回元素零值
+	插入、修改或获取直接下标。下标不存在时返回元素零值。如果遍历中修改，建议value用指针形式。
 	删除用delete函数
 	双赋值检测key是否存在： elem, ok := m[key]
+	获取key不会导致插入操作：elem := m[key]。key不存在时返回0值，但不会插入key到m中
 函数值：类似函数指针
 	func compute(fn func(float64, float64) float64) float64 {
 		return fn(3, 4)
@@ -304,7 +349,7 @@ map：nil。必须有键名。顶级类型名赋值中可省略。
 **函数的闭包：闭包是一个函数值，它引用了其函数体之外的变量。该函数可以访问并赋予其引用的变量的值。	
 ```
 
-## 5.4 方法和接口
+### 5.4 方法和接口
 
 本地类型：local type。包内定义的类型。方法及入参指针只能使用本地类型。type MyFloat float64在包内定义了类型MyFloat	
 
@@ -358,7 +403,7 @@ image.go: 图像接口
     }
 ```
 
-## 5.5 并发
+### 5.5 并发
 
 ```
 goroutine:
@@ -375,7 +420,7 @@ channel:
 sync.Mutex: 有Lock和Unlock方法。
 ```
 
-## 5.6 其他
+### 5.6 其他
 
 反射
 
@@ -399,13 +444,13 @@ func reflectSample() {
 
 
 
-# 6. 遇到的问题
+## 6. 遇到的问题
 
-## 6.1 运行代码
+### 6.1 运行代码
 
 类似VS，调试F5, 非调试运行Ctrl+F5. 也可以终端输入命令：go build然后运行命令，或者`go run main.go`。注意  `go build | bin.exe`并不能执行最新编译后的程序，而是运行的上次编译的程序。推测和windows系统预取优化有关。
 
-## 6.2 用户的package
+### 6.2 用户的package
 
 参考9.1 `go help path`
 
@@ -413,12 +458,14 @@ func reflectSample() {
 一个目录中只能有一个package
 一般代码放在src路径下。如果引用其他src路径，需要将src上级目录添加到gopath中。vscode的gopath分用户和项目两级，和系统的gopath互不影响。更改vacode的gopath可能导致插件重新安装
 ```
+### 6.3 go get安装失败
+首先确认源没问题。可能是源被墙了，可以考虑科学上网后尝试。可能需要设置proxy。参考1.7
 
-# 7. 代码笔记
+## 7. 代码笔记
 
-## 7.1 常用库 
+### 7.1 常用库 
 
-### string int int64互转
+#### string int int64互转
 
 ```
 #string到int  
@@ -431,7 +478,7 @@ string:=strconv.Itoa(int)
 string:=strconv.FormatInt(int64,10)  
 ```
 
-### string, []byte, 结构体互转
+#### string, []byte, 结构体互转
 
 ```
 type strudef struct{
@@ -447,7 +494,7 @@ type strudef struct{
 	s2 := string(fmtJSON.Bytes())
 ```
 
-### error
+#### error
 
 ```
 https://gobyexample.com/errors
@@ -456,20 +503,225 @@ err = fmt.Errorf("%s %d", xxx, nnn)
 实现一个具有Error() string{}方法的结构体，直接赋值给err
 ```
 
-## 7.2 语言特性
+### 7.2 语言特性
 
-### 接口
+#### 接口
 
 - [ ] [Golang面向接口编程](https://blog.csdn.net/huwh_/article/details/79054450)
 - [ ] [理解 Go interface 的 5 个关键点](http://sanyuesha.com/2017/07/22/how-to-understand-go-interface/)
 
-# 8. 参考资源
+#### 反射
 
+- [ ] [Go语言实战笔记（二十四）| Go 反射](https://www.flysnow.org/2017/06/13/go-in-action-go-reflect.html)
+
+```
+var myval = 100
+reflect.TypeOf(myval)
+```
+
+
+
+###  7.3 信号处理
+
+- [ ] [Golang信号处理和优雅退出守护进程](https://studygolang.com/articles/10076)
+
+信号定义
+
+```
+信号类型
+每个平台的信号定义或许有些不同。有些信号名对应着3个信号值，这是因为这些信号值与平台相关。下面列出了POSIX中定义的信号。Linux 使用34-64信号用于实时系统中。命令 man signal 提供了官方的信号介绍。在POSIX.1-1990标准中定义的信号列表。
+需要特别说明的是，SIGKILL和SIGSTOP这两个信号既不能被应用程序捕获，也不能被操作系统阻塞或忽略。
+
+信号	   值		  动作	 说明
+SIGHUP	1			Term	终端控制进程结束(终端连接断开)
+SIGINT	2			Term	用户发送INTR字符(Ctrl+C)触发
+SIGQUIT	3			Core	用户发送QUIT字符(Ctrl+/)触发
+SIGILL	4			Core	非法指令(程序错误、试图执行数据段、栈溢出等)
+SIGABRT	6			Core	调用abort函数触发
+SIGFPE	8			Core	算术运行错误(浮点运算错误、除数为零等)
+SIGKILL	9			Term	无条件结束程序(不能被捕获、阻塞或忽略)
+SIGSEGV	11			Core	无效内存引用(试图访问不属于自己的内存空间、对只读内存空间进行写操作)
+SIGPIPE	13			Term	消息管道损坏(FIFO/Socket通信时，管道未打开而进行写操作)
+SIGALRM	14			Term	时钟定时信号
+SIGTERM	15			Term	结束程序(可以被捕获、阻塞或忽略)
+SIGUSR1	30,10,16	Term	用户保留
+SIGUSR2	31,12,17	Term	用户保留
+SIGCHLD	20,17,18	Ign		子进程结束(由父进程接收)
+SIGCONT	19,18,25	Cont	继续执行已经停止的进程(不能被阻塞)
+SIGSTOP	17,19,23	Stop	停止进程(不能被捕获、阻塞或忽略)
+SIGTSTP	18,20,24	Stop	停止进程(可以被捕获、阻塞或忽略)
+SIGTTIN	21,21,26	Stop	后台程序从终端中读取数据时触发
+SIGTTOU	22,22,27	Stop	后台程序向终端中写数据时触发
+
+在SUSv2和POSIX.1-2001标准中的信号列表:
+信号	   值		  动作	 说明
+SIGTRAP	5			Core	Trap指令触发(如断点，在调试器中使用)
+SIGBUS	0,7,10		Core	非法地址(内存地址对齐错误)
+SIGPOLL				Term	Pollable event (Sys V). Synonym for SIGIO
+SIGPROF	27,27,29	Term	性能时钟信号(包含系统调用时间和进程占用CPU的时间)
+SIGSYS	12,31,12	Core	无效的系统调用(SVr4)
+SIGURG	16,23,21	Ign		有紧急数据到达Socket(4.2BSD)
+SIGVTALRM 26,26,28	Term	虚拟时钟信号(进程占用CPU的时间)(4.2BSD)
+SIGXCPU	24,24,30	Core	超过CPU时间资源限制(4.2BSD)
+SIGXFSZ	25,25,31	Core	超过文件大小资源限制(4.2BSD)
+```
+
+
+
+信号处理函数
+
+```
+Ignore(sig ...os.Signal)
+Ignored(sig os.Signal) bool
+Notify(c chan<- os.Signal, sig ...os.Signal)
+Reset(sig ...os.Signal)
+Stop(c chan<- os.Signal)
+```
+
+示例
+
+```
+// capture all signals
+
+// Set up channel on which to send signal notifications.
+// We must use a buffered channel or risk missing the signal
+// if we're not ready to receive when the signal is sent.
+c := make(chan os.Signal, 1)
+
+// Passing no signals to Notify means that
+// all signals will be sent to the channel.
+signal.Notify(c)
+
+// Block until any signal is received.
+s := <-c
+fmt.Println("Got signal:", s)
+```
+
+### 7.4 select
+
+用法
+
+```
+1. A "select" statement chooses which of a set of possible send or receive operations will proceed. It looks similar to a "switch" statement but with the cases all referring to communication operations.
+即用来监听和channel有关的IO操作
+2. 所有case都会被求值（从上到下，从左到右）。
+3. 如果有一个或多个case满足，则随机选择一个。否则执行default
+
+因此，多个case间信号没有优先级。如果需要实现优先级，则需要采用default套嵌select实现。如果层级复杂，建议default部分使用函数
+select{
+    case <first class sigs>:
+    default:
+    	select{
+            case <second class sigs>:
+			...
+    	}
+}
+```
+
+break
+
+```
+break的坑 http://blog.51cto.com/xwandrew/2147090
+break可以中断 for, switch, select 的执行。因此
+for {
+	select {
+        case <- sigClose:
+        	break
+        default:
+        	xxx
+	}
+}
+close(sigClose)后，只会跳出select，然后导致死循环。
+
+解决方案：采用break [tag] 或 goto [tag]（不推荐）
+TagExitFor:
+for {
+	select {
+        case <- sigClose:
+        	break TagExitFor
+        default:
+        	xxx
+	}
+}
+```
+
+机制
+
+```
+https://blog.csdn.net/u011957758/article/details/82230316
+```
+
+### 7.5 channel
+
+```
+1. 必须创建才能使用，否则容易panic
+2. close后可以recv
+3. 重复close会panic。解决
+	a. 单独线程负责close。一般是发送者。
+	b. 使用sync.Once
+	c. 使用带有recover panic的函数关闭
+```
+
+### 7.6. 文件操作
+
+```
+1. 打开文件
+f, e:= 
+os.OpenFile(fn, 
+			os.O_WRONLY|os.O_APPEND|os.O_CREATE, 
+			os.ModeAppend|os.ModeExclusive|0744)
+注意：linux下，如果不指定权限Mode(如os.ModePerm=0777)可能会导致文件不能被再次打开（没有权限）
+```
+
+
+
+
+## 8. 参考和实践
+
+```
+https://godoc.org
 https://go-zh.org
-
 https://tour.go-zh.org
+```
+### 8.1 项目目录结构
 
-# 9. 翻译参考
+```
+参考9.1 go help gopath
+go搜索包时，会按顺序检索goroot、gopath下的src目录。为了项目间互相引用包方便，建议配置3个gopath：公共pub、项目work以及用户usr。假设开发目录为d:\dev，则配置
+GOPATH=d:\dev\go\pub;d:\dev\go\work;d:\dev\go\usr
+注意：如果有vendor目录（一般在proj根目录下），优先使用vendor的包。如果多个gopath下的包之间有冲突，则会使用按顺序找到的第一个包。这可能导致引用意外的包。
+
+示例目录结构如下：
+d:\dev\ // 开发根目录。linux下可以使用 /home/user/dev 等目录
+      |cpp\  // cpp项目
+	  |go\   // go项目
+		 |pub\  // 公共，一般用于存放go tools
+		     |bin\  // 编译后产生的程序
+			 |pkg\  // 编译时产生的包对象
+				 |windows_amd64\ // windows平台下生成
+				 |linux_amd64\   // linux平台下生成
+			 |src\  // 源代码
+				 |github.com\ // 源代码托管位置  
+							|useracc\ // 用户账户
+							        |proj1 // 项目。可以包含多个包，或自身作为一个包
+				 |golang.org\ // 源代码托管位置
+	     |work\ // 工作，一般是公司项目。
+		      |src\  // 源代码 
+			      |repo.my.com\ // 一般是公司的源码托管服务器域名
+						      |proj1 // 项目。可以包含多个包，或自身作为一个包
+		 |usr\  // 个人，用于个人的一些测试项目等。
+			 |src\
+				 |proj\ // 可以直接把包放在这里，但是没有托管
+				 |repo.xxx.com\ // 项目托管在repo.xxx.com上
+							  |useracc\
+							          |proj1\
+
+
+```
+
+
+
+## 9. 翻译参考
 
 ## 9.1 go help gopath
 

@@ -11,7 +11,7 @@ tags: [win10, how to]
 
 how to install linux subsytem and start ssh service
 
-## 安装
+## 1. 安装
 
 - 启用开发者模式
 
@@ -22,7 +22,7 @@ how to install linux subsytem and start ssh service
 
 安装是会提示错误0x80072ee2，是由于网络不稳定。换个时间再试，或者启用VPN，或者开启shadowsocks的全局代理。
 
-## 启用root
+## 2. 启用root
 
 `sudo passwd root`
 
@@ -32,7 +32,7 @@ how to install linux subsytem and start ssh service
 
 `su`
 
-## ssh服务
+## 3. ssh服务
 
 ```
 apt install openssh-server
@@ -53,6 +53,17 @@ PasswordAuthentication yes # 启用密码登录
 追加sshkey到该文件可实现自动登陆
 cat id_rsa.pub >> /root/.ssh/authorized_keys  # 登录到root的key
 ```
+
+## 4. windows下运行wsl命令
+
+```
+直接在windows命令行下通过wsl运行，如 wsl ls -l
+如果wsl安装了go，可以通过
+wsl /usr/local/go/bin/godoc -http=:6060 
+启动godoc server
+```
+
+
 
 # 更改网络类型(公用、专用、私有)
 

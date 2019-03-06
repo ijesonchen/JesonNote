@@ -70,29 +70,52 @@ git本身建议这样操作。建议使用submodule，但是有类似的实现�
 
 # 3. github
 
-## 常规操作
+## 3.1常规操作
 
+```
 clone: 需要本地编译、修改等。不要下载zip文件，因为不会迁出子项目
-
 star：点赞，可以在your stars看到曾经点赞过的项目，类似收藏。
-
 watch：项目有提交等变化时收到邮件提醒。 
-
 fork：自己需要进行一些修改。不会和原项目自动同步。一般是修改后提出pull request到原作者，经同意后合并到原仓库。
-
 建议：喜欢的项目star（收藏），需要跟进watch（修改邮件通知），想要贡献fork（测过后提pull request）
+```
 
-## github fork项目后的同步
+
+
+## 3.2 fork项目后的同步
 
 目前不支持自动同步。需要手动操作，create pull request或者命令行实现
 
-## github跟踪项目
+## 3.3 跟踪项目
 
 不建议fork，建议star相关项目，之后可以在your star里面看到。
+
+## 3.4 获取ssh pubkey
+
+```
+curl https://github.com/<user-account>.keys
+即可得到用户user-account的ssh pubkey。将这些key放入Linlux <home>/.ssh/authorized_keys既可支持服务器远程登录
+```
+
+
 
 # 4. Git常用工作流程
 
 ## 4.1 工作流：github
+
+```
+首先，git clone <repo> 克隆repo
+1. git fetch <remote> // 更新repo
+2. git checkout -b <local_branch_name> <remote_base_branch> // 根据远程base创建分支，一般是origin:master
+3. working & commit
+4. git fetch <remote> & git rebase <remote_base_branch> // 保持和远程分支的同步
+5. git push <remote> <local_branch_name>:<remote_branch_name> // 提交分支到远程
+6. 提交remote_branch_name到remote_base_branch 的pr或mr，同时申请review
+7. 如果需要修改，本地修改后，git push
+8. 合并到base_branch
+```
+
+
 
 ## 4.2 工作流：gitlab
 

@@ -1,6 +1,6 @@
 ---
 title: template for gitpages
-date: 2017-05-24 22:14:00
+date: 2017-05-24 00:00 :00
 tags: [tag1, tag2]
 ---
 
