@@ -56,6 +56,34 @@ codecs.decode(bindata, 'utf-8')
 math包含取整、三角函数、幂、指数、对数、阶乘、伽马、最大公约数等，并包含一些常量定义（e,pi)
 cmath和math类似，但是支持复数，包括三角、幂指一级坐标变换等（极坐标）
 
+
+
+# 安装
+
+## 库的安装
+
+```
+升级pip
+linux: pip install --upgrade pip
+windows: python -m pip install --upgrade pip
+安装包
+pip install package
+```
+
+## 库安装时缺少文件
+
+python.h
+
+```
+pip install mysql-python
+提示缺少python.h
+解决:
+	centos: yum install python-devel
+	ubuntu: apt install python-dev
+```
+
+
+
 # 文件操作
 
 ## os.scandir 快速遍历目录

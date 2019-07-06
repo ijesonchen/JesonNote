@@ -67,6 +67,64 @@ wildcard: in LIKE pattern
 ## **CREATE INDEX** - creates an index (search key)
 ## **DROP INDEX** - deletes an index
 
+# mysql函数
+
+```
+https://www.w3resource.com/mysql/date-and-time-functions/date-and-time-functions.php
+```
+
+
+
+# Q&A
+
+## show processlist 排查问题
+
+```
+https://xu3352.github.io/mysql/2017/07/08/msyql-show-full-processlist // processlist表使用方法
+https://blog.csdn.net/21aspnet/article/details/6922190 // processlist.state状态详解
+https://www.tutorialspoint.com/how-do-i-kill-all-the-processes-in-mysql-show-processlist
+
+-- 查看当前线程处理情况
+show full processlist 
+
+-- 添加过滤条件
+select id, db, user, host, command, time, state, info
+from information_schema.processlist
+where command != 'Sleep'
+order by time desc 
+
+-- 杀掉一个线程
+kill <id>;
+
+-- 查询执行时间超过2分钟的线程，然后拼接成 kill 语句
+select concat('kill ', id, ';')
+from information_schema.processlist
+where command != 'Sleep'
+and time > 2*60
+order by time desc 
+
+-- 命令行
+mysql -e "show full processlist;" -ss | awk '{print "KILL "$1";"}'| mysql
+```
+
+## 连接错误: not allowed
+
+```
+ERROR 1130 (HY000): Host '116.228.147.110' is not allowed to connect to this MySQL server
+
+https://confluence.atlassian.com/jirakb/configuring-database-connection-results-in-error-host-xxxxxxx-is-not-allowed-to-connect-to-this-mysql-server-358908249.html
+https://stackoverflow.com/questions/1559955/host-xxx-xx-xxx-xxx-is-not-allowed-to-connect-to-this-mysql
+原因:安全配置,默认root只能本机登录
+解决1> 新建其他用户
+  CREATE USER 'user'@'%' IDENTIFIED BY 'password';
+  GRANT ALL PRIVILEGES ON *.* TO 'user'@'%' WITH GRANT OPTION;
+  FLUSH PRIVILEGES;
+解决2> 添加例外ip
+  USE mysql;
+  SELECT user,host FROM user;
+  GRANT ALL PRIVILEGES ON *.* TO root@<ipaddr> IDENTIFIED BY '<rootpwd>' WITH GRANT OPTION;
+```
+
 
 
 # MySQL安装

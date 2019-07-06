@@ -97,27 +97,33 @@ golint, govet, gofmt
 - [ ] [Going the extra mile: golint and go vet](https://splice.com/blog/going-extra-mile-golint-go-vet)
 - [ ] [If you code in Go, don't forget to vet](https://www.spreadsheetdb.io/blog/2017/03/if-you-code-in-go-dont-forget-to-vet)    [如果你用Go，不要忘了vet](https://studygolang.com/articles/9619)
 
+```
 https://en.wikipedia.org/wiki/Lint_%28software%29
-
 **gofmt**：格式化工具
-
 **golint**: 代码检查工具，侧重代码风格，检查不规范用法。A linter or lint refers to tools that analyze source code to flag programming errors, bugs, stylistic errors, and suspicious constructs.
-
 **govet**(gotoolvet): 代码错误检查，bug或可疑的构造
+```
 
-## 2.2 查找引用
 
-guru, go-find-references
+
+## 2.2 查找引用较慢的问题
+
+```
+guru, go-find-references，godef都可以查找引用
 
 guru比go-find-references慢，但更准确：https://github.com/Microsoft/vscode-go/issues/340
-
 vscode go项目比较大时，find all refernces可能耗时十几秒https://github.com/Microsoft/vscode-go/issues/1491
-
 为了提升速度，可以考虑使用[Go Language Server](https://github.com/Microsoft/vscode-go/blob/master/README.md#go-language-server-experimental)，但目前无windows支持。
-
 但是，都不好用！！！如果项目没有加入到GOPATH，就会无结果。现在不知道是不是guru本来就有这个问题，还是安装Language Server引起的，卸载后问题仍然存在。
-
 老老实实用GoLand吧
+
+2019.4.9更新：
+go language server可以使用，使用[language server from Sourcegraph]项目比较大时耗时也可以接受。
+1. 使用go-langserver[language server from Sourcegraph]速度会比较快。第一次可能略慢（几秒），后面查找就会比较快了（秒级）。看trace信息，鼠标点钟某个符号时就会请求对应的信息。但是不支持gomod。并且查找较慢时，结果界面仍然显示上次搜索的结果。
+2. 更新goland 1.12.3后更新为gopls[language server from Google]。但是仍然使用了guru查找引用。耗时10s+，基本不可用。
+```
+
+
 
 ## 2.3 快捷键
 
@@ -157,7 +163,7 @@ go install <gopath>\src\github.com\golang\tools\cmd\guru
 
 ### 2.5 遇到的问题
 
-#### 2.5.1 保留自动打开的文件
+#### 2.5.1 保留自动打开的文件标签页
 
 ```
 这个是预览窗口的特性。自动打开预览窗口，不需要时自动关闭。如果不希望自动关系，关掉预览功能。
@@ -335,6 +341,7 @@ range：遍历数切片或映射，返回下标及对应元素的副本。_ 忽�
 		1. 使用s[i]修改元素
 		2. slice定义为指针数组，但是这时候只能修改元素的成员。
 map：nil。必须有键名。顶级类型名赋值中可省略。
+	声明时为nil，可get，但是set会panic，需要make后使用。
 	遍历: for k,v range mapVar {}
 	遍历key: for k range mapVar {}
 	遍历value: for _, v range mapVar {}
@@ -348,6 +355,31 @@ map：nil。必须有键名。顶级类型名赋值中可省略。
 	}
 **函数的闭包：闭包是一个函数值，它引用了其函数体之外的变量。该函数可以访问并赋予其引用的变量的值。	
 ```
+
+#### 匿名结构体
+
+```
+函数或包内部临时使用。可以使用小写（不导出）。可以定义成数组。常用于测试用例的编写。
+var data struct{
+    str string
+}
+data := struct{
+    str string
+}
+
+files := []struct{
+    name string
+    len, pos int
+}{
+    {"file1", 1000, 0},
+}
+
+for _, file:= range files{
+    ...
+}
+```
+
+
 
 ### 5.4 方法和接口
 
@@ -420,7 +452,77 @@ channel:
 sync.Mutex: 有Lock和Unlock方法。
 ```
 
-### 5.6 其他
+### 5.6 测试
+
+使用testing包，实现UT、性能、内存、并发等测试，并且可以发现并发竞争问题。
+
+单元测试
+
+```
+go test . -v // 测试本目录下，显示详情
+go test ./... // 测试本目录及子目录
+go test -v -test.run TestLoadFromCache // 指定测试函数
+
+func TestFuncName(t *testing.T) {
+	type args struct {
+		param1 Type1
+		// ...
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wantRet1 RetType1
+		wantRet2 RetType2
+		wantErr  bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotRet1, gotRet2, err := FuncName(tt.args.param1 ...)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("FuncName() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if wantRet1 != tt.wantRet1 {
+				t.Errorf("FuncName() wantRet1 = %v, want %v", wantRet1, tt.wantRet1)
+			}
+			// ...
+		})
+	}
+}
+```
+性能测试和内存测试
+```
+// 测试单线程运行耗时
+func BenchmarkSleep(b *testing.B) {
+	// Init code cost cpu but not in benchmark
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		time.Sleep(time.Millisecond * 50)
+	}
+}
+
+// 测试并行耗时。总耗时/总运行次数。对于sleep函数，核数*耗时~=sleep时间。
+func BenchmarkSleepParallel(b *testing.B) {
+	b.RunParallel(func(pb *testing.PB) {
+		// Init code cost cpu but not in benchmark. init thread local varibles
+		for pb.Next() {
+			time.Sleep(time.Millisecond * 50)
+		}
+	})
+}
+
+go test --bench=. --cpu=8 -v
+一组测试数据（计算密集型）：4C8T pc，单线14.5ms，2核7.9ms，4核4.4ms，8核6.2ms。
+
+内存测试
+go test --bench=. --benchmem 
+```
+
+
+
+### 5.7 其他
 
 反射
 
@@ -439,6 +541,64 @@ func reflectSample() {
 	} else {
 		v.Call([]reflect.Value{})  // parameters can packed into []reflect.Value{}
 	}
+}
+```
+
+### 5.8 内存对齐
+
+```
+当前测试结果: 
+1.按照结构体中最小POD类型的大小进行对齐
+2.长度为N的简单成员只能出现在内存地址为N整数倍的地方，结构体按照其内部简单成员位置对齐。推论：对齐按照结构体中最大简单类型的长度为准。如最大的是int8，则1字节对齐，最大int32则4字节对齐，slice含有3个8字节成员（长度，容量，地址）占24字节，按照8字节对齐。
+	int8 int32 int8 // 12
+	x---|xxxx|x---
+	int8 int16 int32 int64 // 16
+	x-|xx|xxxx|xxxxxxxx
+	int8 int16 int64 int32 // 24
+	x-|xx|----|xxxxxxxx|xxxx|----
+3.每一个成员都要分配地址，即使长度为0的定长数组。但是为0的成员，可以和其他成员共享地址 
+
+打印长度：fmt.Println(unsafe.Sizeof(struct{}{}))
+版本: go1.12.3
+
+0
+struct{}
+1
+struct{ _ bool }
+2 1字节对齐
+struct {
+	_ bool
+	_ int8
+}
+12 4字节对齐
+struct {
+	_ bool
+	_ int32
+	_ int8
+}
+24 8字节对齐
+struct {
+	_ bool
+	_ int64
+	_ int8
+}
+32 8字节对齐
+struct {
+	_ bool
+	_ []byte
+}
+40 8字节对齐
+struct {
+	_ bool
+	_ []byte
+	_ [0]byte
+}
+40 8字节对齐 c和d内存地址相同(规则3)
+struct {
+	a bool
+	b []byte
+	c [0]byte
+	d [8]byte
 }
 ```
 
@@ -717,6 +877,38 @@ d:\dev\ // 开发根目录。linux下可以使用 /home/user/dev 等目录
 							          |proj1\
 
 
+```
+
+### 8.2 测试包
+
+```
+testify: 基于interface的测试
+https://github.com/stretchr/testify 
+
+普通mock推荐monkey patching.不需要interface,侵入式,仅测试
+https://github.com/bouk/monkey
+
+http请求的mock推荐gock
+https://github.com/h2non/gock
+```
+
+### 8.3 性能
+
+atomic.AddInt64
+
+```
+模型: 
+cnt := new(int64)
+一个统计线程: 每秒记录并重置cnt
+多个写入线程: 持续+1
+多个读取线程: 持续读取
+10秒后统计平均值,即atomic累加次数
+测试结果(2019.6):
+	读线程基本不增加开销
+笔记本: i5-8250U 3.3G
+	单线程: ~170M次, 6ns 多线程约45M次,25ns
+服务器: Xeon Platinum 8163 2.5G
+	单线程: ~150M次，7ns  多线程约40M次,25ns
 ```
 
 

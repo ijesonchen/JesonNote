@@ -10,6 +10,38 @@ tags: [git]
 
 
 
+# 0. 安装
+
+```
+windows: 下载安装包
+ubuntu：apt install git
+centos：yum install git
+
+源码安装(centos 7.4 示例）：
+wget https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.9.5.tar.gz
+tar -zxvf git-2.9.5.tar.gz
+cd git-2.9.5
+./configure
+make
+
+如果提示错误
+    SUBDIR perl
+/usr/bin/perl Makefile.PL PREFIX='/usr/local' INSTALL_BASE='' --localedir='/usr/local/share/locale'
+Can't locate ExtUtils/MakeMaker.pm in @INC (@INC contains: /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at Makefile.PL line 3.
+BEGIN failed--compilation aborted at Makefile.PL line 3.
+make[1]: *** [perl.mak] Error 2
+make: *** [perl/perl.mak] Error 2
+
+说明缺少ExtUtils/MakeMaker.pm
+解决
+1. yum install perl-devel
+或者直接
+2. yum install perl-ExtUtils-MakeMaker 
+```
+
+
+
+
 # 1. 使用git本地版本库实现多地同步
 
 ## 应用场景
@@ -95,6 +127,14 @@ fork：自己需要进行一些修改。不会和原项目自动同步。一般�
 ```
 curl https://github.com/<user-account>.keys
 即可得到用户user-account的ssh pubkey。将这些key放入Linlux <home>/.ssh/authorized_keys既可支持服务器远程登录
+```
+
+## 3.5 临时指定配置参数
+
+```
+--global指定全局参数
+-c 指定本次执行参数
+git -c core.fileMode=false diff
 ```
 
 
@@ -219,7 +259,24 @@ git checkout . && git clean -xdf
 
 
 
-## 4.4 QA
+## 4.4 常用操作
+
+### 强制使用远程分支覆盖本地
+
+```
+git fetch --all
+git reset --hard origin/master
+git pull
+```
+
+### 清理reflog
+
+```
+git reflog expire --expire=now --all
+git gc --prune=now
+```
+
+## 4.5 QA
 
 1）commit your changes or stash them before you can merge.
 
@@ -235,5 +292,26 @@ git stash pop // 恢复修改。后续可以继续在b1分支上工作
 ```
 情景：误操作 git check -b <branch name> 导致branch name为中文含：。git branch显示不正常，分支列表全部为白色，无星号（正常显示是branch列表，且当前分支为绿色标*）。git branch -d删除其他分支正常，删除中文名的分支报错。
 解决：git checkout 切换到master分支后，恢复正常。git branch -d "中文分支名"成功
+```
+
+3）换行符问题
+
+```
+windows crlf 
+unix/linux lf
+mac cr
+
+git可配置为自动对换行符进行转换
+.gitconfig
+[core]
+	autocrlf = true(仅本地转换为crlf)|input(提交时转换为lf)|false(不转换)
+
+win10记事本、goland、vscode都可以自动识别换行符。任务栏会显示换行符类型。
+```
+
+4) error: path 'xxx' is unmerged when checkout
+
+```
+git rm xxx // 从git删除
 ```
 
