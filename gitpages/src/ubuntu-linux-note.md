@@ -1,6 +1,6 @@
 ---
 title: ubuntu linux note
-date: 2019-01-21 00:00:00
+date: 2019-01-21 00:00:00 +0800
 tags: [ubuntu, linux, note]
 ---
 
