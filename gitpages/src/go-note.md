@@ -12,23 +12,57 @@ Note for go language.
 
 [TOC]
 
-## 1. vscode下go开发环境配置
+# 0. 阅读列表
+
+```
+[译]Go 调度器: M, P 和 G
+	https://povilasv.me/go-scheduler/
+	https://colobu.com/2017/05/04/go-scheduler/
+	
+深度解密GO语言之反射 https://juejin.im/post/5cd0d6ed6fb9a0321556f618
+Go语言反射reflect https://www.cnblogs.com/itbsl/p/10551880.html
+Adventures in Go: Accessing Unexported Functions http://www.alangpierce.com/blog/2016/03/17/adventures-in-go-accessing-unexported-functions/
+```
+
+
+
+# 1. 安装
+
+```
+下载: https://golang.org/dl/
+安装: https://golang.org/doc/install
+```
+
+## 1.1. vscode+go
 
 os: win10 pro build 1709
 
 左侧菜单栏：文件，搜索，SCM（内部集成git），调试，扩展
 
-1.1. **git**: https://git-scm.com Git-2.17.0-64-bit.exe 
+1.1.1. **git**: https://git-scm.com Git-2.17.0-64-bit.exe 
 
-1.2. **tortoise git**: 可选 https://tortoisegit.org/download TortoiseGit-2.6.0.0-64bit.msi 
+1.1.2. **tortoise git**: 可选 https://tortoisegit.org/download TortoiseGit-2.6.0.0-64bit.msi 
 
-1.3. **go lang**: https://golang.org/dl go1.10.2.windows-amd64.msi 
+1.1.3. **go lang**: https://golang.org/dl go1.10.2.windows-amd64.msi 
 
-1.4. **vscode**: https://code.visualstudio.com 1.23.1/20180510
+### 1.1.4. **vscode**
 
-1.5. **vscode插件**: Go for Visual Studio Code 插件
+https://code.visualstudio.com 1.23.1/20180510
 
-### 1.6. **配置参数**
+重要: F1或Ctrl+Shift+P 可以打开主命令框 Command Palette，执行相关指令（包括安装插件，启动调试等）
+
+常用插件
+
+```
+gitlens 显示代码最后一次提交人,类似git blame
+```
+
+
+
+1.1.5. **vscode插件**: Go for Visual Studio Code 插件
+
+### 1.1.6. **配置参数**
+
 vscode使用json配置文件。按照如下顺序确定配置项内容
 
 ```
@@ -58,7 +92,19 @@ vscode使用json配置文件。按照如下顺序确定配置项内容
 }   
 ```
 
-### 1.7. **常用go插件**
+vscode 1.39.1 相关配置 (update 2019.10.15)
+
+````
+自动补全:
+"go.useCodeSnippetsOnFunctionSuggest": true
+"go.useCodeSnippetsOnFunctionSuggestWithoutType": true
+自动引入包:
+"go.autocompleteUnimportedPackages": true
+格式化:
+"go.formatTool": "goreturns"
+````
+
+### 1.1.7. **常用go插件**
 
    新建并打开文件夹(go项目文件夹)，新建xx.go文件。随便写一些代码，保存，系统会提示是安装某些插件。点install all即可自动安装。插件包括：
 
@@ -78,7 +124,16 @@ git代理：
 	git config --global http.proxy "<http_proxy_addr:port>"
 ```
 
-### 1.8. **配置调试参数**
+### 1.1.8. **配置调试参数**
+
+更新/安装工具
+
+```
+Go: Install/Update Tools
+全选即可
+```
+
+
 
     调试，打开配置 / 添加配置
 ```
@@ -88,9 +143,69 @@ git代理：
 “args" : ["-config", "conf/config.json],
 ```
 
-## 2. 插件介绍
+## 1.2 linux
 
-### 2.1 源码格式化与检查
+```
+host: win1903 18362.175 WSL
+os: Ubuntu 18.04.1 LTS 
+go: 1.12.7 amd64
+```
+
+
+
+1.2.1 安装
+
+```
+1. download
+https://dl.google.com/go/go1.12.7.linux-amd64.tar.gz
+2. decompress
+
+```
+
+## 1.3 goland
+
+自动格式化: 使用FileWatchers处理
+
+```
+File, Settings, Tools, FileWatchers
+注意: 如果有多个，则顺序启动。可能有互相覆盖的情况。
+```
+
+## 1.4 IntelliJ IDEA
+
+安装go插件
+
+```
+File, Settings, Plugings
+Marketplace可以搜索相应插件,点击install即可
+Installed是安装好的插件,可以修改参数
+```
+
+自动格式化
+
+```
+1. 安装File Watchers插件
+2. 设置自动格式化
+```
+
+Filesystem Case-Sensitivity Mismatch
+
+```
+文件系统大小写敏感配置不匹配
+1. 移动项目到匹配的位置
+2. 修改全局配置
+修改配置
+Help | Edit Custom Properties (可能提示创建文件)
+idea.case.sensitive.fs=true|false
+清除缓存并重启 
+File | Invalidate Caches 
+```
+
+
+
+# 2. 插件介绍
+
+## 2.1 源码格式化与检查
 
 golint, govet, gofmt
 
@@ -161,9 +276,9 @@ go install <gopath>\src\github.com\golang\tools\cmd\guru
 即可。会在对应的bin目录里生成 guru
 ```
 
-### 2.5 遇到的问题
+## 2.5 遇到的问题
 
-#### 2.5.1 保留自动打开的文件标签页
+### 2.5.1 保留自动打开的文件标签页
 
 ```
 这个是预览窗口的特性。自动打开预览窗口，不需要时自动关闭。如果不希望自动关系，关掉预览功能。
@@ -174,19 +289,21 @@ https://blog.csdn.net/weixin_39179096/article/details/81407716?utm_source=blogxg
 
 
 
-## 3. 读书笔记: Go in Action（Go语言实战）
+# 3. 读书笔记: Go in Action
+
+Go in Action（Go语言实战）
 
 https://github.com/goinaction/code
 
 可参考[飞雪无情的博客](http://www.flysnow.org/categories/Golang/) [Go语言实战笔记（一）| Go包管理](http://www.flysnow.org/2017/03/04/go-in-action-go-package.html) 等
 
-### 3.1 介绍 
+## 3.1 介绍 
 
 - 现代、快速，带有强大标准库
 - 内置并发支持goroutine
 - 使用接口作为代码复用基础模块
 
-### 3.2 快速开始
+## 3.2 快速开始
 
 代码：
 
@@ -199,11 +316,11 @@ fmt.Errorf：strings should not be capitalized or end with punctuation or a newl
 
 
 
-## 4. 读书笔记：The GO Programming Language
+# 4. 读书笔记：TGPL
 
+The GO Programming Language
 
-
-### 4.10 包和go工具
+## 4.10 包和go工具
 
 - 包管理机制: 加速编译。导入显示列出；无循环依赖；目标文件包含所有依赖的导出。
 - 导入路径: 建议使用网络域名开始
@@ -264,14 +381,14 @@ chunked可以被http或httputil引用，不能被url引用
 
 - 包的查询：`go list` 通配符 `go list ...xml...`
 
-## 5. Go tour
+# 5. Go tour
 
 `go get github.com/Go-zh/tour/gotour`并执行GOPATH中的`gotour`
 
 - [ ] Go tour英文版
 - [ ] Go tour练习
 
-### 5.1 包、变量和函数
+## 5.1 包、变量和函数
 
 [Go 语法声明：为何类型在名称之后](http://blog.go-zh.org/gos-declaration-syntax)
 
@@ -288,7 +405,7 @@ return：多返回值按顺序赋值。直接返回：返回已命名的返回�
 数值型常量：高精度值。如const Bit = 1 << 100
 ```
 
-### 5.2 流程控制
+## 5.2 流程控制
 
 [defer panic  and recover](http://blog.go-zh.org/defer-panic-and-recover)
 
@@ -313,7 +430,7 @@ label: 用于goto, break, continue
 	3. 在switch前面，用于break
 ```
 
-### 5.3 更多类型：struct、slice和map
+## 5.3 更多类型：struct、slice和map
 
  [Go 切片：用法和本质](https://blog.go-zh.org/go-slices-usage-and-internals)
 
@@ -356,7 +473,7 @@ map：nil。必须有键名。顶级类型名赋值中可省略。
 **函数的闭包：闭包是一个函数值，它引用了其函数体之外的变量。该函数可以访问并赋予其引用的变量的值。	
 ```
 
-#### 匿名结构体
+### 匿名结构体
 
 ```
 函数或包内部临时使用。可以使用小写（不导出）。可以定义成数组。常用于测试用例的编写。
@@ -381,7 +498,7 @@ for _, file:= range files{
 
 
 
-### 5.4 方法和接口
+## 5.4 方法和接口
 
 本地类型：local type。包内定义的类型。方法及入参指针只能使用本地类型。type MyFloat float64在包内定义了类型MyFloat	
 
@@ -435,7 +552,7 @@ image.go: 图像接口
     }
 ```
 
-### 5.5 并发
+## 5.5 并发
 
 ```
 goroutine:
@@ -452,7 +569,7 @@ channel:
 sync.Mutex: 有Lock和Unlock方法。
 ```
 
-### 5.6 测试
+## 5.6 测试
 
 使用testing包，实现UT、性能、内存、并发等测试，并且可以发现并发竞争问题。
 
@@ -522,7 +639,7 @@ go test --bench=. --benchmem
 
 
 
-### 5.7 其他
+## 5.7 其他
 
 反射
 
@@ -544,7 +661,7 @@ func reflectSample() {
 }
 ```
 
-### 5.8 内存对齐
+## 5.8 内存对齐
 
 ```
 当前测试结果: 
@@ -604,13 +721,13 @@ struct {
 
 
 
-## 6. 遇到的问题
+# 6. 遇到的问题
 
-### 6.1 运行代码
+## 6.1 运行代码
 
 类似VS，调试F5, 非调试运行Ctrl+F5. 也可以终端输入命令：go build然后运行命令，或者`go run main.go`。注意  `go build | bin.exe`并不能执行最新编译后的程序，而是运行的上次编译的程序。推测和windows系统预取优化有关。
 
-### 6.2 用户的package
+## 6.2 用户的package
 
 参考9.1 `go help path`
 
@@ -618,14 +735,14 @@ struct {
 一个目录中只能有一个package
 一般代码放在src路径下。如果引用其他src路径，需要将src上级目录添加到gopath中。vscode的gopath分用户和项目两级，和系统的gopath互不影响。更改vacode的gopath可能导致插件重新安装
 ```
-### 6.3 go get安装失败
+## 6.3 go get安装失败
 首先确认源没问题。可能是源被墙了，可以考虑科学上网后尝试。可能需要设置proxy。参考1.7
 
-## 7. 代码笔记
+# 7. 代码笔记
 
-### 7.1 常用库 
+## 7.1 常用库 
 
-#### string int int64互转
+### string int int64互转
 
 ```
 #string到int  
@@ -638,7 +755,7 @@ string:=strconv.Itoa(int)
 string:=strconv.FormatInt(int64,10)  
 ```
 
-#### string, []byte, 结构体互转
+### string, []byte, 结构体互转
 
 ```
 type strudef struct{
@@ -654,7 +771,29 @@ type strudef struct{
 	s2 := string(fmtJSON.Bytes())
 ```
 
-#### error
+### 使用unsafe转换string, []byte
+
+```
+
+	s := fmt.Sprintf("this")  // this 
+	b := []byte(s) // this
+	b[0] = 'a' // ahis 
+
+	p1 := (*reflect.StringHeader)(unsafe.Pointer(&s)) // p1.Data指向s的内存
+	p2 := (*reflect.SliceHeader)(unsafe.Pointer(&b))  // p2.Data指向b的内存
+
+	var d []byte
+	c := (*reflect.SliceHeader)(unsafe.Pointer(&d)) // 拿到d的header
+	c.Data = p1.Data
+	c.Cap = 3
+	c.Len = 3
+	d[0] = 'd' // 修改了s指向的内存
+	log.Printf("%q %q %q", d, s, b) // dhi dhis ahis
+```
+
+
+
+### error
 
 ```
 https://gobyexample.com/errors
@@ -663,14 +802,14 @@ err = fmt.Errorf("%s %d", xxx, nnn)
 实现一个具有Error() string{}方法的结构体，直接赋值给err
 ```
 
-### 7.2 语言特性
+## 7.2 语言特性
 
-#### 接口
+### 接口
 
 - [ ] [Golang面向接口编程](https://blog.csdn.net/huwh_/article/details/79054450)
 - [ ] [理解 Go interface 的 5 个关键点](http://sanyuesha.com/2017/07/22/how-to-understand-go-interface/)
 
-#### 反射
+### 反射
 
 - [ ] [Go语言实战笔记（二十四）| Go 反射](https://www.flysnow.org/2017/06/13/go-in-action-go-reflect.html)
 
@@ -681,7 +820,7 @@ reflect.TypeOf(myval)
 
 
 
-###  7.3 信号处理
+##  7.3 信号处理
 
 - [ ] [Golang信号处理和优雅退出守护进程](https://studygolang.com/articles/10076)
 
@@ -757,7 +896,7 @@ s := <-c
 fmt.Println("Got signal:", s)
 ```
 
-### 7.4 select
+## 7.4 select
 
 用法
 
@@ -811,7 +950,7 @@ for {
 https://blog.csdn.net/u011957758/article/details/82230316
 ```
 
-### 7.5 channel
+## 7.5 channel
 
 ```
 1. 必须创建才能使用，否则容易panic
@@ -822,7 +961,7 @@ https://blog.csdn.net/u011957758/article/details/82230316
 	c. 使用带有recover panic的函数关闭
 ```
 
-### 7.6. 文件操作
+## 7.6. 文件操作
 
 ```
 1. 打开文件
@@ -836,14 +975,14 @@ os.OpenFile(fn,
 
 
 
-## 8. 参考和实践
+# 8. 参考和实践
 
 ```
 https://godoc.org
 https://go-zh.org
 https://tour.go-zh.org
 ```
-### 8.1 项目目录结构
+## 8.1 项目目录结构
 
 ```
 参考9.1 go help gopath
@@ -879,43 +1018,7 @@ d:\dev\ // 开发根目录。linux下可以使用 /home/user/dev 等目录
 
 ```
 
-### 8.2 测试包
-
-```
-testify: 基于interface的测试
-https://github.com/stretchr/testify 
-
-普通mock推荐monkey patching.不需要interface,侵入式,仅测试
-https://github.com/bouk/monkey
-
-http请求的mock推荐gock
-https://github.com/h2non/gock
-```
-
-### 8.3 性能
-
-atomic.AddInt64
-
-```
-模型: 
-cnt := new(int64)
-一个统计线程: 每秒记录并重置cnt
-多个写入线程: 持续+1
-多个读取线程: 持续读取
-10秒后统计平均值,即atomic累加次数
-测试结果(2019.6):
-	读线程基本不增加开销
-笔记本: i5-8250U 3.3G
-	单线程: ~170M次, 6ns 多线程约45M次,25ns
-服务器: Xeon Platinum 8163 2.5G
-	单线程: ~150M次，7ns  多线程约40M次,25ns
-```
-
-
-
-## 9. 翻译参考
-
-## 9.1 go help gopath
+### Ref: go help gopath
 
 gopath需要用绝对路径，可以多个
 
@@ -1051,6 +1154,289 @@ vender目录不会影响'go get'第一次迁出的新仓库的存放，这些仓
 See https://golang.org/s/go15vendor for details.
 
 ```
+
+
+
+## 8.2 测试包
+
+```
+testify: 基于interface的测试
+https://github.com/stretchr/testify 
+
+普通mock推荐monkey patching.不需要interface,侵入式,仅测试
+https://github.com/bouk/monkey
+
+http请求的mock推荐gock
+github.com/h2non/gock
+github.com/dolab/httpmitm
+```
+
+## 8.3 性能
+
+cpuperf统计
+
+```
+runtime.pprof统计cpu性能时,函数执行的时间仅包括函数自身的执行时间,不包括调用其他函数的时间。否则统计的总时间会出现偏差。
+func a1(){
+    // some calc, no func call
+    a2()
+}
+a1()的执行时间并不包括a2()的耗时.统计a2()的耗时时,所有对a2()的调用耗时全部计算。
+```
+
+atomic.AddInt64
+
+```
+模型: 
+cnt := new(int64)
+一个统计线程: 每秒记录并重置cnt
+多个写入线程: 持续+1
+多个读取线程: 持续读取
+10秒后统计平均值,即atomic累加次数
+测试结果(2019.6):
+	读线程基本不增加开销
+笔记本: i5-8250U 3.3G
+	单线程: ~170M次, 6ns 多线程约45M次,25ns
+服务器: Xeon Platinum 8163 2.5G
+	单线程: ~150M次，7ns  多线程约40M次,25ns
+```
+
+## 8.4 缓存
+
+```
+FreeCache - A cache library for Go with zero GC overhead and high concurrent performance.
+https://github.com/coocood/freecache
+```
+
+# 9. 内部实现
+
+
+
+## 9.0 启动
+
+```
+** runtime目录下
+
+_rt0_amd64_windows_lib // rt0_windows_amd64.s
+	_rt0_amd64_windows_lib_go
+	
+_rt0_amd64_windows_lib_go // rt0_windows_amd64.s
+	runtime·rt0_go 
+
+runtime·rt0_go // asm_amd64.s
+	runtime·osinit	// os_windows.go
+		loadOptionalSyscalls 
+			initWine
+				qpcStartCounter // 启动时_QueryPerformanceCounter的计数
+				qpcMultiplier // _QueryPerformanceFrequency的倒数,即计时精度
+				useQPCTime // 0/1
+	runtime·mainPC
+	runtime·newproc
+	runtime·mstart
+
+func main() // proc.go
+```
+
+
+
+## 9.1 计时
+
+获取程序启动到现在的耗时
+
+```
+var (
+	timeStartNano int64 // nanosec when process start
+)
+
+// init timeStartNano and adjust
+func init() {
+	const timeHasMonotonic = 1 << 63
+	t := time.Now()
+	timeStartNano = t.UnixNano()
+	// adjust
+	v := reflect.ValueOf(t)
+	wall := v.FieldByName("wall").Uint()
+	if wall&timeHasMonotonic != 0 {
+		// has monotonic time
+		timeStartNano = timeStartNano - v.FieldByName("ext").Int() + 1
+	}
+}
+
+func getProcUptimeNano() (nanosec int64) {
+	return time.Now().UnixNano() - timeStartNano
+}
+```
+
+计时精度
+
+```
+新版windows计时精度根据硬件,分为100ns或333.3ns(高精度计时器频率频率为10M或3M)
+linux未找到详细资料,但是多次time.Now().UnixNano()获得的数据,ns的个位数不不尽相同,十位百位也没发现明显规律,可能可以达到ns级的计时精度.
+```
+
+
+
+计时机制
+
+```
+** runtime包
+1. runtime.runtimeInitTime // int64, 程序启动时的时间，ns
+	runtime/proc.go:main
+	main goroutine的入口是runtime.main(),会在启动时初始化
+	runtimeInitTime = nanotime()
+2. func nanotime() int64 // 返回windows启动到现在的时间,ns
+   -> runtime·nanotime // sys_windows_amd64.s
+	? useQPCTime==0
+	-> Y
+	  _INTERRUPT_TIME
+	  // 读取windows interrupt time
+	-> N
+	  nanotimeQPC // os_windows.go
+	  // 使用_QueryPerformanceCounter读取当前counter
+	  // (counter - qpcStartCounter) * qpcMultiplier 即为程序启动的ns
+
+** time包
+0. 数据结构
+type Time struct {
+	wall uint64 // 包括标志及时间
+		// 1bit flag, hasMonotonic
+		// 33bit wall time / real time sec 挂钟/实际时间,即钟表时间
+		// 30bit wall time nonosec
+	ext  int64  // 含义和hasMonotonic有关
+	loc *Location
+}
+	hasMonotonic==0:
+		33bit sec为0
+		ext 记录 1年1月1日到现在的秒数
+	has==1
+		33bit sec记录 1885.1.1到现在的秒数
+		ext 为单调时间(monotonic time, monotime), 单位nanosec,记录程序启动到现在的耗时
+		    但是由于startNano有减一操作,所以windows下的monotime是100的整数倍+1
+1. time.startNano // int64, 程序启动时间nanosec-1，-1的目的是防止monotime为0
+	startNano = runtimeNano() - 1
+		runtimeNano->runtime.nanotime
+2. time.Now()
+  2.1 sec, nsec, mono := now()
+	func now() (sec int64, nsec int32, mono int64)
+	sec:nsec // GetSystemTimeAsFileTime获取的系统时间,秒部分和纳秒部分
+	mono // QPC获取的系统启动到现在的毫秒数
+	-> time.now // sys_windows_amd64.s
+		? useQPCTime == 0
+		-> Y
+		  _INTERRUPT_TIME
+		-> N
+		  nowQPC // os_windows.go
+          
+note:
+1. 读取windows interrupt time
+https://www.dcl.hpi.uni-potsdam.de/research/WRK/2007/08/getting-os-information-the-kuser_shared_data-structure/
+00048 typedef struct _KSYSTEM_TIME {
+00049     ULONG LowPart;
+00050     LONG High1Time;
+00051     LONG High2Time;
+00052 } KSYSTEM_TIME, *PKSYSTEM_TIME;
+时间保存在64bit  High1Time:LowPart中，100ns为单位。为了效率和同步，windows clock interrupt service routine (ISR)无锁顺序写入High2Time LowPart High1Time。程序相反顺序读取，并表High1Time和High2Time相等，则时间是完整有效的。
+
+2. windows高精度计时QPC
+QueryPerformanceFrequency 获取高精度计时器频率.硬件相关.有3.3M(部分i7), 10M等. 
+QueryPerformanceCounter 获取计时器计数.单调递增
+比如i5 8250u计时器频率是10M.则最高时间精度是100ns。每个QueryPerformanceCounter表示100ns。
+示例代码(c++)
+#include <Windows.h>  
+#include <iostream>
+using namespace std;
+int main()
+{ 
+	LARGE_INTEGER freq, counter1, counter2;
+	QueryPerformanceFrequency(&freq);
+	QueryPerformanceCounter(&counter1);
+	Sleep(100); // sleep 100ms
+	QueryPerformanceCounter(&counter2); 
+	cout << "freq " << freq.QuadPart << endl;
+	cout << "start " << counter1.QuadPart << endl;
+	cout << "end " << counter2.QuadPart << endl;
+	cout << "tick " << counter2.QuadPart - counter1.QuadPart << endl;
+}
+
+运行结果(i5 8250u, win10 1809)
+freq	10000000
+start 	3271475319115
+end 	3271476324118
+tick 	1005003 // 1005003*100ns ~ 100ms
+
+3. QPC和多核多线程
+https://docs.microsoft.com/zh-cn/windows/win32/sysinfo/acquiring-high-resolution-time-stamps
+In general, the performance counter results are consistent across all processors in multi-core and multi-processor systems, even when measured on different threads or processes
+但是Pre-Windows Vista可能会有例外
+
+4. 查看windows启动时间
+systeminfo
+```
+
+## 9.2 http错误码
+
+```
+http请求返回的错误类型是net/url.Error
+type Error struct {
+	Op  string
+	URL string
+	Err error	// *net.OpError
+} 
+type OpError struct {
+	Op string 	// read, write
+	Net string	// tcp, udp6
+	Source Addr	// dial, read, write
+	Addr Addr	// local or remote
+	Err error	// *os.SyscallError
+}
+type SyscallError struct {
+	Syscall string	// name to syscall (eg. func name)
+	Err     error	// syscall.Errno -> uintptr
+}
+
+示例: 拒绝连接(端口不存在)
+req, _ := http.NewRequest(http.MethodGet, "http://127.0.0.1:1111", nil)
+_, err := http.DefaultClient.Do(req)
+if uerr, ok := err.(*url.Error); ok {
+	if operr, ok2 := uerr.Err.(*net.OpError); ok2 {
+		if serr, ok3 := operr.Err.(*os.SyscallError); ok3 {
+			if nerr, ok4 := serr.Err.(syscall.Errno); ok4 {
+				fmt.Printf("%d", nerr)
+				// only work on windows
+				// on linux, unix.ECONNREFUSED
+				if nerr == 10061 {
+					panic("10061")
+				}
+			}
+		}
+	}
+}
+```
+
+
+
+# 10. 调试和分析
+
+## 10.1 编译和运行
+
+```
+go build . // 编译当前包
+go build xx.go xx.go ... // 编译相关文件。注意需要指定所有文件，否则会提示找不到符号等
+go run . // 运行当前包
+go test -run=TestFuncName
+```
+
+## 10.2 汇编代码
+
+```
+
+```
+
+
+
+
+
+
 
 
 

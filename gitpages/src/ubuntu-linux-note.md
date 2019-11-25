@@ -328,6 +328,12 @@ ping // 统计中mdev是rtt的标准差standard deviation
 dmesg // 查看系统消息， oom-killer 表示内存占用过多被杀掉
 转换dmsg时间到可读时间
 dmsg | tail | sed -r 's#^\[([0-9]+\.[0-9]+)\](.*)#echo -n "[";echo -n $(date --date="@$(echo "$(grep btime /proc/stat|cut -d " " -f 2)+\1" | bc)" +"%c");echo -n "]";echo -n "\2"#e' 
+
+pstree -p | wc -l // 查询整个系统已用的线程或进程数
+ulimit -a // 查询当前用户限制(文件句柄,最大线程数等)
+
+fdisk -l // 列出磁盘信息
+mount <disk> <target_dir> -r // 挂载磁盘, 只读方式, 默认-w读写
 ```
 
 ### 0.1 grep
@@ -341,8 +347,19 @@ grep [options pattern-spec [files...]
 -c: 统计匹配的行总数，不显示航信息
 
 多个关键字 "kwd1\|kwd2"
+```
+
+tail + grep + cut不输出的问题
 
 ```
+https://stackoverflow.com/questions/14360640/tail-f-into-grep-into-cut-not-working-properly
+the problem is almost certainly related to how grep and cut buffer their output. here's a hack that should get you around the problem, though i'm sure there are prettier ways to do it:
+
+tail -f /var/somelog | while read line; do echo "$line" | grep "some test and p l a c e h o l d e r" | cut -f 3,4,14 -d " "; done
+tailf engine_error.log| while read line; do echo $line|grep test_flag|cut -c 120-; done
+```
+
+
 
 ### 0.2 vim
 
@@ -478,16 +495,80 @@ https://www.cnblogs.com/bourneli/archive/2012/04/14/2446944.html
 * 所有
 , 多个
 - 区间
-/n 间隔n
+*/n 间隔n
+
+参考
+https://crontab.guru/examples.html
 
 示例
 59 23 11 27 * mail benben < /home/dmtsai/lover.txt // 每一年11月27日23分59 秒发一封情书给benben
 0 17 * * 5 mail all_members < weekily_report_notify // 每周五5点整，提醒所有组员发周报
 0 23 28-31 * * [ "$(/bin/date +\%d -d tomorrow)" = "01" ] && /your/script.sh // 每月最后一天 23点。使用每月第一天更简单，效果类似。
+* */3 * * * test // 每分钟执行一次，每3小时执行一次。会在3的整数倍小时的每分钟执行
+0 */3 * * * test // 每3小时的0分执行
+*/180 * * * * test // 每小时0分执行。除以60以上，都只会在每小时的0分执行。
+*/180 */2 * * * test // 每双数小时的0分执行。除以60以上，都只会在每小时的0分执行。
+0 * * * * test // 每到0分执行
 
 系统级的crontab只有root权限有权编辑，该crontab是一个文件，位置为/etc/crontab，需要在频率和命令之间添加命令执行者，并且可以添加一些全局变量，在调度中使用：
 MAILTO=root
 /15 * * * * root test 
+```
+
+### 0.6 iptables
+
+```
+Linux下iptables 禁止端口和开放端口
+https://975156298.iteye.com/blog/2323688 
+root账户下
+一。端口的开启。
+     iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+     iptables -A OUTPUT -p tcp --sport 80 -j ACCEPT
+     -A：参数就看成是添加一条 INPUT（OUTPUT） 的规则；
+     -p：指定是什么协议 我们常用的tcp（udp）协议。 例如：53端口的DNS到时我们要配置DNS用到53端口，大家就会发现使用udp协议的；
+    --dport：就是目标端口，当数据从外部进入服务器为目标端口；
+    --sport：数据从服务器出去 则为数据源端口；
+  	-j 就是指定是 ACCEPT 接收 或者 DROP 不接收。
+ 上面这两行代码是开启 80 端口。
+
+二。端口的关闭。
+    iptables -A INPUT -p tcp --dport 80 -j DROP
+    iptables -A OUTPUT -p tcp --sport 80 -j DROP
+这样就关闭了 80 端口。
+
+三。查看端口命令。
+    iptables -L -n    用来查看 iptables 规则。也就是开启的端口等。
+
+四。删除 iptables 规则。
+   iptables -L -n --line-numbers   查看规则 前面加上序号。
+   iptables -D INPUT [ 序号]  通过上面查看得到的序号，通过序号进行删除 iptables 规则。
+
+五。规则的保存。
+     配置完成后是需要保存的。这时就需要 root 权限。sudo 权限已经不够了。设置好后。输入代码：
+     iptables-save > /etc/iptables-rules
+     ip6tables-save > /etc/ip6tables-rules
+    我们需要编辑 /etc/network/interfaces 文件，在最后插入下面两行：
+    pre-up iptables-restore < /etc/iptables-rules
+    pre-up ip6tables-restore < /etc/ip6tables-rules
+重启电脑后。使用   sudo iptables -L     查看配置是否生效。
+
+六。转发流量
+1. 修改/etc/sysctl.conf 然后找到 net.ipv4.ip_forward = 0 修改为 net.ipv4.ip_forward = 1 随后保存。
+2. 端口转发
+iptables -t nat -A PREROUTING -p tcp --dport [要转发的端口号] -j DNAT --to-destination [要转发的服务器IP]
+端口段标识 a:b 标识从a-b范围的端口
+4. 保存并重启iptables
+service iptables save
+service iptables restart
+
+常用
+iptables -D OUTPUT 10 // 删除第10个
+iptables -A OUTPUT -p tcp -d localhost -j ACCEPT
+iptables -A OUTPUT -p tcp -d 127.0.0.1 -j ACCEPT
+iptables -A  OUTPUT -p tcp -d 172.16.59.192 -j ACCEPT
+iptables -A OUTPUT -p tcp --dport 3061 -j DROP
+iptables -A OUTPUT -p tcp --dport 2051 -j DROP
+iptables -L -n --line-numbers
 ```
 
 
@@ -717,7 +798,10 @@ http://supervisord.org/installing.html
    b)python pip install
    c)pip install supervisor==3.1.4 // 指定版本安装
 3. supervisor配置
+   附后
+   修改配置后，supervisorctl update更新配置
 4. service配置
+   附后
 5. 启动
    1) supervisord -c <configfile> // 可以直接看到启动是否正常
    2) service supervisor start|stop|restart // 使用服务
@@ -739,8 +823,36 @@ port=127.0.0.1:9001
 [supervisorctl]
 serverurl=http://127.0.0.1:9001 
 
+; 可以有多个。配置多个时可能导致冲突
 [include]
 files = /etc/supervisord.d/*.ini
+
+
+**************************示例配置*******************************
+; supervisor config file
+
+[unix_http_server]
+file=/var/run/supervisor.sock   ; (the path to the socket file) UNIX socket 文件，supervisorctl 会使用
+chmod=0700                       ; sockef file mode (default 0700) socket 文件的 mode，默认是 0700
+
+[supervisord]
+logfile=/var/log/supervisor/supervisord.log ; (main log file;default $CWD/supervisord.log) 日志文件，默认是 $CWD/supervisord.log
+pidfile=/var/run/supervisord.pid ; (supervisord pidfile;default supervisord.pid) pid 文件
+childlogdir=/var/log/supervisor            ; ('AUTO' child log dir, default $TEMP)
+
+; the below section must remain in the config file for RPC
+; (supervisorctl/web interface) to work, additional interfaces may be
+; added by defining them in separate rpcinterface: sections
+[rpcinterface:supervisor]
+supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
+
+[supervisorctl]
+serverurl=unix:///var/run/supervisor.sock ; use a unix:// URL  for a unix socket 通过 UNIX socket 连接 supervisord，路径与 unix_http_server 部分的 file 一致
+
+; 在增添需要管理的进程的配置文件时，推荐写到 `/etc/supervisor/conf.d/` 目录下，所以 `include` 项，就需要像如下配置。
+; 包含其他的配置文件
+[include]
+files = /etc/supervisor/conf.d/*.conf ; 引入 `/etc/supervisor/conf.d/` 下的 `.conf` 文件
 ```
 
 service配置
@@ -766,11 +878,27 @@ RestartSec=50s
 
 [Install]
 WantedBy=multi-user.target
+
+
+************示例配置*****************
+[program:engine]
+directory=/data/app/engine/current
+command=/data/app/engine/current/bin/engine_run -config=/data/app/engine/current/conf/config.xml -log_config=/data/app/engine/current/conf/log.xml
+autostart=true
+autorestart=true
+startsecs=1
+startretries=3
+user=root
+redirect_stderr=true
+stdout_logfile=/data/app/engine/current/logs/console.out
+environment=GODEBUG="gctrace=1"
 ```
 
 ## 5. git
 
 ```
+** 更多信息参见git-note.md **
+
 一般ubuntu使用apt， centos使用yum。特殊版本可以使用源码安装方式：
 wget https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.9.5.tar.gz
 tar -zxvf git-2.9.5.tar.gz
@@ -811,21 +939,138 @@ systemctl restart redis
 
 配置 /etc/redis.conf
 bind 127.0.0.1 ::1 // 注释掉,否则只能在本机访问
-logfile /data/redis/log/redis.log // 日志文件。启动报Can't open the log file: Permission denied，修改权限为777后解决。懒得找具体用那个账户启动的了。
-bfilename dump.rdb // dump文件的名字.注意只能是文件名,不能含有路径
 requirepass <your-password>  // 需要密码
+logfile /data/redis/log/redis.log // 日志文件。启动报Can't open the log file: Permission denied，需要修改目录权限到用户redis
+dir /data/etc/redis // 工作目录. dump.rdb文件位置
+bfilename dump.rdb // dump文件的名字.注意只能是文件名,不能含有路径
+
+appendonly yes // aof启用
+appendfilename "appendonly.aof" 
+# Redis支持三种不同的刷写模式：
+# appendfsync always #每次收到写命令就立即强制写入磁盘，是最有保证的完全的持久化，但速度也是最慢的，一般不推荐使用。
+appendfsync everysec #每秒钟强制写入磁盘一次，在性能和持久化方面做了很好的折中，是受推荐的方式。
+# appendfsync no     #完全依赖OS的写入，一般为30秒左右一次，性能最好但是持久化最没有保证，不被推荐。
+ 
+#在日志重写时，不进行命令追加操作，而只是将其放在缓冲区里，避免与命令的追加造成DISK IO上的冲突。
+#设置为yes表示rewrite期间对新写操作不fsync,暂时存在内存中,等rewrite完成后再写入，默认为no
+no-appendfsync-on-rewrite no 
+ 
+#当前AOF文件大小是上次日志重写得到AOF文件大小的二倍时，自动启动新的日志重写过程。
+auto-aof-rewrite-percentage 100
+ 
+#当前AOF文件启动新的日志重写过程的最小值，避免刚刚启动Reids时由于文件尺寸较小导致频繁的重写。
+auto-aof-rewrite-min-size 64mb
+ ———————————————— 
+版权声明：本文为CSDN博主「aitangyong」的原创文章，遵循CC 4.0 by-sa版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/aitangyong/article/details/52072708
 ```
 
-## 7. ftp
+## 7. vsftpd
 
 ```
-centos vsftpd
-安装:yum install vsftpd
-新建ftp用户
-adduser -d /data/ftprec -p ftprec -U ftprec // 新建ftprec -d home -p 密码 -U 创建同名组
+centos7.5 vsftpd
+安装: yum install vsftpd -y
+启动: service vsftpd start
+配置文件
+vim /etc/vsftpd/vsftpd.conf
+# 建议
+anonymous_enable=NO
+# 可以考虑
+ascii_upload_enable=YES
+ascii_download_enable=YES
+
+ftp默认使用系统账号密码登录
+新建用户账户,用于ftp登录
+# 新建用户ftp -d home -U 创建同名组 -p 加密后的密码,不是密码明文,建议用passwd确保密码正确
+# -s指定登录shell为/sbin/nologin,表示禁止用户本地登录
+adduser -d /data/ftp -U ftp -s /sbin/nologin
+# 修改用户ftp的密码
+passwd ftp  
+# 修改用户ftp的登录shell
+usermod -s /sbin/nologin ftp
+如果有必要,可以修改 /data/ftp权限为777，以便其他本地用户访问
+sudo chmod 777 /data/ftp
 ```
 
+## 8. apache utils (ab测试)
 
+```
+安装: 
+apt install apache2-utils
+yum install httpd-tools
+介绍:Apache HTTP Server (utility programs for web servers)
+Provides some add-on programs useful for any web server. These include:
+
+ - ab (Apache benchmark tool)
+ - fcgistarter (Start a FastCGI program)
+ - logresolve (Resolve IP addresses to hostnames in logfiles)
+ - htpasswd (Manipulate basic authentication files)
+ - htdigest (Manipulate digest authentication files)
+ - htdbm (Manipulate basic authentication files in DBM format, using APR)
+ - htcacheclean (Clean up the disk cache)
+ - rotatelogs (Periodically stop writing to a logfile and open a new one)
+ - split-logfile (Split a single log including multiple vhosts)
+ - checkgid (Checks whether the caller can setgid to the specified group)
+ - check_forensic (Extract mod_log_forensic output from Apache log files)
+ - httxt2dbm (Generate dbm files for use with RewriteMap)
+ 
+示例
+ab -c 5 -n 1000 -p body.file -T 'application/json' http://172.16.55.183:2051/recommend
+5并发,1000请求,Content-type: application/json, body使用文件body.file
+```
+
+## 9. python3
+
+```
+apt install python3
+apt install python3-pip
+## 安装 mysql-connector-python
+## https://dev.mysql.com/doc/connector-python/en/connector-python-example-connecting.html
+pip3 install mysql-connector-python
+
+## centos
+yum search -v <packagename>
+# python34.x86_64 / python36.x86_64
+yum list python3?.x86_64 
+# python.x86_64 2.7
+yum list python.x86_64
+yum install python36
+yum install python36-pip
+```
+
+## 10. wrk
+
+```
+Modern HTTP benchmarking tool
+安装: (linux)
+git clone https://github.com/wg/wrk.git
+cd wrk
+make
+./wrk
+
+wrk -t1 -c1 -d6s -T1s --script=recsimple.lua  http://172.16.200.74:2051/recommend
+
+recsimple.lua 示例
+wrk.method = "POST"
+wrk.headers["Content-Type"] = "application/json"
+wrk.body = '{"uid":"415825438", "count":8, "content_type":[1,3,12], "activate_timestamp":1454176960, "region":730000}'
+```
+
+## 11. GoReply
+
+```
+https://github.com/buger/goreplay/wiki/Getting-Started
+https://cloud.tencent.com/developer/article/1354875
+下载二进制或者本地编译
+
+用法示例：
+录制3000端口流量到文件requests_track.gor里。output-file-append表示文件不分块。文件名可以用 %Y%m%d%H%M%S.gor 形式表示。比如按照分钟，则每分钟生成一个文件。
+需要root权限侦听端口，否则参考 https://github.com/buger/goreplay/wiki/Running-as-non-root-user
+sudo ./gor --input-raw :3000 --output-file=requests_track.gor --output-file-append
+
+回放requests_track.gor文件到服务http://localhost:9998。"requests_track.gor|200%"表示2倍流量复制。
+gor --input-file "requests_track.gor" --output-http="http://localhost:9998"
+```
 
 # SHELL脚本
 
@@ -902,6 +1147,7 @@ unset var			#清除变量
 -a (and), -o (or) // 表达式
 -eq , -ne , -ge , -gt , -le , -lt  // 数值
 （经测试，= !=可以用在数值上，-eq -ne也可以用在字符串上。似乎shell会在数值和字串之间简单转换？）
+如果想判断一个参数是不是数值,可以用-ge , -gt , -le , -lt,非数值if会出错,跳转到else分支
 
 另外，还有判断文件的一些操作
 -a file exists.
@@ -913,7 +1159,24 @@ unset var			#清除变量
 -w file exists and is writable by the current process.
 -x file exists and is executable by the current process.
 ```
+### 带参数脚本
+
+```
+# 第一个参数赋值给arg1
+arg1=$1 
+# arg1文件名不存在
+if [ ! -e $arg1 ];then
+    echo file \"$fn\" not exist
+    exit
+fi
+```
+
+
+
+
+
 #### 流程控制
+
 ```
 if condition
 then
@@ -926,6 +1189,8 @@ else
   cmd1
   ...
 fi
+
+for ((i:=0;i<10;i++))
 
 for var in item1,....
 do

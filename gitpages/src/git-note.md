@@ -315,3 +315,27 @@ win10记事本、goland、vscode都可以自动识别换行符。任务栏会显
 git rm xxx // 从git删除
 ```
 
+# 5. 配置
+
+ https://git-scm.com/book/zh/v2 
+
+## 5.1 保存密码
+
+```
+https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E5%87%AD%E8%AF%81%E5%AD%98%E5%82%A8
+
+1. 使用全局配置
+git config --global credential.helper store
+vim ~/.git-credentials
+输入明文鉴权信息。格式(每行一个):
+https://<username>:<password>@<gitdomain>
+
+2. 使用当前配置（只针对当前目录，配置保存在 ./.git/config里面，似乎有问题）
+git config credential.helper store
+之后,密码会明文保存在 ~/.git-credentials 里面
+格式(每行一个):
+https://<username>:<password>@<gitdomain>
+```
+
+
+
