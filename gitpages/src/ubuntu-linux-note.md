@@ -334,6 +334,7 @@ ulimit -a // 查询当前用户限制(文件句柄,最大线程数等)
 
 fdisk -l // 列出磁盘信息
 mount <disk> <target_dir> -r // 挂载磁盘, 只读方式, 默认-w读写
+umask u=, g=w, o=rwx // 利用umask命令可以指定哪些权限将在新文件的默认权限中被删除。使得组用户的写权限，其他用户的读、写和执行权限都被取消：
 ```
 
 ### 0.1 grep
@@ -571,6 +572,17 @@ iptables -A OUTPUT -p tcp --dport 2051 -j DROP
 iptables -L -n --line-numbers
 ```
 
+### 0.7 top
+
+```
+https://www.cnblogs.com/ggjucheng/archive/2012/01/08/2316399.html
+top   //每隔5秒显式所有进程的资源占用情况
+top -d 2  //每隔2秒显式所有进程的资源占用情况
+top -c  //每隔5秒显式进程的资源占用情况，并显示进程的命令行参数(默认只有进程名)
+top -p 12345 -p 6789//每隔5秒显示pid是12345和pid是6789的两个进程的资源占用情况
+top -d 2 -c -p 123456 //每隔2秒显示pid是12345的进程的资源使用情况，并显式该进程启动的命令行参数
+```
+
 
 
 ## 1. 知识库
@@ -707,6 +719,9 @@ ssh-keygen // 生成本机密钥。如果已有则跳过
  // -i制定的pub文件可以有多个key，都会被添加
  // -f如果没有对应的私钥文件user_id_rsa，则必须指定-f（用于为其他用户更新key且禁用了密码登录时）
 ssh user@ipaddr // 登录到服务器
+
+ssh -D :9898 user@hostip -p sshport
+本地启动端口9898，通过hostip代理上网（sock5）
 
 提升服务器安全性：
 sudo vim /etc/ssh/sshd_config // 编辑配置文件。建议先备份。
@@ -1070,6 +1085,21 @@ sudo ./gor --input-raw :3000 --output-file=requests_track.gor --output-file-appe
 
 回放requests_track.gor文件到服务http://localhost:9998。"requests_track.gor|200%"表示2倍流量复制。
 gor --input-file "requests_track.gor" --output-http="http://localhost:9998"
+```
+
+## 12 gcc
+
+```
+linux下直接安装
+apt/yum install gcc
+
+windows下，需要安装MinGW-w64/CygWin
+    https://www.zhihu.com/question/22137175/answer/90908473
+    https://blog.csdn.net/yehuohan/article/details/52090282
+	CygWin是windows下模拟linux环境的环境，有个模拟层。
+	MinGW是windows下一致linux应用的开发环境，使用win32 api。
+	MSYS是辅助MinGW的工具链。
+	只是使用gcc，建议安装MinGW。参数：arch x86_64, thread posix, exception seh。
 ```
 
 # SHELL脚本

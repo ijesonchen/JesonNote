@@ -186,6 +186,7 @@ Installed是安装好的插件,可以修改参数
 ```
 1. 安装File Watchers插件
 2. 设置自动格式化
+建议使用goreturns
 ```
 
 Filesystem Case-Sensitivity Mismatch
@@ -200,6 +201,12 @@ idea.case.sensitive.fs=true|false
 清除缓存并重启 
 File | Invalidate Caches 
 ```
+
+运行代码/测试时提示无法下载包
+
+````
+启用了modules。可以在环境变量里面设置 G111MODULE=off 然后重启
+````
 
 
 
@@ -285,6 +292,52 @@ go install <gopath>\src\github.com\golang\tools\cmd\guru
 https://blog.csdn.net/weixin_39179096/article/details/81407716?utm_source=blogxgwz1
 "workbench.editor.enablePreview": false
 "workbench.editor.enablePreviewFromQuickOpen": false
+```
+
+## 2.6 go protobuf
+
+```
+1. 下载protoc
+https://github.com/protocolbuffers/protobuf/releases
+2. 下载go proto插件。使用gogo protobuf
+go get github.com/gogo/protobuf/protoc-gen-gofast
+3. 编译
+protoc --gofast_out=. myproto.proto
+
+**上述使用默认go protobuf特性
+```
+
+使用其他特性
+
+```
+More Speed and more generated code
+Fields without pointers cause less time in the garbage collector. More code generation results in more convenient methods.
+
+Other binaries are also included:
+
+protoc-gen-gogofast (same as gofast, but imports gogoprotobuf)
+protoc-gen-gogofaster (same as gogofast, without XXX_unrecognized, less pointer fields)
+protoc-gen-gogoslick (same as gogofaster, but with generated string, gostring and equal methods)
+Installing any of these binaries is easy. Simply run:
+
+go get github.com/gogo/protobuf/proto
+go get github.com/gogo/protobuf/{binary}
+go get github.com/gogo/protobuf/gogoproto
+These binaries allow you to use gogoprotobuf extensions. You can also use your own binary.
+
+To generate the code, you also need to set the include path properly.
+
+protoc -I=. -I=$GOPATH/src -I=$GOPATH/src/github.com/gogo/protobuf/protobuf --{binary}_out=. myproto.proto
+To use proto files from "google/protobuf" you need to add additional args to protoc.
+
+protoc -I=. -I=$GOPATH/src -I=$GOPATH/src/github.com/gogo/protobuf/protobuf --{binary}_out=\
+Mgoogle/protobuf/any.proto=github.com/gogo/protobuf/types,\
+Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,\
+Mgoogle/protobuf/struct.proto=github.com/gogo/protobuf/types,\
+Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,\
+Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types:. \
+myproto.proto
+Note that in the protoc command, {binary} does not contain the initial prefix of "protoc-gen".
 ```
 
 
@@ -737,6 +790,15 @@ struct {
 ```
 ## 6.3 go get安装失败
 首先确认源没问题。可能是源被墙了，可以考虑科学上网后尝试。可能需要设置proxy。参考1.7
+
+## 6.4 terminal prompts disabled
+
+```
+go list -m 或 go get下载代码时，可能需要账号。go默认禁止terminal prompts。解决：
+export GIT_TERMINAL_PROMPT=1
+```
+
+
 
 # 7. 代码笔记
 

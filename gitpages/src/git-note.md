@@ -196,6 +196,7 @@ git show
 ```
 git show hashid	// 显示提交的更改
 git show hashid --name-only // 仅显示提交修改的文件名
+git show --pretty="" --name-only hashid
 ```
 
 git reset
@@ -218,7 +219,7 @@ git clean 参数
     -f 删除 文件
     -df 删除 文件 和 目录
     -x 删除所有文件（包括 .gitignore中的文件）
-git checkout . && git clean -xdf  
+git checkout . && git clean -xdf
 ```
 
 新建分支处理issue
@@ -329,6 +330,21 @@ git config --global credential.helper store
 vim ~/.git-credentials
 输入明文鉴权信息。格式(每行一个):
 https://<username>:<password>@<gitdomain>
+
+一般git都支持创建token（Personal access tokens），并指定权限。可以为服务器签出代码配置一个只读token账户。注意：gitlab使用的是token名+token验证，bitbucket使用原始用户名+token验证
+bitbucket PAT创建流程：
+  假设用户名为： myuser
+  account-管理账户-Personal access tokens， create a token
+  token name: mytoken
+  permissions: read
+  点创建会生成token串，记下来。这个后面无法查看。只能删掉重建。假设token为： aabbccdd
+  访问时使用http访问，例如：
+  http://myuser:aabbccdd@git.xxx.com/scm/xxx/xx.git
+  如果是gitlab，则是类似
+  http://mytoken:aabbccdd@git.xxx.com/xxx/xx.git
+
+
+  
 
 2. 使用当前配置（只针对当前目录，配置保存在 ./.git/config里面，似乎有问题）
 git config credential.helper store

@@ -48,6 +48,31 @@ codecs.decode(bindata, 'utf-8')
 
 - 解码读写文件 `codecs.open(filename, mode='r', encoding=None, errors='strict', buffering=1) `
 
+## 编码
+
+```
+https://blog.csdn.net/ran337287/article/details/56298949
+ansi
+unicode u''
+utf8 '\x??'
+转换函数 ord()与 chr()、unichr()
+对象方法： encode(), decode()
+```
+
+## for
+
+```
+arr = []
+for data in arr:
+  print(data)
+  
+for i in range(len(arr)): # range all
+  print(arr[i])
+  
+for i in range(10, 20): # range [10, 20)
+  print(arr[i])
+```
+
 
 
 # 库
@@ -56,9 +81,68 @@ codecs.decode(bindata, 'utf-8')
 math包含取整、三角函数、幂、指数、对数、阶乘、伽马、最大公约数等，并包含一些常量定义（e,pi)
 cmath和math类似，但是支持复数，包括三角、幂指一级坐标变换等（极坐标）
 
-
-
 # 安装
+
+## python
+
+```
+python.org下载安装程序。建议python3。老项目可能要python2。可以同时安装，建议先python2， 再python3。常用的版本加入PATH路径。
+安装完后，建议升级pip，否则经常会出现pip install失败：
+python -m pip install --upgrade pip
+
+安装pylint。会安装到在%python_path%\script\pylint.exe
+pip install pylint
+
+安装pipenv。（有人反馈不完善不好用2019.9）。pipenv 是 python 官方推荐的包管理工具，集成了 virtualenv、pyenv 和 pip 三者的功能于一身，类似于 php 中的 composer。
+pip install --user pipenv
+
+** utuntu
+apt install python-pip
+apt install python3-pip
+```
+
+## 更换国内源
+
+```
+PIP 更换国内安装源
+https://blog.csdn.net/yuzaipiaofei/article/details/80891108
+2018-07-02 22:58:20 SoloLinux 阅读数 95261  收藏 更多 
+pip国内的一些镜像
+
+  阿里云 http://mirrors.aliyun.com/pypi/simple/ 
+  中国科技大学 https://pypi.mirrors.ustc.edu.cn/simple/ 
+  豆瓣(douban) http://pypi.douban.com/simple/ 
+  清华大学 https://pypi.tuna.tsinghua.edu.cn/simple/ 
+  中国科学技术大学 http://pypi.mirrors.ustc.edu.cn/simple/
+
+修改源方法：
+
+临时使用： 
+可以在使用pip的时候在后面加上-i参数，指定pip源 
+eg: pip install scrapy -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+永久修改： 
+linux:  修改 ~/.pip/pip.conf
+window: %HOMEPATH%\pip\pip.ini
+
+[global]
+timeout = 6000
+index-url = http://mirrors.aliyun.com/pypi/simple/
+trusted-host = mirrors.aliyun.com
+```
+
+
+
+## Intellij IDEA设置
+
+```
+0. 安装python运行环境。
+1. file, settings, plugins，搜索python，安装。
+2. file, Project Structure, Platform Settings, SDKs， 添加python sdk， 设置Systm Interpreter。
+3. file, Project Structure, Project Settings, Modules, 选中项目，python，设置Python Interpreter。
+```
+
+
 
 ## 库的安装
 
@@ -82,6 +166,61 @@ pip install mysql-python
 	ubuntu: apt install python-dev
 ```
 
+## 常用库
+
+```
+python3:
+redis
+PyMySQL
+pymongo
+```
+
+### redis
+
+```
+import redis
+
+# redis config
+rhost = "xxx"
+rport = 6379
+rdb = 0
+rpwd = ""
+keys = ["hot_item_total_0", "hot_item_total_1", "hot_item_total_2"]
+ 
+def redis_test():
+    r = redis.Redis(host=rhost, port=rport, db=rdb, password=rpwd)
+    for key in keys:
+        # get []
+        r.lrange(key, 0, 500)
+```
+
+### PyMySQL
+
+```
+import pymysql
+
+# mysql config
+shost = ":3306" 
+sdb = ""
+suser = ""
+spwd = ""
+
+def mysql_test():
+    db = pymysql.connect(shost, suser, spwd, sdb)
+    cursor = db.cursor()
+    cursor.execute("select goods_id, is_onsale, is_deleted, pay_rmb from goods where goods_id=10012")
+    data = cursor.fetchall()
+    print(data)
+    db.close()
+    pass
+```
+
+### pymongo
+
+```
+
+```
+
 
 
 # 文件操作
@@ -98,17 +237,37 @@ for ent in os.scandir() 较快，返回DirEntry
 	ent.stat() 可以获取文件时间
 
 ## zipfile 压缩打包
+```
 import zipfile
 from zipfile imort *
 with ZipFile(zipname, 'w') as zipFile:
 	for x in os.scandir(dirname):
 		fullname = base + '\\' + x.name
 		zipFile.write(fullname, arcname = x.name, compress_type = zipfile.ZIP_DEFAULTED)
+```
+
+## 读写json
+
+```
+import json
+
+with open("hot_item_state.pwd", "r") as f:
+    tmp = json.loads(f.read())
+    print(tmp)
+    print(tmp["rpwd"])
+    
+    jsonstr = json.dumps(test_dict)
+    f.write(jsonstr)
+    json.dump(new_dict,f)
+```
+
+
 
 # 进程及线程
 
 ## multiprocessing.Pool 进程池
 
+```
 from multiprocessing import Pool
 
 def f(x):
@@ -118,6 +277,7 @@ if __name__ == '__main__':
 	x = [1, 2, 3]
 	with Pool(5) as p:
 	    print(p.map(f, x))
+```
 
 # 数据库
 
