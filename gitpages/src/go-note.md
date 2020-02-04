@@ -1034,6 +1034,42 @@ os.OpenFile(fn,
 注意：linux下，如果不指定权限Mode(如os.ModePerm=0777)可能会导致文件不能被再次打开（没有权限）
 ```
 
+## 7.7 interface
+
+```
+1. interface赋值也是传值。所以要影响原值，除非slice，map一类本身是指针属性的数据，必须是指针。很多反序列化函数unmarshal使用interface也是这个原因。
+	x := [2]int{1, 2}
+	var y interface{} = x
+	x[0] = 2
+	log.Println(x, y) // [2 2] [1 2]
+
+	a := 9
+	var b interface{} = a
+	a = 3
+	log.Println(a, b) // 3 9
+
+```
+
+## 7.8 reflect
+
+```
+1. reflect赋值
+参考json.Unmshall 
+func (d *decodeState) value(v reflect.Value) error
+通用赋值value.Set(value)：
+	sliceValue := reflect.ValueOf([]int{1, 2, 3}) // 这里将slice转成reflect.Value类型
+	s.FieldByName("Children").Set(sliceValue)
+对于int,float使用value.SetInt/SetFloat
+map要单独根据kv处理
+定位对象，struct使用Field(i)，array使用Index(i)。
+如果使用value.interface{}，会发生传值。对于slice可以修改原值，但是array不会修改原值。
+
+示例：array的修改
+	f := FieldDesc{Name: "a", X: [2]int{1, 2}}
+	v := reflect.ValueOf(&f).Elem() // valueof传指针，否则不可address无法修改值
+	v.Field(1).Index(0).SetInt(9999)
+```
+
 
 
 

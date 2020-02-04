@@ -1188,6 +1188,17 @@ unset var			#清除变量
 -r file exists and is readable by the current process.
 -w file exists and is writable by the current process.
 -x file exists and is executable by the current process.
+
+例如：
+if [ -f xxx ]; then
+  echo file xxx exists
+else
+  echo file xxx not exist
+fi
+
+if [ ! -f xxx ]; then
+  echo file xxx not exist
+fi
 ```
 ### 带参数脚本
 
