@@ -353,5 +353,26 @@ git config credential.helper store
 https://<username>:<password>@<gitdomain>
 ```
 
+## 5.2 代理
+
+### 临时使用代理
+
+```
+ALL_PROXY=https://xxx:xxx git clone https://xxx.git
+ALL_PROXY=socks://xxx:xxx git clone https://xxx.git
+```
+
+## 代理配置
+
+```
+// 配置代理
+git config --global http.proxy http://proxy.com:1234
+git config --global https.proxy http://proxy.com:1234
+git config --global http.sslverify false // 可选配置
+// 清除代理
+git config --global --unset http.proxy
+git config --global --unset https.proxy
+```
+
 
 

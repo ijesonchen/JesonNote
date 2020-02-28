@@ -208,6 +208,17 @@ File | Invalidate Caches
 启用了modules。可以在环境变量里面设置 G111MODULE=off 然后重启
 ````
 
+同步本地-远程代码（支持sftp， ftp等协议）
+
+```
+settings > Build, Excution, Deployment >Deployment
+添加远程配置
+mapping设置本地目录和服务器目录的映射
+excluded paths排除目录，比如vender可以考虑排除
+
+选中文件后，点Tools > Deployment > Upload to 即可上传文件。建议勾选 Automatic Upload (always)， 修改文件后自动上传。方便调试代码。
+```
+
 
 
 # 2. 插件介绍
@@ -483,7 +494,9 @@ label: 用于goto, break, continue
 	3. 在switch前面，用于break
 ```
 
-## 5.3 更多类型：struct、slice和map
+## 5.3 更多类型：
+
+### struct、slice和map
 
  [Go 切片：用法和本质](https://blog.go-zh.org/go-slices-usage-and-internals)
 
@@ -772,6 +785,25 @@ struct {
 }
 ```
 
+## 5.9 传值
+
+```
+go赋值和函数都是传值
+但是，某些类型本质是指针类型
+slice， map， chan是指针类型，只复制指针，对象不复制。
+
+??可以通过反射将slice的内存赋值给string，但是会有gc风险。
+
+string比较特殊，本身不可修改，只能重复赋值。赋值时类似指针，只复制header，不复制内存。
+1)b=a。之后修改a不会影响b，因为修改a的时候，a的指针变了。
+2)string可以通过unsafe由[]byte转化：
+  var s string = *(*string)(unsafe.Pointer((*reflect.StringHeader)(unsafe.Pointer(&b)))) // 这里依赖语言的具体特性。从内存布局上来说，StringHeader可以理解为SliceHeader的一部分
+  或通过StringHeader赋值得到：
+  var s string = *(*string)(unsafe.Pointer(&reflect.StringHeader{Data:ptr, Len:len}))
+  之后所有由s赋值得到的string都会受到b[]byte和ptr+len的影响
+3)直接由[]byte转化来的string会复制[]byte的内存，因此后续赋值不会受[]byte的影响
+```
+
 
 
 # 6. 遇到的问题
@@ -843,6 +875,7 @@ type strudef struct{
 
 	p1 := (*reflect.StringHeader)(unsafe.Pointer(&s)) // p1.Data指向s的内存
 	p2 := (*reflect.SliceHeader)(unsafe.Pointer(&b))  // p2.Data指向b的内存
+	// 注意，这里使用了StringHeader和 SliceHeader的前部分 内存布局相同。
 
 	var d []byte
 	c := (*reflect.SliceHeader)(unsafe.Pointer(&d)) // 拿到d的header
@@ -1016,11 +1049,15 @@ https://blog.csdn.net/u011957758/article/details/82230316
 
 ```
 1. 必须创建才能使用，否则容易panic
-2. close后可以recv
-3. 重复close会panic。解决
+2. 只有在需要的时候关闭，一般由gc负责回收。
+The go programing language:
+You needn't close every channel when you've finished with it. It's only necessary to close a channel when it is important to tell the receiving goroutines that all data have been sent. A channel that the garbage collector determinies to be unreachable will have its resources reclaimed whether or not it is closed. (Don't confuse this with the close operation for open files. It is important to call the Close method on every file when you've finished with it.)
+3. close后可以recv, 但是send会导致panic
+4. 重复close会panic。一般出现这种情况属于设计问题。解决
 	a. 单独线程负责close。一般是发送者。
 	b. 使用sync.Once
 	c. 使用带有recover panic的函数关闭
+5. channel读写属于函数调用，for range一个channel不会影响gc的stw
 ```
 
 ## 7.6. 文件操作
@@ -1069,6 +1106,113 @@ map要单独根据kv处理
 	v := reflect.ValueOf(&f).Elem() // valueof传指针，否则不可address无法修改值
 	v.Field(1).Index(0).SetInt(9999)
 ```
+
+## 7.9 unsafe
+
+```
+go是强类型，不支持直接的类型转换
+类型转换必须通过Interface{}的cast实现
+指针转换必须通过unsafe.Pointer实现
+```
+
+## 7.10 定时器
+
+```
+1. time.After：返回一个chan，超时触发。但是可能导致资源占用：当多次调用时，要等到超时后gc才可能回收，导致大量资源占用。解决：使用timer或ticker，并主动关闭
+select {
+  case // other proc
+  case time.After(time.Duration):
+  	// time out
+}
+
+2. time.NewTimer: 超时后触发一次
+timer := time.NewTimer(time.Duration)
+select {
+  case // other proc
+  case timer.C:
+  	// time out
+}
+timer.Stop()
+
+3. time.NewTicker：定时重复触发
+ticker := time.NewTicker(time.Duration)
+for {
+    select {
+      case // other proc
+      case ticker.C:
+        // time out
+    }
+}
+ticker.Stop()
+```
+
+
+
+## 7.11 plug-in
+
+```
+v1.8引入，目前(v1.13)仅支持linux和macos。可以动态加载so代码。目前来看由于go语言先天特性（主要是gc和类型机制），无法卸载和重新加载。并且对host程序来说，是黑盒，无法使用go的profiling工具。
+原理：使用linux函数dlopen打开so文件，使用dlsym查找符号。
+流程：
+1. plugin代码，在main包执行 go build -buildmode=plugin -o <plugin-name>.so。但是main函数会被忽略。
+2. host程序引入"plugin" package，plugin.Open打开插件文件（此时会执行插件的init函数），plugin.LookUp查找符号。返回interface，case成对应类型或函数即可。注意：plugin中的变量会变为指针类型。
+
+示例：
+plugin代码：
+package main
+import  "plugin" 
+var V int 
+func F() { fmt.Printf("Hello, number %d %p %d\n", V, P, *P) }
+
+host程序代码：
+package main
+import  "plugin" 
+func main() {
+	p, err := plugin.Open("my_plugin_name.so")
+	if err != nil {
+		panic(err)
+	}
+	v, err := p.Lookup("V")
+	if err != nil {
+		panic(err)
+	}
+	f, err := p.Lookup("F")
+	if err != nil {
+		panic(err)
+	}
+	*v.(*int) = 7
+	f.(func())() // prints "Hello, number 7"
+}
+
+问题：
+1. 每个plugin只能加载一次，go内部根据so绝对文件名确定，没有卸载函数。换句话说，只能热加载，不能热更新，不能卸载。不提供卸载应该是和gc有关，减少gc复杂度，否则卸载时可能有资源还在使用。
+2. 暴露struct不方便。需要这个struct是共同的第三方包。否则无法case（pkg识别机制）
+3. host 和 plugin 的 GOPATH 必须完全相同。vendor目录视为不同package。所以建议在同一个项目中，则使用同一个vendor，或者干脆不要用vendor。
+```
+
+## 7.12 atomic
+
+```
+使用atomic比mutex性能更高
+如果是保存指针，可以使用atomic.Value
+
+var gpUserData atomic.Value // store UserData
+// load v1
+pInterface := gpUserData.Load()
+if pInterface == nil { ... }
+pUserData = pInterface.(*UserData)
+...
+// load v2
+pUserData, ok := gpUserData.Load().(*UserData)
+if !ok { ... }
+...
+
+// set
+pUserData := &UserData{}
+...
+gpUserData.Store(pUserData)
+```
+
 
 
 

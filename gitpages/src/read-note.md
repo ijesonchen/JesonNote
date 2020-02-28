@@ -51,6 +51,33 @@ Skip lists are data structures that use probabilistic balancing rather than stri
 操作期望是log(n)
 ```
 
+## 1.3 哈希
+
+```
+https://segmentfault.com/a/1190000010990136
+漫谈非加密哈希算法
+评价： SMHasher 测试集
+非加密要求：均匀，速度快
+
+Version	Speed on 64-bits	Speed on 32-bits
+XXH64	13.8 GB/s	1.9 GB/s
+XXH32	6.8 GB/s	6.0 GB/s
+
+vc, win server 32bit 单线程 Core 2 Duo@3.0G
+Name	Speed	Quality	Author
+xxHash	5.4 GB/s	10	Y.C.
+MurmurHash 3a	2.7 GB/s	10	Austin Appleby
+SBox	1.4 GB/s	9	Bret Mulvey
+Lookup3	1.2 GB/s	9	Bob Jenkins
+CityHash64	1.05 GB/s	10	Pike & Alakuijala
+FNV	0.55 GB/s	5	Fowler, Noll, Vo
+CRC32	0.43 GB/s	9	
+MD5-32	0.33 GB/s	10	Ronald L.Rivest
+SHA1-32	0.28 GB/s	10
+```
+
+
+
 # 2. 数据库
 
 ## 2.1 MySQL

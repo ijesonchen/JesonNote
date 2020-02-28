@@ -583,6 +583,28 @@ top -p 12345 -p 6789//每隔5秒显示pid是12345和pid是6789的两个进程的
 top -d 2 -c -p 123456 //每隔2秒显示pid是12345的进程的资源使用情况，并显式该进程启动的命令行参数
 ```
 
+#### 替代工具
+
+```
+1. htop
+yum install htop
+显示每个cpu/mem负载
+
+2. vtop 基于nodejs
+npm install -g vtop
+字符界面模拟windows任务管理器
+
+3. gtop 基于nodejs
+npm install -g gtop
+类似vtop，多彩显示，功能多一点
+
+4. ptop 基于python
+pip install ptop
+
+** 安装nodejs
+yum install nodejs
+```
+
 
 
 ## 1. 知识库
@@ -654,13 +676,10 @@ yum makecache
 ## 5. ssh自动登录脚本
 
 ```
-xshell可以设置登录脚本
-使用expect脚本实现，并且可以传递参数
-https://www.jianshu.com/p/4178badeee39
-http://www.cnblogs.com/zhenbianshu/p/5867440.html
+
 ```
 
-## 6. 调整cpu性能
+## 5. 调整cpu性能
 
 ```
 https://www.jianshu.com/p/e1a37771c68e
@@ -704,6 +723,8 @@ golang配置，windows下golang tools迁移到linux，参考go-note.md
 
 ## 2.  ssh
 
+#### 安装
+
 ```
 服务器：
 sudo su
@@ -731,9 +752,29 @@ sudo vim /etc/ssh/sshd_config // 编辑配置文件。建议先备份。
 service ssh restart // 重启服务
 ```
 
+#### 自动登录
+
+```
+xshell可以设置登录脚本
+使用expect脚本实现，并且可以传递参数
+https://www.jianshu.com/p/4178badeee39
+http://www.cnblogs.com/zhenbianshu/p/5867440.html
+```
+
+#### 代理
+
+```
+https://zhuanlan.zhihu.com/p/57630633
+ssh 命令除了登陆外还有三种代理功能：
+
+正向代理（-L）：相当于 iptable 的 port forwarding 在本地启动端口，把本地端口数据转发到远端。
+反向代理（-R）：相当于 frp 或者 ngrok 让远端启动端口，把远端端口数据转发到本地。
+socks5 代理（-D）：相当于 ss/ssr 本地启动sock5，通过远端代理访问。
+```
 
 
-## 3. zsh (一个好用的shell)
+
+## 3. zsh (shell)
 
 安装
 
