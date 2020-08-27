@@ -27,3 +27,7 @@ resources for programming
 
 [7 Features of C++17 that will simplify your code](https://tech.io/playgrounds/2205/7-features-of-c17-that-will-simplify-your-code/introduction)
 
+# electron
+
+[国内配置Electron开发环境的正确方式（2020.03重新整理）](https://blog.yasking.org/a/zh-install-electron-development-2020.html)
+[指南：开始使用 Electron](https://www.electronjs.org/docs/tutorial)

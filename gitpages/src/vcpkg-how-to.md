@@ -38,9 +38,20 @@ bootstrap-vcpkg.bat
 
 	vcpkg search  // 检索已有包
 	vcpkg install [pkgname[:pkgarc]] // 安装包，如vcpkg install zlib:x64-windows
+	vcpkg.exe install glog --triplet x64-windows
+	集成 .\vcpkg.exe integrate install
+	移除集成 .\vcpkg.exe integrate remove
+	
+	可以在win10 wsl下执行（wsl可执行windows程序）
 ## 1.4. 常见问题
 
-### 1.4.1. 无法获取依赖
+### 1.4.1. 无法获取依赖（安装失败）
+
+```
+新版本（2020.4.5）安装过程中下载依赖失败，会提示下载路径。直接用其他工具下载好放到download目录即可
+```
+
+
 
 ```
 The following packages will be built and installed:

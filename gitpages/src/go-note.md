@@ -219,6 +219,24 @@ excluded paths排除目录，比如vender可以考虑排除
 选中文件后，点Tools > Deployment > Upload to 即可上传文件。建议勾选 Automatic Upload (always)， 修改文件后自动上传。方便调试代码。
 ```
 
+### c/c++插件
+
+```
+https://plugins.jetbrains.com/plugin/1373-c-c-/reviews#review=28966
+可安装C/C++插件，但是需要修改配置支持最新版本。
+1. 下载插件zip文件
+2. 解压，修改配置，重新打包为zip
+3. 从本地安装插件：file, settings, plugins, 齿轮图标，install from disk，指定插件zip文件。
+```
+
+# 1.5 GUI
+
+```
+https://github.com/fyne-io/fyne
+更多库参考
+https://github.com/avelino/awesome-go#gui
+```
+
 
 
 # 2. 插件介绍
@@ -802,6 +820,79 @@ string比较特殊，本身不可修改，只能重复赋值。赋值时类似�
   var s string = *(*string)(unsafe.Pointer(&reflect.StringHeader{Data:ptr, Len:len}))
   之后所有由s赋值得到的string都会受到b[]byte和ptr+len的影响
 3)直接由[]byte转化来的string会复制[]byte的内存，因此后续赋值不会受[]byte的影响
+```
+
+## 5.10 cgo
+
+### 示例
+
+```
+package main
+
+/*
+#include <stdio.h>
+
+static void Print(char* s){
+	printf("input: %s\n", s);
+}
+
+*/
+import "C"
+
+import (
+	"fmt"
+	"log"
+)
+
+func main() {
+	s := fmt.Sprintf("this is a test") 
+	C.Print(C.CString(s))
+}
+```
+
+### 注意事项
+
+```
+1. import "C" 必须在嵌入的C代码后面的第一行，中间不能有空格，否则会提示could not determine kind of name
+2. 通过C.CString(s)生成的char* p会产生一次内存拷贝，修改p不会影响s
+3. printf不含有\n时，不会flush到输出，可能会导致cgo调用中printf不显示。如果\n后面有内容也可能不显示
+
+更多参见 https://github.com/ijesonchen/vstest/blob/master/ideago/test_code/cgo.go
+```
+
+## 5.11 go mod
+
+```
+init        initialize new module in current directory
+tidy        add missing and remove unused modules
+vendor      make vendored copy of dependencies
+download    download modules to local cache
+edit        edit go.mod from tools or scripts
+graph       print module requirement graph
+verify      verify dependencies have expected content
+why         explain why packages or modules are needed
+```
+
+### proxy
+
+```
+https://goproxy.io/zh/
+
+
+如果您使用的 Go 版本是 1.13 及以上 （推荐）
+go env -w GO111MODULE=on
+go env -w GOPROXY=https://goproxy.io,direct
+# 设置不走 proxy 的私有仓库，多个用逗号相隔（可选）
+go env -w GOPRIVATE=*.corp.example.com
+# 设置不走 proxy 的私有组织（可选）
+go env -w GOPRIVATE=example.com/org_name
+
+
+如果您使用的 Go 版本是 1.12 及以下 
+# 启用 Go Modules 功能
+export GO111MODULE=on
+# 配置 GOPROXY 环境变量
+export GOPROXY=https://goproxy.io
 ```
 
 
@@ -1667,6 +1758,18 @@ go build xx.go xx.go ... // 编译相关文件。注意需要指定所有文件�
 go run . // 运行当前包
 go test -run=TestFuncName
 ```
+
+### cgo编译未更新
+
+```
+调用cgo时，c/c++/lib文件修改后，编译未生效。
+原因：如果没有go文件变化，build cache会导致cgo相关代码不更新
+解决：添加 -a 参数： force rebuilding of packages that are already up-to-date.
+```
+
+
+
+
 
 ## 10.2 汇编代码
 

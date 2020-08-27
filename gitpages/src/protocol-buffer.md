@@ -137,6 +137,9 @@ package  testpb;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
+字段后加nullable:
+	repeated double Field1 = 1 [(gogoproto.nullable) = false, packed = true];
+
 命令示例：
 protoc -I=. -I=$GO1STPATH/src --gogofaster_out=.  test.proto
 其中GO1STPATH为go get时使用的路径，一般是GOPATH的第一个路径(注意，gogoproto github的说明此处有误)

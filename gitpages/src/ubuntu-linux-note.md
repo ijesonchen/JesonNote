@@ -378,6 +378,11 @@ tailf engine_error.log| while read line; do echo $line|grep test_flag|cut -c 120
 撤销：uu
 重做：^r
 
+## 命令
+:s 替换文本
+	:s/src/dst/g   当前行所有的src替换为dst（没有最后的g表示替换第一个）
+	:%s/src/dst/g  所有行所有的src替换为dst
+
 配置文件
 /etc/vim/vimrc  /etc/vimrc 全局	
 ~/.vimrc 用户
@@ -605,6 +610,22 @@ pip install ptop
 yum install nodejs
 ```
 
+### 0.8 strings
+
+```
+显示二进制文件中可打印字符串。
+可用于检索bin中的符号
+strings /lib64/libc.so.6 |grep GLIBC_
+显示libc中含有GLIBC_的符号，一般用于查看其中函数对应的libc版本
+```
+
+### 0.9 ssh-key
+
+```
+ssh-keygen -l -E md5 -f <keyfile>
+校验key的md5签名，一般是pubkey。可用于和gitlab上的key比对。
+```
+
 
 
 ## 1. 知识库
@@ -690,11 +711,34 @@ cpufreq是一个动态调整cpu频率的模块，系统启动时生成一个文�
 performance最高 powersave最低 userspace用户定义 conservative平滑 ondemand按需跳频 
 ```
 
+## 6. 临时指定环境变量
+
+```
+export GODEBUG="gctrace=1"
+如果需要永久生效，编辑用户home目录下的
+.rc .bashrc 或 .zshrc，取决于使用的shell
+
+如果只针对某次命令生效，
+GODEBUG="gctrace=1" go build .
+LIBRARY_PATH=/usr/lib/x86_64-linux-gnu build.sh
+```
+
+## 7 curl命令行查看ip公网地址
+
+```
+curl ipinfo.io 
+curl cip.cc
+curl ip.gs
+curl ifconfig.me
+```
+
 
 
 # 安装
 
-## 0. 源码安装
+## 0. 安装及位置
+
+源码安装
 
 ```
 一般步骤: 下载，解压，配置，编译
@@ -704,6 +748,31 @@ cd xxx
 ./configure
 make
 然后会在当前目录生成可执行文件
+```
+
+包管理工具
+
+```
+apt/yum install xxx
+apt/yum search xxx
+
+查看安装包路径
+centos:
+rpm -qa |grep blas // 获取详细包名==> blas-devel-3.4.2-8.el7.x86_64
+rpm -ql blas-devel-3.4.2-8.el7.x86_64
+ubuntu:
+dpkg -l | grep blas  // 获取详细包名==> libopenblas-dev:amd64
+dpkg -L libopenblas-dev:amd64
+```
+
+### 常用包
+
+```
+yum install lrzsz  // rz sz
+yum install httpd-tools // ab
+yum install util-linux  // tailf
+yum install sysvinit-tools // pidof
+
 ```
 
 
@@ -730,6 +799,9 @@ golang配置，windows下golang tools迁移到linux，参考go-note.md
 sudo su
 apt install openssh-server // 安装服务
 ip addr // 记录ip地址
+
+ssh -A host1 -A host2 // 本机->host1->host2，-A转发秘钥
+ssh -p port1 user1@host1 ssh -p port2 user2@host2 // 本机->host1->host2，不过登录都是用服务器上的秘钥
 
 客户端:
 ssh-keygen // 生成本机密钥。如果已有则跳过
@@ -768,6 +840,10 @@ https://zhuanlan.zhihu.com/p/57630633
 ssh 命令除了登陆外还有三种代理功能：
 
 正向代理（-L）：相当于 iptable 的 port forwarding 在本地启动端口，把本地端口数据转发到远端。
+
+ssh -L 127.0.0.1:1111:127.0.0.1:2222 root@3.3.3.3
+本地1111端口映射到3.3.3.3的本地2222端口
+
 反向代理（-R）：相当于 frp 或者 ngrok 让远端启动端口，把远端端口数据转发到本地。
 socks5 代理（-D）：相当于 ss/ssr 本地启动sock5，通过远端代理访问。
 ```
@@ -952,10 +1028,26 @@ environment=GODEBUG="gctrace=1"
 
 ## 5. git
 
+cenos
+
+```
+1. 安装源
+yum install http://opensource.wandisco.com/centos/6/git/x86_64/wandisco-git-release-6-1.noarch.rpm   // centos 6 git 1.x
+- or -
+yum install http://opensource.wandisco.com/centos/7/git/x86_64/wandisco-git-release-7-1.noarch.rpm   // centos 7 git 1.x
+- or -
+yum install http://opensource.wandisco.com/centos/7/git/x86_64/wandisco-git-release-7-2.noarch.rpm   // centos 7 git 2.x
+
+2. yum install git 更新
+3. git version 查看版本
+```
+
+源码安装
+
 ```
 ** 更多信息参见git-note.md **
 
-一般ubuntu使用apt， centos使用yum。特殊版本可以使用源码安装方式：
+一般ubuntu使用apt， centos使用yum。特殊版本可以使用源码安装方式：(可以浏览目录查看最新版本)
 wget https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.9.5.tar.gz
 tar -zxvf git-2.9.5.tar.gz
 cd git-2.9.5
@@ -1143,6 +1235,211 @@ windows下，需要安装MinGW-w64/CygWin
 	只是使用gcc，建议安装MinGW。参数：arch x86_64, thread posix, exception seh。
 ```
 
+## 13 gdb pstack
+
+```
+yum install gdb
+pstack工具是一个gdb脚本，使用gdb的bt或者thread apply all bt命令，通过sed工具输出线程堆栈信息
+https://nanxiao.me/linux-pstack/
+```
+
+## 14 hadoop
+
+```
+https://hadoop.apache.org/docs/r1.0.4/cn/hdfs_shell.html
+hadoop fs -cmd param
+FS Shell:
+cat chgrp chmod chown
+copyFromLocal copyToLocal cp 
+du dus expunge get getmerge ls lsr 
+mkdir movefromLocal mv put 
+rm rmr setrep stat 
+tail test text touchz 
+```
+
+## 15 conda
+
+```
+anaconda: 约500M，集成1000+包
+miniconda：conda内核，约80M
+xxx2为集成python2， xxx3集成python3。支持win/linux/mac平台。
+
+linux安装：下载相应的.sh（包含脚本和二进制文件）执行即可
+
+no change     /usr/local/anaconda3/condabin/conda
+no change     /usr/local/anaconda3/bin/conda
+no change     /usr/local/anaconda3/bin/conda-env
+no change     /usr/local/anaconda3/bin/activate
+no change     /usr/local/anaconda3/bin/deactivate
+no change     /usr/local/anaconda3/etc/profile.d/conda.sh
+no change     /usr/local/anaconda3/etc/fish/conf.d/conda.fish
+no change     /usr/local/anaconda3/shell/condabin/Conda.psm1
+no change     /usr/local/anaconda3/shell/condabin/conda-hook.ps1
+no change     /usr/local/anaconda3/lib/python3.7/site-packages/xontrib/conda.xsh
+no change     /usr/local/anaconda3/etc/profile.d/conda.csh
+modified      /home/cjx/.bashrc
+
+==> For changes to take effect, close and re-open your current shell. <==
+
+If you'd prefer that conda's base environment not be activated on startup, 
+   set the auto_activate_base parameter to false: 
+
+conda config --set auto_activate_base false
+
+
+
+https://github.com/conda/conda
+https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+https://repo.anaconda.com/archive/
+https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh
+国内镜像(清华)
+https://mirror.tuna.tsinghua.edu.cn/help/anaconda/
+
+```
+
+## 16 docker
+
+```
+
+```
+
+## 17 sftp同步
+
+```
+idea: setting， deployment， sftp自动同步
+vscode: 添加sftp插件自动同步
+windows： winscp，免费，配置puttykey，可登陆sftp。连接后，工具栏按钮Keep remote directory up-to-date(Ctrl-U)，start，可指定某个目录自动同步。窗口可缩小至系统托盘。
+```
+
+## 18 rsync
+
+```
+rsync --safe-links -arvzuc --exclude ".git" -e 'ssh -p 58422' . root@39.105.23.44:/home/cjx/tmp/dev/feature_process/ --chmod=D755,F644
+// 同步本地local_dir，经过host1中转，到host2上面
+rsync -ru -e 'ssh -p port1 user1@host1 ssh -p port2' local_dir user2@host2:<remote_dir>
+如果使用--exclude-from=<list_file>；list_file里面每一行代表一个排除项
+
+--chmod: 修改目标权限，D表示目录，F标识文件。
+-v, --verbose 详细模式输出。
+-q, --quiet 精简输出模式。
+-c, --checksum 打开校验开关，强制对文件传输进行校验。
+-a, --archive 归档模式，表示以递归方式传输文件，并保持所有文件属性，等于-rlptgoD。
+-r, --recursive 对子目录以递归模式处理。
+-R, --relative 使用相对路径信息。
+-b, --backup 创建备份，也就是对于目的已经存在有同样的文件名时，将老的文件重新命名为~filename。可以使用--suffix选项来指定不同的备份文件前缀。
+--backup-dir 将备份文件(如~filename)存放在在目录下。
+-suffix=SUFFIX 定义备份文件前缀。
+-u, --update 仅仅进行更新，也就是跳过所有已经存在于DST，并且文件时间晚于要备份的文件，不覆盖更新的文件。
+-l, --links 保留软链结。
+-L, --copy-links 想对待常规文件一样处理软链结。
+--copy-unsafe-links 仅仅拷贝指向SRC路径目录树以外的链结。
+--safe-links 忽略指向SRC路径目录树以外的链结。
+-H, --hard-links 保留硬链结。
+-p, --perms 保持文件权限。
+-o, --owner 保持文件属主信息。
+-g, --group 保持文件属组信息。
+-D, --devices 保持设备文件信息。
+-t, --times 保持文件时间信息。
+-S, --sparse 对稀疏文件进行特殊处理以节省DST的空间。
+-n, --dry-run现实哪些文件将被传输。
+-w, --whole-file 拷贝文件，不进行增量检测。
+-x, --one-file-system 不要跨越文件系统边界。
+-B, --block-size=SIZE 检验算法使用的块尺寸，默认是700字节。
+-e, --rsh=command 指定使用rsh、ssh方式进行数据同步。
+--rsync-path=PATH 指定远程服务器上的rsync命令所在路径信息。
+-C, --cvs-exclude 使用和CVS一样的方法自动忽略文件，用来排除那些不希望传输的文件。
+--existing 仅仅更新那些已经存在于DST的文件，而不备份那些新创建的文件。
+--delete 删除那些DST中SRC没有的文件。
+--delete-excluded 同样删除接收端那些被该选项指定排除的文件。
+--delete-after 传输结束以后再删除。
+--ignore-errors 及时出现IO错误也进行删除。
+--max-delete=NUM 最多删除NUM个文件。
+--partial 保留那些因故没有完全传输的文件，以是加快随后的再次传输。
+--force 强制删除目录，即使不为空。
+--numeric-ids 不将数字的用户和组id匹配为用户名和组名。
+--timeout=time ip超时时间，单位为秒。
+-I, --ignore-times 不跳过那些有同样的时间和长度的文件。
+--size-only 当决定是否要备份文件时，仅仅察看文件大小而不考虑文件时间。
+--modify-window=NUM 决定文件是否时间相同时使用的时间戳窗口，默认为0。
+-T --temp-dir=DIR 在DIR中创建临时文件。
+--compare-dest=DIR 同样比较DIR中的文件来决定是否需要备份。
+-P 等同于 --partial。
+--progress 显示备份过程。
+-z, --compress 对备份的文件在传输时进行压缩处理。
+--exclude=PATTERN 指定排除不需要传输的文件模式。
+--include=PATTERN 指定不排除而需要传输的文件模式。
+--exclude-from=FILE 排除FILE中指定模式的文件。
+--include-from=FILE 不排除FILE指定模式匹配的文件。
+--version 打印版本信息。
+--address 绑定到特定的地址。
+--config=FILE 指定其他的配置文件，不使用默认的rsyncd.conf文件。
+--port=PORT 指定其他的rsync服务端口。
+--blocking-io 对远程shell使用阻塞IO。
+-stats 给出某些文件的传输状态。
+--progress 在传输时现实传输过程。
+--log-format=formAT 指定日志文件格式。
+--password-file=FILE 从FILE中得到密码。
+--bwlimit=KBPS 限制I/O带宽，KBytes per second。
+-h, --help 显示帮助信息。
+```
+
+## 19 inotify
+
+```
+用途：监控文件变化
+apt install inotify-tools
+
+监控：
+inotifywait --exclude '\.(part|swp)' -r -mq -e  modify,create,delete <file/directory-to-watch>
+监控一次：
+inotifywait --exclude '\.(part|swp)' <file/directory-to-watch>
+
+配合rsync，自动同步到远端
+while true
+do
+	inotifywait <dir>
+	rsync xxx
+done
+```
+
+## 20 sysvinit-tools
+
+```
+yum install sysvinit-tools
+Tools used for process and utmp management.
+包括
+killproc pidof等
+```
+
+## 21 tmux
+
+```
+终端复用器：分离ssh和terminal。每个session可以由数字标识，或者自定义名字
+tmux new -s <session-name>
+tmux detach
+tmux attach -t <session-name>
+tmux rename -t n <session-name>
+tmux ls // 列出会话
+tmux kill-session -t n
+
+快捷键
+Ctrl+b d：分离当前会话。
+Ctrl+b s：列出所有会话。
+Ctrl+b $：重命名当前会话。
+```
+
+## 22 iproute
+
+```
+yum install iproute
+```
+
+
+
+
+
+
+
 # SHELL脚本
 
 ## 1. 规范
@@ -1241,7 +1538,7 @@ if [ ! -f xxx ]; then
   echo file xxx not exist
 fi
 ```
-### 带参数脚本
+#### 带参数脚本
 
 ```
 # 第一个参数赋值给arg1
@@ -1336,6 +1633,49 @@ done
 使用awk处理。可通过system()调用shell命令
 ```
 
+#### 数组
+
+```
+var=(1 2 3 4) // ()， 空格分隔
+echo len=${#var[@]}
+for i in $var[@]; do
+	echo $i
+done
+```
+
+
+
+#### 关联数组(字典)
+
+```
+#声明associative arrays（类似字典）
+declare -A y
+y["sss"]="kkk"
+y["aaa"]="bbb"
+#获取所有键key
+echo ${!y[@]} 
+#获取所有键val
+echo ${y[*]}
+#获取指定键的值
+echo ${y["sss"]}
+```
+
+#### 多进程并行
+
+```
+for xxx;
+do 
+{
+	// code run in new proc
+	while true;
+	do
+		xxx // run for ever. eg. monitor & sync
+	done
+} & 
+done 
+wait // wait til all done
+```
+
 
 
 #### 其它
@@ -1422,12 +1762,58 @@ $: 匹配行尾位置
 ```
 **复杂子串拼接
 一对引号中不允许出现单引号，即使转义也不行
-解决：拼接。例子
+解决：拼接。例子 
+SHELL_CMD='ssh -p 58422'
+HOST=root@192.168.106.186
+echo $SHELL_CMD $HOST '"' "mkdir -p" $remote '"' 
+// ssh -p 58422 root@39.105.23.44 " mkdir -p /home/cjx/tmp/dev/d1/d2/d3 "
 
 **调试
 bash -x shell param
 
 **自增
 例子
+```
+
+## 1.4 示例
+
+### 管道遍历文件并处理
+
+```
+ls *.proto | cat | awk '{print "protoc --cpp_out=. " $1 | "/bin/bash"}'
+列出所有proto文件 | 分行 | awk处理
+awk：打印命令 | 传递给bash
+awk也可以使用system调用命令
+```
+
+
+
+
+
+# gdb
+
+## core dump
+
+```
+ulimit -c unlimited // 不限制core大小
+gdb -c core.xxxx
+bt
+file xxx 加载文件符号
+frame n 或者 f n 切换到bt的第n个帧
+i f // info frame
+i t // info thread 列出线程信息
+t n // 切换到第N个线程
+directory <src directory> // 添加源码搜索路径。No such file or directory 时
+p var-name // print变量值
+```
+
+# 常用命令
+
+```
+遍历文件并处理
+ls *.proto | cat | awk '{print "protoc --cpp_out=. " $1 | "/bin/bash"}'
+find ./ -name \*.proto | awk '{print "protoc --cpp_out=. " $1 | "/bin/bash"}'
+
+
 ```
 

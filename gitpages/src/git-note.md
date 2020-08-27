@@ -94,7 +94,7 @@ Also, consider repacking your repository, which will generate a packfile that wi
 *.pdf -delta
 ```
 
-# 2. git只迁出某一子目录
+# 2. git只签出某一子目录
 
 git本身建议这样操作。建议使用submodule，但是有类似的实现方式："sparse clone" and "sparse fetch" 
 
@@ -277,6 +277,41 @@ git reflog expire --expire=now --all
 git gc --prune=now
 ```
 
+### 初始化库
+
+```
+你有一个空的存储库
+To get started you will need to run these commands in your terminal.
+ 
+第一次配置Git
+git config --global user.name "your_name"
+git config --global user.email "your_mail"
+使用您的存储库
+我只想克隆这个存储库
+如果要简单地克隆此空存储库，请在终端中运行此命令。
+
+git clone <git-url>
+我的代码已经准备好推送
+如果你代码已经准备好推送到仓库，请在终端中执行该命令
+
+cd existing-project
+git init
+git add --all
+git commit -m "Initial Commit"
+git remote add origin <git-url>
+git push -u origin master
+我的代码已经由Git跟踪
+如果你的代码已经由Git跟踪，然后设置这个仓库作为你的“origin”推送。
+
+cd existing-project
+git remote set-url origin <git-url>
+git push -u origin --all
+git push origin --tags
+所有用命令完成？
+```
+
+
+
 ## 4.5 QA
 
 1）commit your changes or stash them before you can merge.
@@ -372,6 +407,18 @@ git config --global http.sslverify false // 可选配置
 // 清除代理
 git config --global --unset http.proxy
 git config --global --unset https.proxy
+```
+
+# 6. 子模块
+
+```
+https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E5%AD%90%E6%A8%A1%E5%9D%97
+
+git clone --recurse-submodules https://github.com/chaconinc/MainProject
+git submodule init
+git submodule update
+git submodule update --init --recursive
+git submodule update --remote // 同步远端更改
 ```
 
 
