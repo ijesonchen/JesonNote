@@ -305,9 +305,6 @@ passwd // 修改密码。可指定用户
 apt update|install|remove // 更新源|安装软件|移除软件。
 	E: Unable to fetch some archives, maybe run apt-get update or try with --fix-missing?
 	如果安装失败，首先考虑update后再次安装
-uname -a // 显示kernal信息
-lsb_release -a // 显示发行版本信息
-rpm -q centos-release // cenos发行版本信息
 who // 查看登录用户
 whoami // 查看当前登录用户
 scp -i <ssh-key> -r src dst 
@@ -336,6 +333,19 @@ fdisk -l // 列出磁盘信息
 mount <disk> <target_dir> -r // 挂载磁盘, 只读方式, 默认-w读写
 umask u=, g=w, o=rwx // 利用umask命令可以指定哪些权限将在新文件的默认权限中被删除。使得组用户的写权限，其他用户的读、写和执行权限都被取消：
 ```
+
+### 0.0 查看发行版
+
+```shell
+uname -a // 显示kernal信息
+lsb_release -a // 显示发行版本信息
+rpm -q centos-release // cenos发行版本信息
+版本信息文件(较新版本支持)
+ubuntu: /etc/os-release
+centos: /etc/system-relase
+```
+
+
 
 ### 0.1 grep
 
@@ -626,6 +636,27 @@ ssh-keygen -l -E md5 -f <keyfile>
 校验key的md5签名，一般是pubkey。可用于和gitlab上的key比对。
 ```
 
+### 0.10 sed
+
+```
+**替换**
+https://www.cnblogs.com/linux-wangkun/p/5745584.html
+
+sed 's/原字符串/替换字符串/'           # 替换第一个
+sed "s/原字符串包含'/替换字符串包含'/"  # 要处理的字符包含单引号
+sed 's?原字符串?替换字符串?'           # 将分隔符换成问号”?”
+sed 's/原字符串/替换字符串/g'          # 替换所有匹配关键字
+　　”^”表示行首
+　　”$”符号如果在引号中表示行尾，但是在引号外却表示末行(最后一行)
+# 注意这里的 " & " 符号，如果没有 “&”，就会直接将匹配到的字符串替换掉
+sed 's/^/添加的头部&/g' 　　　　 #在所有行首添加
+sed 's/$/&添加的尾部/g' 　　　　 #在所有行末添加
+sed '2s/原字符串/替换字符串/g'　 #替换第2行
+sed '$s/原字符串/替换字符串/g'   #替换最后一行
+sed '2,5s/原字符串/替换字符串/g' #替换2到5行
+sed '2,$s/原字符串/替换字符串/g' #替换2到最后一行
+```
+
 
 
 ## 1. 知识库
@@ -662,6 +693,8 @@ ubuntu
 sudo su
 cd /etc/apt
 cp source.list source.list.bak // 备份
+sed 's/archive.ubuntu.com/mirrors.aliyun.com/g' sources.list.bak > sources.list
+
 vi source.list
   a. 注释掉 deb cdrom: 开头的这一行（光盘安装路径）
   b. 替换为mirrors.aliyun.com:
@@ -772,7 +805,18 @@ yum install lrzsz  // rz sz
 yum install httpd-tools // ab
 yum install util-linux  // tailf
 yum install sysvinit-tools // pidof
+yum install iproute
+yum install zsh
+yum install gcc-toolset-9-gcc-c++ gcc-toolset-9-make gcc-toolset-9-gcc-gdb-plugin gcc-toolset-9-valgrind gcc-toolset-9-perftools gcc-toolset-9-binutils gcc-toolset-9-gdb-gdbserver
+yum install bazel3 // 需要先配置repo源，参考官网
 
+brew cask install iterm2 typora docker visual-studio-code google-chrom
+brew install iproute2mac // ip addr
+brew install md5sha1sum wget clang-format graphviz xdot
+
+ubuntu:
+build-essential // gcc开发工具集 也可指定 gcc-8 g++-8
+zsh git wget curl iproute2
 ```
 
 
@@ -794,7 +838,7 @@ golang配置，windows下golang tools迁移到linux，参考go-note.md
 
 #### 安装
 
-```
+```shell
 服务器：
 sudo su
 apt install openssh-server // 安装服务
@@ -918,6 +962,32 @@ ZSH_THEME_GIT_PROMPT_DIRTY="%{$reset_color$fg[cyan]%}) %{$fg_bold[yellow]%}✗"
 ZSH_THEME_GIT_PROMPT_CLEAN="%{$reset_clolr$fg[cyan]%})"
 ```
 
+问题排查
+
+```
+-v    equivalent to --verbose
+-x    equivalent to --xtrace
+可以在zhs执行命令时显示详细trace信息，帮助排查错误或性能瓶颈，例如，某些情况容易卡住
+```
+
+```
+****git目录非常慢****
+macos下运行docker，ubuntu，命令行操作git目录非常慢，执行完一条命令后会卡几秒
+zsh -vx后，执行ls命令
+发现会在
++parse_git_dirty:18> STATUS=+parse_git_dirty:18> STATUS=+parse_git_dirty:18> tail -n1
+这一行停留几秒。推测是由于git命令的原因
+执行git status，发现是该命令返回时间较长，经常会重建index
+切换到bash下，执行git status仍然缓慢
+**发现该目录是从docker访问的macos路径
+讲该repo复制到docker内部存储后，问题消失
+推测原因：docker存储macos文件系统时，存在性能问题，会导致访问大量小文件比较慢。
+同样在windows系统下，wsl访问windows目录也容易出现类似问题。
+**可以考虑直接通过vscode的Remote - Containers插件访问docker内的文件来解决
+```
+
+
+
 ## 4. supervisor
 
 ```
@@ -1030,7 +1100,7 @@ environment=GODEBUG="gctrace=1"
 
 cenos
 
-```
+```shell
 1. 安装源
 yum install http://opensource.wandisco.com/centos/6/git/x86_64/wandisco-git-release-6-1.noarch.rpm   // centos 6 git 1.x
 - or -
@@ -1040,6 +1110,16 @@ yum install http://opensource.wandisco.com/centos/7/git/x86_64/wandisco-git-rele
 
 2. yum install git 更新
 3. git version 查看版本
+
+***使用ius源安装
+https://ius.io/setup
+
+yum install https://repo.ius.io/ius-release-el7.rpm https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+测试
+yum install yum-utils
+搜索
+yum info git2* |grep Name // 搜索git2.x版本
+yum install git222  // 安装2.22
 ```
 
 源码安装
@@ -1068,6 +1148,28 @@ make: *** [perl/perl.mak] Error 2
 或者直接
 2. yum install perl-ExtUtils-MakeMaker 
 ```
+
+源码安装
+
+```
+host: macos
+docker: ubuntu 20.04.1 LTS
+git: 2.28.0
+
+apt install build-essential wget
+apt install libssl-dev libcurl4-gnutls-dev zlib1g-dev autoconf tcl gettext
+wget https://www.kernel.org/pub/software/scm/git/git-2.28.0.tar.gz
+tar -zxf git-2.28.0.tar.gz
+cd git-2.28.0
+make configure
+./configure --prefix=/usr/local/git
+make -j8 
+make install
+```
+
+
+
+
 
 ## 6. redis
 
@@ -1142,7 +1244,7 @@ sudo chmod 777 /data/ftp
 
 ## 8. apache utils (ab测试)
 
-```
+```shell
 安装: 
 apt install apache2-utils
 yum install httpd-tools
@@ -1233,6 +1335,12 @@ windows下，需要安装MinGW-w64/CygWin
 	MinGW是windows下一致linux应用的开发环境，使用win32 api。
 	MSYS是辅助MinGW的工具链。
 	只是使用gcc，建议安装MinGW。参数：arch x86_64, thread posix, exception seh。
+	
+安装特定版本：
+yum search gcc
+yum install gcc-toolset-9-gcc-c++
+scl list-collections // 查看有哪些toolset可用
+scl enable gcc-toolset-9 bash
 ```
 
 ## 13 gdb pstack
@@ -1300,7 +1408,19 @@ https://mirror.tuna.tsinghua.edu.cn/help/anaconda/
 ## 16 docker
 
 ```
+macos安装：
+brew cask install docker
 
+添加国内源
+daemon.json
+  "registry-mirrors": [
+    "http://hub-mirror.c.163.com"
+  ],
+  
+docker run -it -h <docker_host_name> --cpus <N> -m 4G --network host -v <local_path>:<docker_path> image_name
+
+查看镜像tag：（源是dockerhub时）
+https://hub.docker.com/ 搜索对应镜像，查看tag
 ```
 
 ## 17 sftp同步
@@ -1313,7 +1433,7 @@ windows： winscp，免费，配置puttykey，可登陆sftp。连接后，工具
 
 ## 18 rsync
 
-```
+```shell
 rsync --safe-links -arvzuc --exclude ".git" -e 'ssh -p 58422' . root@39.105.23.44:/home/cjx/tmp/dev/feature_process/ --chmod=D755,F644
 // 同步本地local_dir，经过host1中转，到host2上面
 rsync -ru -e 'ssh -p port1 user1@host1 ssh -p port2' local_dir user2@host2:<remote_dir>
@@ -1413,7 +1533,7 @@ killproc pidof等
 
 ## 21 tmux
 
-```
+```shell
 终端复用器：分离ssh和terminal。每个session可以由数字标识，或者自定义名字
 tmux new -s <session-name>
 tmux detach
@@ -1434,9 +1554,42 @@ Ctrl+b $：重命名当前会话。
 yum install iproute
 ```
 
+## 23 docker
+
+```shell
+docker run -d -e 'CONSUL_LOCAL_CONFIG={"skip_leave_on_interrupt": true}' --name=node3 consul agent -server -bind=172.17.0.4  -join=172.17.0.2 -node-id=$(uuidgen | awk '{print tolower($0)}')  -node=node3 -client=172.17.0.4
 
 
+docker run -it -d -e 'CONSUL_LOCAL_CONFIG={"skip_leave_on_interrupt": true}' --name=node5 consul agent -server -bind=172.17.0.6  -join=172.17.0.2 -node-id=$(uuidgen | awk '{print tolower($0)}')  -node=node5
 
+
+docker run -it -h <cntr_host_name> -v <host_dir>:<cntr_dir> --network host centos:7
+docker exec -it <img_id> zsh
+
+docker run --net=host -h lambda --name yien -it -d --entrypoint /bin/bash docker-reg.devops.xiaohongshu.com/lambda/lambda-service:dev -c 'sleep infinity' 
+```
+
+## 24 bazel
+
+```shell
+bazel build //<path-to-pkg>:<pkg-name>
+// 打印依赖图，可以在http://www.webgraphviz.com中展示
+bazel query --notool_deps --noimplicit_deps "deps(//main:hello-world)" --output graph
+// 使用xdot工具显示依赖图。注意会在弹出窗口显示，知道关闭窗口才返回。需要安装graphviz和xdot
+xdot <(bazel query --notool_deps --noimplicit_deps "deps(//main:hello-world)" --output graph) 
+```
+
+## 25 gpg
+
+```shell
+brew install gpg
+gpg签名验证
+一般提供gpg签名文件的同时，会附带说明public key id及公钥文件。
+
+gpg --import <gpg-key-file> // 从文件导公钥
+gpg --recv-keys <key-id>    // 从服务器导入公钥
+gpg --verify xxx.gpg xxx 验证签名
+```
 
 
 
@@ -1492,7 +1645,7 @@ unset var			#清除变量
 ```
 #### 条件判断
 
-```
+```shell
 **条件判断condition
 [ 其实是一个程序（ /usr/bin/[ ，有时是/usr/bin/test的软链接)。因此使用时后面要加空格，以]表示输入结束，结束时设置返回值为表达式的值。详情可以参考 man [。例如(注意空格！)：
 [ $foo = "bar" ]
