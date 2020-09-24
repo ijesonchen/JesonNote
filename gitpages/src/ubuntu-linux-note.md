@@ -332,6 +332,8 @@ ulimit -a // 查询当前用户限制(文件句柄,最大线程数等)
 fdisk -l // 列出磁盘信息
 mount <disk> <target_dir> -r // 挂载磁盘, 只读方式, 默认-w读写
 umask u=, g=w, o=rwx // 利用umask命令可以指定哪些权限将在新文件的默认权限中被删除。使得组用户的写权限，其他用户的读、写和执行权限都被取消：
+
+lsof -i -P // 显示打开的文件。-i 显示端口号 -P 不显示端口的常用名
 ```
 
 ### 0.0 查看发行版
@@ -652,6 +654,14 @@ sed '2,5s/原字符串/替换字符串/g' #替换2到5行
 sed '2,$s/原字符串/替换字符串/g' #替换2到最后一行
 ```
 
+### 0.11 xargs
+
+```
+把输入转化为参数
+ls *.sig | xargs -L 1 gpg --verify
+把所有sig文件送给gpg，每个为一行 ==》  gpg --verify xxx.sig // 每个sig文件生成一个命令
+```
+
 
 ## 1. 知识库
 
@@ -679,7 +689,7 @@ passwd 修改当前用户密码，有长度限制
 sudo passwd username 修改用户密码，可以设置为简单密码
 ```
 
-## 4. 更换阿里源
+## 4. 更换国内源
 
 ubuntu
 
@@ -704,6 +714,9 @@ centos
 ```
 wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
 curl -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
+
+腾讯云 https://mirrors.cloud.tencent.com/help/centos.html
+wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.cloud.tencent.com/repo/centos5_base.repo
 
 https://yq.aliyun.com/articles/33286
 CentOS系统更换软件安装源
@@ -795,6 +808,7 @@ dpkg -L libopenblas-dev:amd64
 ### 常用包
 
 ```
+centos:
 yum install lrzsz  // rz sz
 yum install httpd-tools // ab
 yum install util-linux  // tailf
@@ -803,9 +817,12 @@ yum install iproute
 yum install zsh
 yum install gcc-toolset-9-gcc-c++ gcc-toolset-9-make gcc-toolset-9-gcc-gdb-plugin gcc-toolset-9-valgrind gcc-toolset-9-perftools gcc-toolset-9-binutils gcc-toolset-9-gdb-gdbserver
 yum install bazel3 // 需要先配置repo源，参考官网
-brew cask install iterm2 typora docker visual-studio-code google-chrom
+
+macos:
+brew cask install iterm2 typora docker visual-studio-code google-chrome
 brew install iproute2mac // ip addr
 brew install md5sha1sum wget clang-format graphviz xdot
+
 ubuntu:
 build-essential // gcc开发工具集 也可指定 gcc-8 g++-8
 zsh git wget curl iproute2
@@ -1272,6 +1289,9 @@ yum list python3?.x86_64
 yum list python.x86_64
 yum install python36
 yum install python36-pip
+
+python3 -m pip install xxx            ## 通过python调用pip安装包
+python3 -m pip install --upgrade pip  ## 升级pip
 ```
 
 ## 10. wrk
@@ -1402,7 +1422,12 @@ daemon.json
     "http://hub-mirror.c.163.com"
   ],
   
-docker run -it -h <docker_host_name> --cpus <N> -m 4G --network host -v <local_path>:<docker_path> image_name
+拉取：docker pull <镜像全名> 即可拉取。
+运行：docker run -ti --rm --network host <镜像全名> bash
+  
+  
+docker run -it -h <docker_host_name> --cpus <N> -m 4G --rm --network host -v <local_path>:<docker_path> image_name:tag
+--rm 自动移除已存在的docker
 查看镜像tag：（源是dockerhub时）
 https://hub.docker.com/ 搜索对应镜像，查看tag
 
@@ -1410,8 +1435,24 @@ https://hub.docker.com/ 搜索对应镜像，查看tag
 docker run -d -e 'CONSUL_LOCAL_CONFIG={"skip_leave_on_interrupt": true}' --name=node3 consul agent -server -bind=172.17.0.4  -join=172.17.0.2 -node-id=$(uuidgen | awk '{print tolower($0)}')  -node=node3 -client=172.17.0.4
 docker run -it -d -e 'CONSUL_LOCAL_CONFIG={"skip_leave_on_interrupt": true}' --name=node5 consul agent -server -bind=172.17.0.6  -join=172.17.0.2 -node-id=$(uuidgen | awk '{print tolower($0)}')  -node=node5
 docker run -it -h <cntr_host_name> -v <host_dir>:<cntr_dir> --network host centos:7
+docker ps -a
 docker exec -it <img_id> zsh
 docker run --net=host -h lambda --name yien -it -d --entrypoint /bin/bash docker-reg.devops.xiaohongshu.com/lambda/lambda-service:dev -c 'sleep infinity' 
+
+列出镜像
+docker imagess
+导出镜像(可以使用imageid或者repo:tag的方式制定image，但是使用image id时导入镜像repo和tag会显示为none)
+docker save registry.qtt6.cn/qtt-bigdata/dnn_cpp_batch-test:v8-20200509181720 -o dnn_cpp_batch-test-v8.tgz
+导入镜像
+docker load --input dnn_cpp_batch-test-v8.tgz
+保存镜像修改（镜像需要在运行，默认保存时会暂停镜像)
+docker commit [OPTIONS] CONTAINER [REPOSITORY[:TAG]]
+移除镜像
+docker rm <container>
+docker rmi <docker-id>
+
+Ctrl+P+Q退出但不关闭容易。
+一般exit后容器会被关闭
 ```
 
 ## 17 sftp同步
@@ -1553,6 +1594,9 @@ bazel build //<path-to-pkg>:<pkg-name>
 bazel query --notool_deps --noimplicit_deps "deps(//main:hello-world)" --output graph
 // 使用xdot工具显示依赖图。注意会在弹出窗口显示，知道关闭窗口才返回。需要安装graphviz和xdot
 xdot <(bazel query --notool_deps --noimplicit_deps "deps(//main:hello-world)" --output graph) 
+
+bazel build --copt="-pg" --cxxopt="-pg" --linkopt="-pg" test:test_dnn_model_v2  // debug符号表
+
 ```
 
 ## 24 gpg
@@ -1564,6 +1608,12 @@ gpg签名验证
 gpg --import <gpg-key-file> // 从文件导公钥
 gpg --recv-keys <key-id>    // 从服务器导入公钥
 gpg --verify xxx.gpg xxx 验证签名
+```
+
+## vcpkg
+
+```
+方便管理c++依赖，跨平台。详细参考c_cpp-note.md
 ```
 
 # SHELL脚本

@@ -312,6 +312,18 @@ https://code.visualstudio.com/docs/remote/remote-overview VS Code Remote Develop
 4. 右键文件或文件夹，可以执行同步 Sync xxx
 ```
 
+## Remote Development
+
+```
+https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack
+vscode 远程开发套件，包括ssh, wsl, container。
+remote ssh: 通过跳板机登录：利用ProxyCommand。
+	使用了ssh_config配置，参考：
+	https://linux.die.net/man/5/ssh_config
+	https://code.visualstudio.com/blogs/2019/10/03/remote-ssh-tips-and-tricks
+	https://cikeblog.com/proxycommand.html
+```
+
 
 
 
@@ -342,15 +354,23 @@ https://code.visualstudio.com/docs/remote/remote-overview VS Code Remote Develop
 
 ## 7.2 vcpkg
 
+安装使用
+
+```
 安装：git clone然后按照说明运行即可。安装过程中需要下载cmake并复制到指定目录，注意不要点错取消。
-
 搜索包：`vcpkg search sqlite`
-
 包支持的平台triplet:`vcpkg help triplet`
-
 安装: `vcpkg install tbb:x64-windows` （默认x86平台)
-
 集成：`vcpkg integrate install`
+```
+
+常用包
+
+```
+vcpkg install glog brpc gtest gperftools tensorflow-cc
+```
+
+
 
 ## 7.3 Linux dev
 
@@ -388,8 +408,6 @@ https://developercommunity.visualstudio.com/idea/617778/systemnotsupportedexcept
 格式的私钥。
 解决办法:另外生成一份私钥 ssh-keygen -t rsa ，然后将公钥添加到服务器的authrized_keys里面。使用心得rsa格式私钥链接。
 ```
-
-
 
 
 
@@ -440,6 +458,21 @@ https://devblogs.microsoft.com/cppblog/c-with-visual-studio-2019-and-windows-sub
      1>wsl_test3.vcxproj -> C:\dev\cpp\wsl_test3\wsl_test3\bin\x64\Debug\wsl_test3.out
     但调试和程序输出都在wsl里面。  
 ```
+
+## 7.4 vs2019无法登录账号
+
+```
+社区版需要申请licence，但是无法登录账户申请新的licence，输入账户后下一步卡死。
+按照https://blog.csdn.net/cc93691810/article/details/93969472
+的方法尝试登出服务后，输入账户后下一步白屏
+IdentityServiceAdalCache.cache 文件也未找到。
+删除.IdentityService目录也没效果。
+
+解决：
+在提示过期的界面上有个账户选项，点击 登录选项 有个黄思勇一下方式添加账户并重新进行身份验证，把 嵌入式web浏览器 改成 系统web浏览器，再次登录会弹出浏览器窗口，登录后返回vs界面会自动刷新账户状态，点检查新的许可证即可更新。
+```
+
+
 
 # 8 Intelij Idea
 
@@ -519,7 +552,7 @@ gperftools (originally Google Performance Tools)
 HEAP CHECKER
 ```
 
-### 9.2 profilling
+## 9.2 profilling
 
 #### gprof
 
@@ -542,6 +575,8 @@ An Introduction to GCC: 10.2 Using the profiler gprof
 #### gperftools
 
 ```
+**** 注意，在docker中使用gperftools需要特殊参数
+
 https://blog.csdn.net/whuzhang16/article/details/93890514
 GoogleCPUProfiler在CMake项目中的使用
 
@@ -750,6 +785,85 @@ for la in libtcmalloc_minimal.la libtcmalloc_minimal_debug.la libtcmalloc.la lib
  /usr/bin/install -c -m 644 libtcmalloc.pc libtcmalloc_minimal.pc libtcmalloc_debug.pc libtcmalloc_minimal_debug.pc libprofiler.pc '/usr/local/lib/pkgconfig'
 make[1]: Leaving directory `/home/cjx/dev/src/github.com/gperftools/gperftools'
 ```
+
+## 9.3 faiss
+
+```
+facebook的向量搜索库
+
+https://zhuanlan.zhihu.com/p/40236865
+https://github.com/facebookresearch/faiss/wiki/Getting-started
+https://github.com/facebookresearch/faiss/wiki/Faster-search
+https://github.com/facebookresearch/faiss/wiki/Lower-memory-footprint
+
+##############
+conda安装python库
+下载miniconda3，然后按照教程安装即可。
+
+
+##############
+编译源码
+1. 安装依赖库
+apt install openblas-dev liblapack-dev
+yum install openblas-devel lapack64-devel
+可以通过apt search blas/lapack或者yum search blas/lapack查找具体包名
+
+也可以源码编译openblas https://juejin.im/post/5bed7cebe51d454e5b5f2c23
+git clone https://github.com/xianyi/OpenBLAS.git
+cd OpenBLAS
+#yum install gcc-gfortran （unbuntu版 执行 sudo apt-get install gfortran）
+make FC=gfortran
+make install
+ln -s /opt/OpenBLAS/lib/libopenblas.so  /usr/lib/libopenblas.so
+
+2. 配置
+./configure --without-cuda
+3. 检查
+make misc/test_blas
+./misc/test_blas
+会提示lapack具体使用的int字长。如
+Intentional Lapack error (appears only for 64-bit INTEGER):
+info=0000064b00000000
+Lapack uses 32-bit integers
+根据https://github.com/facebookresearch/faiss/issues/101这个只是个提示。
+如果make过程提示找不到openblas库，
+export  export LD_LIBRARY_PATH=<open-blas-lib-path>
+
+4. 编译
+make
+
+5. 安装
+make install
+cp libfaiss.a libfaiss.so /usr/local/lib
+tar cf - MatrixStats.h IndexBinaryHNSW.h Index2Layer.h IndexPreTransform.h IndexIVFFlat.h MetaIndexes.h IndexScalarQuantizer.h IndexPQ.h Clustering.h IVFlib.h IndexBinary.h Index.h IndexHNSW.h IndexIVFPQR.h IndexFlat.h IndexBinaryHash.h DirectMap.h IndexBinaryFromFloat.h IndexBinaryIVF.h IndexIVFPQ.h OnDiskInvertedLists.h VectorTransform.h IndexReplicas.h index_io.h IndexLattice.h index_factory.h InvertedLists.h IndexBinaryFlat.h IndexLSH.h IndexIVF.h IndexShards.h MetricType.h clone_index.h IndexIVFSpectralHash.h AutoTune.h impl/AuxIndexStructures.h impl/FaissAssert.h impl/PolysemousTraining.h impl/io.h impl/HNSW.h impl/ThreadedIndex-inl.h impl/ScalarQuantizer.h impl/FaissException.h impl/lattice_Zn.h impl/ProductQuantizer.h impl/ProductQuantizer-inl.h impl/ThreadedIndex.h utils/WorkerThread.h utils/extra_distances.h utils/distances.h utils/hamming.h utils/hamming-inl.h utils/random.h utils/utils.h utils/Heap.h | tar xf - -C /usr/local/include/faiss/
+可以根据需要把头文件复制到自己需要的目录
+
+6. demo
+make -C demos demo_ivfpq_indexing
+cd demos
+./demo_ivfpq_indexing
+提示找不到libfaiss.so时export LD_LIBRARY_PATH=<libfaiss.so-path>
+```
+
+## 9.4 brpc
+
+```
+https://github.com/apache/incubator-brpc/blob/master/docs/cn/getting_started.md
+
+1. 安装依赖
+sudo apt-get install -y git g++ make libssl-dev libgflags-dev libprotobuf-dev libprotoc-dev protobuf-compiler libleveldb-dev  libsnappy-dev libgoogle-perftools-dev
+sudo apt-get install -y cmake libgtest-dev && cd /usr/src/gtest && sudo cmake . && sudo make && sudo mv libgtest* /usr/lib/ && cd -
+2. 编译
+sh config_brpc.sh --headers=/usr/include --libs=/usr/lib
+make -j 64 // 并发编译
+3. 运行demo
+cd example/echo_c++
+make
+./echo_server &
+./echo_client
+```
+
+
 
 
 

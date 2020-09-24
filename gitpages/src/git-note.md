@@ -137,6 +137,68 @@ curl https://github.com/<user-account>.keys
 git -c core.fileMode=false diff
 ```
 
+## 3.6 加速
+
+clone加速-国内镜像
+
+```
+gitclone.com
+
+https://gitclone.com ，目前mirror了一万多个代码库，star超过1500的都做了镜像。通过gitclone.com clone，如果能命中镜像，则速度会达到1M多，如果之前未mirror过，会随着git clone命令建立起镜像，下次clone会用到。使用起来很简单，URL稍微改一下，如 git clone "https://gitclone.com/github.com/xxx/yyy">https://gitclone.com/github.com/xxx/yyy ，或干脆不改url，如 cgit clone https://github.com/xxx/yyy ，不需要fork、不需要登录。
+链接：https://www.zhihu.com/question/38192507/answer/1292617132
+```
+
+
+下载加速
+```
+http://toolwa.com/github/
+
+
+https://niao.su/7/
+GitHub国内加速下载
+GitHub我们都知道是世界上最大的开源及私有软件项目的托管平台，全世界每天有海量优秀的开源软件在这里产生，而GitHub在国内很多时候获取到的下载链接是亚马逊的服务器。
+中国因为不可言说的原因，经常抽疯或龟速。想要加快GitHub下载速度就需要用到GitHub国内加速服务，对于有条件的可以使用代理加快访问速度，而没有条件的就可以用到网上热心人士维护的加速服务了。
+GitHub hosts
+https://github.com/521xueweihan/GitHub520
+通过修改hosts加快GitHub访问速度，日常频率使用高的可以用这个方法。
+GitHub镜像地址
+* https://github.com.cnpmjs.org
+* https://hub.fastgit.org
+github加速下载
+http://toolwa.com/github/   
+https://d.serctl.com/         ***********
+GitHub文件加速
+利用 Cloudflare Workers 对 github release 、archive 以及项目文件进行加速，部署无需服务器且自带 cdn
+https://gh.api.99988866.xyz
+https://g.ioiox.com
+http://gitd.cc
+https://gh.sky-and-poem.fun
+该网站为演示站点，如无法打开可以查看开源项目：gh-proxy-GitHub文件加速自行部署。
+加速你的Github
+https://github.zhlh6.cn
+输入Github仓库地址，使用生成的地址进行git ssh操作即可
+GitHub加速谷歌浏览器扩展
+.crx下载
+如果可以直接访问谷歌商店，可以访问GitHub加速谷歌商店安装。
+GitHub加速插件
+油猴插件：加速下载脚本
+在此之前需要安装油猴或暴力猴扩展，如已安装请忽视
+暴力猴
+油猴
+crx下载
+如无法直接安装.crx扩展，使用终极解决方法，把.crx解压缩，然后在扩展中心中开启 开发者模式然后选择加载已解压的扩展程序。
+GitHub缓存加速网站
+https://gitclone.com/
+为开发者服务（使用git2.0+）只需在git clone命令中将gitclone.com嵌入到克隆地址中即可
+GitHub raw加速
+GitHub raw域名并非github.com 而是raw.githubusercontent.com，上方的GitHub加速并不能加速这个域名，那么可以使用Static CDN提供的反代服务。
+将raw.githubusercontent.com替换为raw.staticdn.net 即可加速。
+GitHub + Jsdelivr
+jsdelivr 唯一美中不足的就是它不能获取 exe文件以及 Release 处附加的exe和dmg文件。
+也就是说如果exe文件是附加在 Release 处但是没有在 code 里面的话是无法获取的。所以只能当作静态文件cdn用途，而不能作为Release加速下载的用途。
+来源：Hunsh's Blog、GitHub中转下载、Jsdelivr+GitHub加速
+```
+
 
 
 # 4. Git常用工作流程
@@ -256,6 +318,21 @@ git checkout . && git clean -xdf
 3. 分支rebase
 	git checkout mybranch
 	git rebase master
+```
+
+### 获取信息
+
+```shell
+git symbolic-ref --short HEAD  // 本地分支名
+git rev-parse <branch-name> //  分支id?
+git rev-parse --symbolic-full-name <branch-name>@{u}  // 分支对齐？
+```
+
+### 其他
+
+```
+ssh key fingerprint：
+ssh-keygen -E md5 -lf id_rsa.pub  // md5方式
 ```
 
 
@@ -413,6 +490,9 @@ git config --global --unset https.proxy
 
 ```
 https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E5%AD%90%E6%A8%A1%E5%9D%97
+!!!第一步一定是git submodule init，否则会出莫名其妙的错误
+
+没有git submodule init,直接git submodule add，当前repo正常，push到远端，再次checkout之后, git submodule update --init --checkout会没有反应，并且不报错，不签出子模块。
 
 git clone --recurse-submodules https://github.com/chaconinc/MainProject
 git submodule init
