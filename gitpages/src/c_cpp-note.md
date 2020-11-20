@@ -209,6 +209,21 @@ scl enable devtoolset-3 zsh // 启动zsh，并且使用toolset3，exit后失效�
 直接指定变量：export CC=/opt/rh/devtoolset-3/root/usr/bin/gcc
 source /opt/rh/devtoolset-3/enable
 
+**** 安装devtoolset-8
+https://www.softwarecollections.org/en/scls/rhscl/devtoolset-8/
+# 1. Install a package with repository for your system:
+# On CentOS, install package centos-release-scl available in CentOS repository:
+$ sudo yum install centos-release-scl
+
+# On RHEL, enable RHSCL repository for you system:
+$ sudo yum-config-manager --enable rhel-server-rhscl-7-rpms
+
+# 2. Install the collection:
+$ sudo yum install devtoolset-8
+
+# 3. Start using software collections:
+$ scl enable devtoolset-8 bash
+
 ubuntu 18.04
 apt install gcc-4.8 g++-4.8 // 4.8.2 位置：/usr/bin/gcc-4.8
 
@@ -221,6 +236,12 @@ export CXX=/bin/g++
 提示找不到devtoolset-8-gcc-c++时：
 yum install centos-release-scl
 yum install devtoolset-8-gcc-c++
+
+ubuntu 1804安装gcc-10
+https://launchpad.net/~ubuntu-toolchain-r/+archive/ubuntu/test
+add-apt-repository ppa:ubuntu-toolchain-r/test
+apt-get update
+apt install g++-10 gcc-10
 ```
 
 ### 参数
@@ -228,7 +249,7 @@ yum install devtoolset-8-gcc-c++
 ```
 -L=./lib // 静态库搜索目录
 -lxxx    // 链接 libxxx.a / libxxx.so
--O3      // 优化级别
+-O3      // 优化级别 O0禁用优化
 -std=c++11 // 启用C++11
 -fPIC    // 生成静态库
 -I <dir>  // include目录
@@ -248,6 +269,137 @@ g++ -std=c++11 -DFINTEGER=int  -fopenmp  -I. -fPIC -m64 -Wno-sign-compare -g -O3
 ar r libcfaiss.a cfaisslib/cfaiss.o
 链接静态库和faiss
 g++ -std=c++11 -DFINTEGER=int  -fopenmp  -I. -m64 -Wno-sign-compare -g -O3 -Wall -Wextra -mpopcnt -msse4 -o main main.cpp -fopenmp -L=./third_part -lopenblas -lblas -lcfaiss   -lfaiss
+```
+
+### 运行时越界检查
+
+```
+https://github.com/google/sanitizers/wiki/AddressSanitizer
+https://gcc.gnu.org/onlinedocs/gcc/Instrumentation-Options.html
+https://github.com/google/sanitizers/wiki/AddressSanitizerFlags
+https://blog.csdn.net/weixin_41644391/article/details/103450401
+https://www.jianshu.com/p/3a2df9b7c353
+
+gcc clang集成，编译开关打开即可。lib库、camke，bazel都可以支持。
+测试代码：
+  auto ppp = new int[10];
+  LOG(INFO) << "==========> try overflow";
+  LOG(INFO) << "==========> overflow " << ppp[10];
+运行会有提示并打印调用堆栈
+==14158==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x60400001c7b8 at pc 0x000000557af2 bp 0x7fffa68771b0 sp 0x7fffa68771a0
+READ of size 4 at 0x60400001c7b8 thread T0
+
+cmake：
+set(CMAKE_CXX_FLAGS "${CMAKE_CPP_FLAGS} -DNDEBUG -O2 -D__const__= -pipe -g -W -Wall -Wextra -Wno-unused-parameter -fPIC -fno-omit-frame-pointer")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBRPC_ENABLE_CPU_PROFILER -lglog  -fno-omit-frame-pointer  -fsanitize=address")
+target_link_libraries(qiao_brpc ${BRPC_LIB} ${DYNAMIC_LIB} ${GPERFTOOLS_LIBRARIES} -fno-omit-frame-pointer -fsanitize=address)
+
+bazel:
+https://github.com/bazelment/trunk/blob/master/tools/bazel.rc
+（0.25修改文件.bazelrc)
+修改bazelrc文件：
+build:asan --crosstool_top //tools/lrte:toolchain
+build:asan --compiler clang
+build:asan --strip=never
+build:asan --copt -fsanitize=address
+build:asan --copt -DADDRESS_SANITIZER
+build:asan --copt -O1
+build:asan --copt -g
+build:asan --copt -fno-omit-frame-pointer
+build:asan --linkopt -fsanitize=address
+编译：
+bazel build --config asan
+```
+
+### 临时忽略指定错误/警告
+
+```
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-function"
+#pragma GCC diagnostic pop
+```
+
+
+
+## gdb
+
+```
+yum install gdb
+```
+
+### 常用指令
+
+```
+https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/gdb.html   常用指令
+https://www.cnblogs.com/rosesmall/archive/2012/04/10/2440514.html  带参数调试
+
+****启动程序
+gdb <bin>
+set args <bin-args>
+
+****attach
+gdb attach `pidof <prog-name>`
+gdb -c xxx.core  <bin-name>
+
+thread apply all bt // 打印所有线程调用栈
+
+file xxx // 加载符号
+
+bt // backtrace打印调用栈
+t n // 切换到线程n
+f n // 切换到调用栈第n帧
+p symbol // 打印symbol的值
+https://blog.csdn.net/counsellor/article/details/87087871
+info variables // 显示variales信息
+info locals // 显示当前帧变量
+info args // 显示当前帧参数
+x/16 &var // 显示var地址对应的数据，16单位，详细 help x
+
+list // 显示源码。如果找不到no such file or directory，则添加源码搜索目录
+show dir // 显示工作目录. 默认$cdir(编译目录) $cwd(当前目录)
+dir <source-dir> // 添加源码搜索目录
+info source // 源码信息
+```
+
+###  示例
+
+```
+例如：test --args xxx
+gdb test
+set args --args xxx // 设置运行参数
+show args // 查看
+r // run 开始运行
+ctrl-c // 暂停执行
+l main.cpp:20 // list 显示main.cpp第20行
+b main.cpp:20 // break 设置断点
+c // continue
+n // next
+```
+
+
+
+
+
+### pstack 
+
+```
+pstack工具是一个gdb脚本，使用gdb的bt或者thread apply all bt命令，通过sed工具输出线程堆栈信息
+https://nanxiao.me/linux-pstack/
+```
+
+### strace
+
+```
+
+strace -fp <pid> -s<截断长度> -e trace=write
+链接到pid的write函数，即现实其他线程输出。
+```
+
+### elfutils
+
+```
+https://sourceware.org/elfutils/
+查看elf文件、进程或者coredump的backtrace等信息
 ```
 
 
@@ -270,14 +422,31 @@ LIBRARY_PATH=/usr/lib/x86_64-linux-gnu build.sh
 google开源构建工具
 自动从网络下载依赖并编译**// 网络不好容易挂
 bazel build <project-name>
+bazel test <xxx>
+
+目录结构：会生成目录 ${HOME}/.cache/bazel/_bazel_root/
+execroot/<workspace_name>/
+
+bazel test -c dbg //framework:value_model_test --test_output=all
+log：execroot/lambda/bazel-out/k8-dbg/testlogs/framework/value_model_test/test.log
+bin：execroot/lambda/bazel-out/k8-dbg/bin/framework/value_model_test.runfiles/lambda/framework/value_model_test
+core: execroot/lambda/bazel-out/k8-dbg/bin/framework/value_model_test.runfiles/lambda/core.xxx
 ```
 
 ## 链接
 
 ```
 https://blog.csdn.net/HopingWhite/article/details/7208661 linux如何查找.so
+LD_LIBRARY_PATH：全局变量，在哪些目录中可以找到共享库。可以设置多个搜索目录，这些目录之间用冒号分隔开。
 
+```
 
+### 相关命令
+
+```
+
+ldd <bin> // 查看so依赖
+lsof -p `pidof <bin>` |grep "\.so" // 查看程序运行时使用的so。符号链接会被解析为实际文件
 ```
 
 
@@ -289,6 +458,21 @@ ref
 ```
 https://code.visualstudio.com/docs/remote/remote-overview VS Code Remote Development
 ```
+
+## 常用配置
+
+```
+编辑预览：跳转到一个文件时，默认预览模式，不保留窗口（标题栏为斜体），双击后变为普通打开模式。可以考虑false
+"workbench.editor.enablePreview": true, 
+"workbench.editor.enablePreviewFromQuickOpen": true,
+
+https://code.visualstudio.com/docs/remote/troubleshooting
+启动环境变量 .bash_rc 可配置htts_proxy
+```
+
+
+
+
 
 ## sftp
 
@@ -322,6 +506,70 @@ remote ssh: 通过跳板机登录：利用ProxyCommand。
 	https://linux.die.net/man/5/ssh_config
 	https://code.visualstudio.com/blogs/2019/10/03/remote-ssh-tips-and-tricks
 	https://cikeblog.com/proxycommand.html
+	
+	
+示例：
+Host red-dev
+  HostName 10.4.40.222
+  User root
+  ForwardAgent yes
+  PermitLocalCommand yes
+  Port 22222
+
+Host red-dev-docker
+  HostName 127.0.0.1
+  User root
+  ForwardAgent yes
+  PermitLocalCommand yes
+  Port 222
+  // %h:%p  127.0.0.1:222。
+  ProxyCommand ssh.exe -q -W %h:%p red-dev 
+** 注意，ProxyCommand中必须是ssh.exe，否则会报错：
+CreateProcessW failed error:2
+posix_spawn: No such file or directory
+> 过程试图写入的管道不存在。
+```
+
+## 调试
+
+```
+
+```
+
+
+
+### coredump
+
+```
+https://code.visualstudio.com/docs/cpp/cpp-debug#_memory-dump-debugging
+https://stackoverflow.com/questions/55736235/how-do-you-debug-a-linux-core-dump-using-vscode
+{
+            "name": "core lambda service",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/lambda-service/bin/LambdaServer",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],     
+            "sourceFileMap": {
+                "/codebase/serving": "/codebase/lambda-service"
+            },
+            "coreDumpPath": "${workspaceFolder}/lambda-service/bin/core.LambdaServer.13275"
+        },
+        
+
+sourceFileMap应该可以映射源码，但似乎有问题（？？？）
+call stack查找对应源码时查找 /proc/self/cwd/xxx ，一般映射到用户目录。可以通过 ln -s 映射。注意点击堆栈时vscode给出的找不到文件的提示，可以点create file后查找文件创建位置。
 ```
 
 
@@ -863,6 +1111,59 @@ make
 ./echo_client
 ```
 
+## 9.5 clang-format
+
+```
+llvm-project(clang-format)
+
+git clone -b llvmorg-10.0.0 --single-branch --depth 1 https://github.com/llvm/llvm-project.git
+cd llvm-project
+mkdir build (in-tree build is not supported)
+cd build
+cmake -DLLVM_ENABLE_PROJECTS=clang -G "Unix Makefiles" ../llvm
+make -j64
+make install # 会安装很多东西
+
+** gcc8编译时需要camke 3.4.3 
+centos需要升级camke
+cmake --verson                # 查看当前版本
+yum remove cmake              # 移除老版本 
+yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm # 安装epel源
+yum install cmake3            # 安装cmake3
+ln -s /bin/cmake3 /bin/cmake  # 软连接
+```
+
+## 9.6 abseil
+
+```
+Google Abseil 
+https://abseil.io/
+https://github.com/abseil/abseil-cpp
+https://zhuanlan.zhihu.com/p/29940200
+
+基础类库，作为C++ STL的补充
+Abseil 简要组成部分如下：
+base Abseil Fundamentals ：包含初始化代码和其它部分依赖的代码。除了 C++ 标准库外不依赖外部代码
+algorithm ：C++ <algorithm> 库的增强
+container ：STL 风格容器
+debugging ：内存泄露检查
+memory ：智能指针和内存管理
+meta ：用 C++11 兼容代码支持 C++14 和 C++17 版本的 <type_traits> 库
+numeric ：支持 C++11 兼容的 128 位整数
+strings ：string 相关函数增强
+synchronization ：同步原语和抽象支持
+time ：时间方面的计算
+types ：非容器类型的工具类型
+```
+
+## 9.7 数学表达式求值
+
+```
+https://github.com/ArashPartow/math-parser-benchmark-project
+ExprTk：仅头文件，支持多类型，功能完善，支持常见计算、逻辑判断、流程控制、自定义表达式等。模板实现，编译耗时较长。
+TinyExpr：简单小巧，仅支持普通数学表达式和自定义函数，效率尚可，编译较快。
+```
+
 
 
 
@@ -960,5 +1261,72 @@ __func__
 __STDC__ // to 1 if comforms ISO Standard C
 __STDC_VERSION__
 __cplusplus // to 1 if C++
+```
+
+# 11. 笔记
+
+## 11.1 性能
+
+### 耗时采样
+
+```
+**** clock_gettime大约比chrono快4倍(63ns -> 239nm).但是纳秒级耗时一般不用在意。
+**** c
+static constexpr uint64_t kSecondsToNanos = 1000ULL * 1000ULL * 1000ULL;
+inline uint64_t nanoTime() {
+  struct timespec ts;
+  clock_gettime(CLOCK_MONOTONIC, &ts);
+  return (static_cast<uint64_t>(ts.tv_sec) * kSecondsToNanos +
+          static_cast<uint64_t>(ts.tv_nsec));
+}
+
+**** c++
+
+    auto tp = chrono::high_resolution_clock::now();
+    diff = chrono::duration_cast<chrono::nanoseconds>(
+            chrono::high_resolution_clock::now() - tp)
+            .count();
+
+**** 测试代码 loop=1e6
+  cout << "test: " << endl;
+  int64_t start = chrono::duration_cast<chrono::nanoseconds>(
+                      chrono::high_resolution_clock::now().time_since_epoch())
+                      .count();
+  for (int i = 0; i < loop; i++) {
+    auto tp = chrono::high_resolution_clock::now();
+    x = chrono::duration_cast<chrono::nanoseconds>(
+            chrono::high_resolution_clock::now() - tp)
+            .count();
+  }
+  auto end = chrono::duration_cast<chrono::nanoseconds>(
+                 chrono::high_resolution_clock::now().time_since_epoch())
+                 .count();
+  auto diff = end - start;
+  cout << "test x " << x << " diff " << diff << " avg " << diff / loop << endl;
+
+  cout << "test2: " << endl;
+  start = chrono::duration_cast<chrono::nanoseconds>(
+              chrono::high_resolution_clock::now().time_since_epoch())
+              .count();
+  for (int i = 0; i < loop; i++) {
+    auto tp = nanoTime();
+    x = nanoTime() - tp;
+  }
+  end = chrono::duration_cast<chrono::nanoseconds>(
+            chrono::high_resolution_clock::now().time_since_epoch())
+            .count();
+  diff = end - start;
+  cout << "test2 x " << x << " diff " << diff << " avg " << diff / loop << endl;
+
+**** 测试结果
+test: 
+test x 120 diff 239566447 avg 239
+test2: 
+test2 x 30 diff 63204790 avg 63
+
+**** 相关解释
+https://gcc.gnu.org/legacy-ml/gcc-help/2014-01/msg00093.ht
+Re: Why does std::chrono now() uses slow syscall?
+因为多线程可能导致的性能问题，glibc 2.17以后的版本才会使用clock_gettime
 ```
 

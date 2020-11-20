@@ -310,6 +310,8 @@ whoami // 查看当前登录用户
 scp -i <ssh-key> -r src dst 
 	// 跨服务器复制文件 -r 复制目录。路径格式user@addr:<path>,可使用 ~ 代表home
 chmod -R o+u <dir> // 递归地对<dir>目录及子目录下文件添加其他用户的写权限(ugo)
+lsattr // 显示文件属性（独立于rwx的权限）
+chattr // 修改文件属性（独立于rwx的权限）如 -i 可能导致root即使有rw权限也无法修改。
 mkdir -p dir1/dir2/dir3 // 递归创建多级目录
 kill -SIGKILL `pidof xxx` // 强制杀死xxx, sig=9
 pkill -SIGTERM xxx // 通知xxx退出,sig=15
@@ -331,9 +333,23 @@ ulimit -a // 查询当前用户限制(文件句柄,最大线程数等)
 
 fdisk -l // 列出磁盘信息
 mount <disk> <target_dir> -r // 挂载磁盘, 只读方式, 默认-w读写
+mount -t nfs -o ro <hostip>:<host_path> <local_path> // 只读挂载nfs
+    **** centos如果出现错误提示：
+    mount: wrong fs type, bad option, bad superblock on 10.0.32.98:/,
+       missing codepage or helper program, or other error
+       (for several filesystems (e.g. nfs, cifs) you might
+       need a /sbin/mount.<type> helper program)
+
+       In some cases useful info is found in syslog - try
+       dmesg | tail or so.
+    **** 解决：
+    yum install mount.nfs
 umask u=, g=w, o=rwx // 利用umask命令可以指定哪些权限将在新文件的默认权限中被删除。使得组用户的写权限，其他用户的读、写和执行权限都被取消：
 
 lsof -i -P // 显示打开的文件。-i 显示端口号 -P 不显示端口的常用名
+journalctl -xe // 查看系统错误。一般服务启动失败，或者sudu su切换用户慢，可以看下是否有异常日志
+
+find -H/L/P /usr -name xxx.so // -H/L/P对待符号链接的方式：P：不跟随符号，L：跟随符号，H：只跟随命令行中的符号。
 ```
 
 ### 0.0 查看发行版
@@ -396,6 +412,7 @@ tailf engine_error.log| while read line; do echo $line|grep test_flag|cut -c 120
 /etc/vim/vimrc  /etc/vimrc 全局	
 ~/.vimrc 用户
 配置
+** 关闭功能就是 set noXXX 或者 set XXX!, 例如 set nonu / set nu!
 set mouse-=a " 进制vim内置的鼠标支持。可以恢复鼠标本来的用途（如右键黏贴等）
 set nu " 显示行号
 set hlsearch " 搜索高亮
@@ -569,10 +586,16 @@ root账户下
 
 六。转发流量
 1. 修改/etc/sysctl.conf 然后找到 net.ipv4.ip_forward = 0 修改为 net.ipv4.ip_forward = 1 随后保存。
+
 2. 端口转发
 iptables -t nat -A PREROUTING -p tcp --dport [要转发的端口号] -j DNAT --to-destination [要转发的服务器IP]
 端口段标识 a:b 标识从a-b范围的端口
-4. 保存并重启iptables
+iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 22222 -j REDIRECT --to-port 22
+转发eth0上的端口22222到22
+iptables -t nat -D PREROUTING -i eth0 -p tcp --dport 22222 -j REDIRECT --to-port 22
+删除上述规则
+
+3. 保存并重启iptables
 service iptables save
 service iptables restart
 
@@ -583,6 +606,7 @@ iptables -A OUTPUT -p tcp -d 127.0.0.1 -j ACCEPT
 iptables -A  OUTPUT -p tcp -d 172.16.59.192 -j ACCEPT
 iptables -A OUTPUT -p tcp --dport 3061 -j DROP
 iptables -A OUTPUT -p tcp --dport 2051 -j DROP
+iptables -t nat -D PREROUTING -i eth0 -p tcp --dport 22222 -j REDIRECT --to-port 22 // 端口22222转发到22
 iptables -L -n --line-numbers
 ```
 
@@ -595,6 +619,8 @@ top -d 2  //每隔2秒显式所有进程的资源占用情况
 top -c  //每隔5秒显式进程的资源占用情况，并显示进程的命令行参数(默认只有进程名)
 top -p 12345 -p 6789//每隔5秒显示pid是12345和pid是6789的两个进程的资源占用情况
 top -d 2 -c -p 123456 //每隔2秒显示pid是12345的进程的资源使用情况，并显式该进程启动的命令行参数
+
+top运行中，按E/e切换概览/程序内存信息单位(K/G/T等)
 ```
 
 #### 替代工具
@@ -633,6 +659,9 @@ strings /lib64/libc.so.6 |grep GLIBC_
 ```
 ssh-keygen -l -E md5 -f <keyfile>
 校验key的md5签名，一般是pubkey。可用于和gitlab上的key比对。
+
+使用其他ssh的sshkey（不在默认目录）。root默认/root，不受HOME变量影响
+eval $(ssh-agent -s) && ssh-add ~/.ssh/id_rsa_qsh4
 ```
 
 ### 0.10 sed
@@ -652,6 +681,37 @@ sed '2s/原字符串/替换字符串/g'　 #替换第2行
 sed '$s/原字符串/替换字符串/g'   #替换最后一行
 sed '2,5s/原字符串/替换字符串/g' #替换2到5行
 sed '2,$s/原字符串/替换字符串/g' #替换2到最后一行
+
+**特殊替换模式**
+**最小匹配
+sed模式匹配默认最大匹配（贪婪匹配）。
+如果要最小匹配，需要通过 [^str] 的方法找到最近的右侧匹配规则
+'s/(.*)//g'   # 匹配最近的()
+**换行
+源字符串中\n不直接转义（因为默认只在一行内匹配），替换字符串可以自动识别\n以及\
+https://cloud.tencent.com/developer/ask/137080
+sed ':a;N;$!ba;s/\n/ /g' file
+其中:a;N;$!ba; 的含义：创建一个标签a,N当前模式处理下一行，$!ba不包括最后一行。
+因为贪婪匹配问题，如果是 下一行，则使用：  \n[^\n]*
+
+例如
+local_repository(
+    name = "tf_serving",
+    path = "/codebase/serving",
+)
+替换为：
+http_archive(
+    name = "tf_serving",
+    ...
+)
+则：
+sed -i ':a;N;$!ba;s/local_repository(\n    name = "tf_serving",\n[^\n]*\n[^\n]*/http_archive(\
+    name = "tf_serving",\
+    strip_prefix = "serving-red-v1.0.8-99966afd26631160bdddc8e18ec290f5875aaf6c",\
+    urls = ["https:\/\/code.devops.xiaohongshu.com\/firefly\/serving\/repository\/archive.zip?ref=red-v1.0.8"],\
+)/'  WORKSPACE
+
+
 ```
 
 ### 0.11 xargs
@@ -661,6 +721,27 @@ sed '2,$s/原字符串/替换字符串/g' #替换2到最后一行
 ls *.sig | xargs -L 1 gpg --verify
 把所有sig文件送给gpg，每个为一行 ==》  gpg --verify xxx.sig // 每个sig文件生成一个命令
 ```
+
+### 0.12 时区
+
+```
+https://blog.csdn.net/skh2015java/article/details/85007624
+centos7:
+cp  /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime
+```
+
+### 0.13 coredump
+
+```
+host: ubuntu 
+docker: centos
+1. core-pattern(host)
+echo core.%e.%p> /proc/sys/kernel/core_pattern
+2. host:
+ulimit -c unlimited
+3. docker run --ulimit core=-1
+```
+
 
 
 ## 1. 知识库
@@ -716,7 +797,7 @@ wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-
 curl -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
 
 腾讯云 https://mirrors.cloud.tencent.com/help/centos.html
-wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.cloud.tencent.com/repo/centos5_base.repo
+wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.cloud.tencent.com/repo/centos7_base.repo
 
 https://yq.aliyun.com/articles/33286
 CentOS系统更换软件安装源
@@ -733,6 +814,36 @@ enabled=0
 yum clean all
 yum makecache
 ```
+
+# 4. 添加其他repo
+
+```
+ubuntu：
+**** ppa
+https://launchpad.net/
+
+例如 ubuntu 1804升级gcc 10
+https://launchpad.net/~ubuntu-toolchain-r/+archive/ubuntu/test?field.series_filter=bionic
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+sudo apt-get update
+apt install gcc-10
+
+centos:
+**** epel
+https://fedoraproject.org/wiki/EPEL#How_can_I_use_these_extra_packages.3F
+install： https://fedoraproject.org/wiki/EPEL#Quickstart
+yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+查看软件版本：如cmake
+https://mirrors.tuna.tsinghua.edu.cn/epel/7/x86_64/Packages/c/
+
+例如 centos升级cmake2到cmake3
+yum remove cmake              # 移除老版本 
+yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm # 安装epel源
+yum install cmake3            # 安装cmake3
+ln -s /bin/cmake3 /bin/cmake  # 软连接
+```
+
+
 
 ## 5. ssh自动登录脚本
 
@@ -763,13 +874,43 @@ GODEBUG="gctrace=1" go build .
 LIBRARY_PATH=/usr/lib/x86_64-linux-gnu build.sh
 ```
 
-## 7 curl命令行查看ip公网地址
+## 7. curl命令行查看ip公网地址
 
 ```
 curl ipinfo.io 
 curl cip.cc
 curl ip.gs
 curl ifconfig.me
+```
+
+## 8. 性能相关
+
+#### vmstat
+
+```
+https://blog.csdn.net/chenlvzhou/article/details/89496587
+vmstat 1 // 每1秒输出1条
+procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----
+ r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st
+14  0      0 7037048 1841972 65330588    0    0     0   396 236789 317009 23  4 73  0  0
+procee: r/b：ready、block线程数
+swap: si/so: swap in/out
+io: bi/bo: block in/out
+system: interupt /context switch/user space/system/idea/wait/stolen from a vm
+
+vmstat -d 1 //磁盘读写信息
+disk- ------------reads------------    ------------writes-----------             -----IO------
+       total merged sectors      ms    total merged sectors      ms               cur    sec
+vda   846205  67384 19457898 1397734   272233572 522470588 6745950820 940761091    0 637993
+vdb   2750669   3642 237572706 8291006 10847527 17994011 3331605184 394878698      0  28536
+```
+
+#### vnstat
+
+```
+vnstat -l / --live
+显示实时网络速度
+rx:   510.66 Mbit/s 60870 p/s          tx:   232.91 Mbit/s 36830 p/s
 ```
 
 
@@ -813,7 +954,8 @@ yum install lrzsz  // rz sz
 yum install httpd-tools // ab
 yum install util-linux  // tailf
 yum install sysvinit-tools // pidof
-yum install iproute
+yum install iproute // ip
+yum install lsof
 yum install zsh
 yum install gcc-toolset-9-gcc-c++ gcc-toolset-9-make gcc-toolset-9-gcc-gdb-plugin gcc-toolset-9-valgrind gcc-toolset-9-perftools gcc-toolset-9-binutils gcc-toolset-9-gdb-gdbserver
 yum install bazel3 // 需要先配置repo源，参考官网
@@ -851,10 +993,16 @@ golang配置，windows下golang tools迁移到linux，参考go-note.md
 服务器：
 sudo su
 apt install openssh-server // 安装服务
+yum install openssh-server && sudo systemctl start sshd.service && sudo systemctl enable sshd.service
 ip addr // 记录ip地址
 
+ssh -V // 版本号
 ssh -A host1 -A host2 // 本机->host1->host2，-A转发秘钥
-ssh -p port1 user1@host1 ssh -p port2 user2@host2 // 本机->host1->host2，不过登录都是用服务器上的秘钥
+ssh -p port1 user1@host1 ssh -p port2 user2@host2 // 本机->host1->host2，不过登录都是用服务器上的秘钥。可以使用 -i 指定key
+如果提示 Pseudo-terminal will not be allocated because stdin is not a terminal，需要加-tt参数，强制分配tty
+ssh -tt -p port1 user1@host1 ssh -p port2 user2@host2 // 本机->host1->host2
+ssh -v -F <ssh-conf-file> <conf-host> // 根据配置连接host，并显示连接详情
+
 
 客户端:
 ssh-keygen // 生成本机密钥。如果已有则跳过
@@ -869,12 +1017,26 @@ ssh user@ipaddr // 登录到服务器
 ssh -D :9898 user@hostip -p sshport
 本地启动端口9898，通过hostip代理上网（sock5）
 
-提升服务器安全性：
+使用其他key登录
+ssh -i other_id_rsa user@host
+
+配置文件：
 sudo vim /etc/ssh/sshd_config // 编辑配置文件。建议先备份。
+  Port 22 // 端口号
   PermitRootLogin yes|no|prohibit-password  // root登录：允许|禁止|禁用密码(仅key)。
   			// 建议prohibit-password并且添加key到root，方便恢复系统。
   PasswordAuthentication yes|no // 使用密码登录：允许|禁止。建议no
 service ssh restart // 重启服务
+
+ssh登录过慢，排除网络问题后，
+time ssh -v user@host exit查看详细登录过程，看看哪一步比较慢，并且记录登录耗时
+注意：有时候修改hostname后会导致登录过慢，同时还有sudo su，hostnamectl都会比较慢。 journalctl -xe查看是否有系统错误。ubuntu系统尝试使用hosnname newhost 修改host可能会解决
+```
+
+#### docker安装
+
+```
+
 ```
 
 #### 自动登录
@@ -1349,12 +1511,15 @@ scl list-collections // 查看有哪些toolset可用
 scl enable gcc-toolset-9 bash
 ```
 
-## 13 gdb pstack
+## 13 gdb pstack strace
 
 ```
 yum install gdb
 pstack工具是一个gdb脚本，使用gdb的bt或者thread apply all bt命令，通过sed工具输出线程堆栈信息
 https://nanxiao.me/linux-pstack/
+
+strace -fp <pid> -s<截断长度> -e trace=write
+链接到pid的write函数，即现实其他线程输出。
 ```
 
 ## 14 hadoop
@@ -1426,8 +1591,10 @@ daemon.json
 运行：docker run -ti --rm --network host <镜像全名> bash
   
   
-docker run -it -h <docker_host_name> --cpus <N> -m 4G --rm --network host -v <local_path>:<docker_path> image_name:tag
+docker run -it -h <docker_host_name> --cpus <N> -m 4G --rm --network host -v <local_path>:<docker_path> --privileged=true image_name:tag
 --rm 自动移除已存在的docker
+--privileged 启用扩展权限
+-d --detach  Run container in background and print container ID
 查看镜像tag：（源是dockerhub时）
 https://hub.docker.com/ 搜索对应镜像，查看tag
 
@@ -1450,9 +1617,15 @@ docker commit [OPTIONS] CONTAINER [REPOSITORY[:TAG]]
 移除镜像
 docker rm <container>
 docker rmi <docker-id>
+修改镜像tag
+docker tag IMAGEID(镜像id) REPOSITORY:TAG（仓库：标签）
 
-Ctrl+P+Q退出但不关闭容易。
+Ctrl+P+Q退出但不关闭容器。
 一般exit后容器会被关闭
+
+**** 无法启动服务
+特权模式启动，并且使用init做入口
+docker run -d -name centos7 --privileged=true centos:7 /usr/sbin/init
 ```
 
 ## 17 sftp同步
@@ -1610,11 +1783,26 @@ gpg --recv-keys <key-id>    // 从服务器导入公钥
 gpg --verify xxx.gpg xxx 验证签名
 ```
 
-## vcpkg
+##  25 vcpkg
 
 ```
 方便管理c++依赖，跨平台。详细参考c_cpp-note.md
 ```
+
+## 26 php
+
+```
+https://webtatic.com/packages/php71/
+1. 安装php71
+yum remove php php-common
+yum install mod_php71w php71w-opcache php71w-common
+缺点：php命令不能使用。
+2. 替换
+yum replace php-common --replace-with=php71w-common
+会升级php php-cli php-common 为 mod_php71w php71w-cli php71w-common
+```
+
+
 
 # SHELL脚本
 
@@ -1960,6 +2148,8 @@ ls *.proto | cat | awk '{print "protoc --cpp_out=. " $1 | "/bin/bash"}'
 列出所有proto文件 | 分行 | awk处理
 awk：打印命令 | 传递给bash
 awk也可以使用system调用命令
+
+
 ```
 
 
@@ -1989,7 +2179,6 @@ p var-name // print变量值
 遍历文件并处理
 ls *.proto | cat | awk '{print "protoc --cpp_out=. " $1 | "/bin/bash"}'
 find ./ -name \*.proto | awk '{print "protoc --cpp_out=. " $1 | "/bin/bash"}'
-
-
+find ./ -iname "*.h" -o -iname "*.cpp" |xargs clang-format -style=file -i          # 格式化所有.h和.cpp文件
 ```
 

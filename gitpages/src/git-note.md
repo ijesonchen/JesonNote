@@ -22,9 +22,13 @@ wget https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.9.5.tar.gz
 tar -zxvf git-2.9.5.tar.gz
 cd git-2.9.5
 ./configure
-make
+make -j64 ## 64并发编译
+make install
+可以指定目录：
+# make prefix=/usr/local/git all
+# make prefix=/usr/local/git install
 
-如果提示错误
+****如果提示错误
     SUBDIR perl
 /usr/bin/perl Makefile.PL PREFIX='/usr/local' INSTALL_BASE='' --localedir='/usr/local/share/locale'
 Can't locate ExtUtils/MakeMaker.pm in @INC (@INC contains: /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at Makefile.PL line 3.
@@ -37,6 +41,13 @@ make: *** [perl/perl.mak] Error 2
 1. yum install perl-devel
 或者直接
 2. yum install perl-ExtUtils-MakeMaker 
+
+****如果提示 MSGFMT tclsh相关的错误
+yum install gettext
+即可。
+其他可能缺少的包
+# yum install curl-devel expat-devel gettext-devel openssl-devel zlib-devel asciidoc
+# yum install  gcc perl-ExtUtils-MakeMaker
 ```
 
 
@@ -354,6 +365,19 @@ git reflog expire --expire=now --all
 git gc --prune=now
 ```
 
+### 清理错误提交的大文件
+
+```
+http://liuhui998.com/2010/11/06/remove_commits_completely/
+如何彻底删除 Git 中的提交(commit)
+
+git reset --hard <old-commit> // 回退到之前的提交
+git reflog expire --expire-unreachable=0 --all // 清理reflog
+git gc --prune=0 // 触发gc
+```
+
+
+
 ### 初始化库
 
 ```
@@ -454,9 +478,6 @@ bitbucket PAT创建流程：
   http://myuser:aabbccdd@git.xxx.com/scm/xxx/xx.git
   如果是gitlab，则是类似
   http://mytoken:aabbccdd@git.xxx.com/xxx/xx.git
-
-
-  
 
 2. 使用当前配置（只针对当前目录，配置保存在 ./.git/config里面，似乎有问题）
 git config credential.helper store
